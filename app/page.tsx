@@ -3,6 +3,7 @@ import Hero from "@/components/agency/Hero";
 import SocialProofBar from "@/components/agency/SocialProofBar";
 import HowItWorks from "@/components/agency/HowItWorks";
 import TierShowcase from "@/components/agency/TierShowcase";
+import TechnicalEdge from "@/components/agency/TechnicalEdge";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <SocialProofBar />
       <HowItWorks />
       <TierShowcase />
+      <TechnicalEdge />
     </>
   );
 }
