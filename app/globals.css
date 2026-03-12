@@ -110,3 +110,28 @@ html {
   outline: 2px solid var(--agency-accent);
   outline-offset: 2px;
 }
+
+/* ============================================================
+   MARQUEE — Pure CSS infinite horizontal scroll (§4.2.3)
+   ============================================================ */
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 30s linear infinite;
+}
+
+/* Respect reduced-motion (already handled globally above,
+   but being explicit for the marquee) */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
