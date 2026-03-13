@@ -6,6 +6,7 @@ import TierShowcase from "@/components/agency/TierShowcase";
 import TechnicalEdge from "@/components/agency/TechnicalEdge";
 import FAQSection from "@/components/agency/FAQSection";
 import FinalCTA from "@/components/agency/FinalCTA";
+import Footer from "@/components/agency/Footer";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <TechnicalEdge />
       <FAQSection />
       <FinalCTA />
+      <Footer />
     </>
   );
 }
