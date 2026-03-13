@@ -6,7 +6,7 @@ import TierCard from "@/components/agency/TierCard";
 
 /* ────────────────────────────────────────────────────────────
    TierShowcase — PRD §4.2.5
-   Section header + three tier pricing cards.
+   Section header + four tier pricing cards in a 2×2 grid.
    Scroll-triggered staggered reveal (§3.4).
    ──────────────────────────────────────────────────────────── */
 
@@ -44,7 +44,7 @@ export default function TierShowcase() {
           transition={prefersReduced ? undefined : { duration: 0.4, ease: "easeOut" }}
           className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent"
         >
-          Three Tiers of Work
+          Four Tiers of Work
         </motion.p>
 
         <motion.h2
@@ -55,7 +55,7 @@ export default function TierShowcase() {
           transition={prefersReduced ? undefined : { duration: 0.4, ease: "easeOut", delay: 0.08 }}
           className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl"
         >
-          From a clean start to a full custom build.
+          From a single page to a full custom build.
         </motion.h2>
 
         <motion.p
@@ -70,30 +70,49 @@ export default function TierShowcase() {
         </motion.p>
       </div>
 
-      {/* ── Cards grid ──────────────────────────────────────── */}
+      {/* ── Cards grid (2×2 on desktop) ─────────────────────── */}
       <motion.div
         variants={prefersReduced ? undefined : containerVariants}
         initial={prefersReduced ? undefined : "hidden"}
         whileInView={prefersReduced ? undefined : "visible"}
         viewport={{ once: true, amount: 0.1 }}
-        className="mx-auto mt-14 grid max-w-7xl gap-8 lg:mt-20 lg:grid-cols-3"
+        className="mx-auto mt-14 grid max-w-7xl gap-8 md:grid-cols-2 lg:mt-20 lg:grid-cols-2"
       >
+        {/* ── Essential ─────────────────────────────────────── */}
+        <motion.div variants={prefersReduced ? undefined : cardVariants}>
+          <TierCard
+            name="Essential"
+            color="cyan"
+            price="$499"
+            valueProp="Get online fast. A single-page site that puts your business on the map — literally."
+            features={[
+              "Single page — hero, services, contact, Google Maps",
+              "Mobile-first, fully responsive",
+              "Google Business Profile setup",
+              "Contact form with email notification",
+              "Submitted to Google Search Console",
+            ]}
+            retainer="From $89/month Basic Care"
+            demoHref="/demo/starter"
+          />
+        </motion.div>
+
         {/* ── Starter ───────────────────────────────────────── */}
         <motion.div variants={prefersReduced ? undefined : cardVariants}>
           <TierCard
             name="Starter"
             color="cyan"
-            price="$1,500 – $3,000"
-            valueProp="A clean, fast, professional web presence for businesses starting from scratch."
+            price="$999"
+            valueProp="A clean, fast, professional web presence for businesses ready to be found on Google."
             features={[
-              "Up to 5 custom-coded pages",
+              "4–5 custom-coded pages",
               "Mobile-first, fully responsive design",
               "Google Business Profile setup & optimisation",
               "Contact form with email notification",
               "Basic on-page SEO (meta tags, structured data)",
               "Cloudflare hosting setup",
             ]}
-            retainer="From $150/month hosting & maintenance"
+            retainer="From $89/month Basic Care"
             demoHref="/demo/starter"
           />
         </motion.div>
@@ -103,10 +122,10 @@ export default function TierShowcase() {
           <TierCard
             name="Business"
             color="amber"
-            price="$3,500 – $7,000"
+            price="$1,799"
             valueProp="A conversion-focused site with everything a growing Melbourne business needs to win customers from Google."
             features={[
-              "6–12 custom-coded pages",
+              "6–10 custom-coded pages",
               "Custom design system built for your brand",
               "CMS integration (Sanity) — edit your own content",
               "Booking or enquiry flow integration",
@@ -115,7 +134,7 @@ export default function TierShowcase() {
               "Core Web Vitals optimised (Lighthouse 100/100)",
               "2 rounds of revisions included",
             ]}
-            retainer="From $200/month hosting, maintenance & monthly report"
+            retainer="From $179/month Standard Care"
             demoHref="/demo/business"
             popular
           />
@@ -126,7 +145,7 @@ export default function TierShowcase() {
           <TierCard
             name="Premium"
             color="violet"
-            price="$7,000 – $18,000"
+            price="$3,999+"
             valueProp="A bespoke, high-performance build that positions your business as the market leader in your category."
             features={[
               "Unlimited pages, full custom architecture",
@@ -138,7 +157,7 @@ export default function TierShowcase() {
               "Performance report on delivery (Lighthouse 100/100 guaranteed)",
               "Priority support, 3 months included post-launch",
             ]}
-            retainer="From $350/month hosting, maintenance, priority support & monthly SEO report"
+            retainer="From $349/month Growth Care"
             demoHref="/demo/premium"
           />
         </motion.div>
