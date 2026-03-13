@@ -1,0 +1,88 @@
+"use client";
+
+import Link from "next/link";
+import { motion, type Variants } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/lib/useReducedMotion";
+
+/* ────────────────────────────────────────────────────────────
+   FinalCTA — PRD §4.2.8
+   Full-width cyan background. Dark text.
+   H2, subtext, large primary button → /contact,
+   "Based in Melbourne · Serving all of Victoria" below.
+   Scroll-triggered fade-up reveal.
+   ──────────────────────────────────────────────────────────── */
+
+const containerVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
+export default function FinalCTA() {
+  const prefersReduced = useReducedMotion();
+
+  return (
+    <section
+      className="bg-agency-accent px-6 py-20 lg:px-12 lg:py-32"
+      aria-labelledby="final-cta-heading"
+    >
+      <motion.div
+        variants={prefersReduced ? undefined : containerVariants}
+        initial={prefersReduced ? undefined : "hidden"}
+        whileInView={prefersReduced ? undefined : "visible"}
+        viewport={{ once: true, amount: 0.15 }}
+        className="mx-auto max-w-2xl text-center"
+      >
+        {/* H2 */}
+        <motion.h2
+          id="final-cta-heading"
+          variants={prefersReduced ? undefined : fadeUp}
+          className="font-display text-3xl font-bold text-agency-bg sm:text-4xl lg:text-5xl"
+        >
+          Ready to stop losing customers to a bad&nbsp;website?
+        </motion.h2>
+
+        {/* Subtext */}
+        <motion.p
+          variants={prefersReduced ? undefined : fadeUp}
+          className="mt-5 text-base leading-relaxed text-agency-bg/80 sm:text-lg"
+        >
+          Book a free 20-minute discovery call. No obligation&nbsp;&mdash; just
+          an honest look at what&rsquo;s possible for your business.
+        </motion.p>
+
+        {/* CTA button */}
+        <motion.div variants={prefersReduced ? undefined : fadeUp} className="mt-8">
+          <Link
+            href="/contact"
+            className={cn(
+              "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
+              "bg-agency-bg text-agency-accent",
+              "transition-all duration-150 hover:bg-agency-surface active:scale-[0.98]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-agency-bg focus-visible:ring-offset-2 focus-visible:ring-offset-agency-accent",
+            )}
+          >
+            Book a Free Call
+          </Link>
+        </motion.div>
+
+        {/* Location line */}
+        <motion.p
+          variants={prefersReduced ? undefined : fadeUp}
+          className="mt-6 text-sm text-agency-bg/60"
+        >
+          Based in Melbourne · Serving all of Victoria
+        </motion.p>
+      </motion.div>
+    </section>
+  );
+}

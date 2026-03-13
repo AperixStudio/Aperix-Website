@@ -4,6 +4,8 @@ import SocialProofBar from "@/components/agency/SocialProofBar";
 import HowItWorks from "@/components/agency/HowItWorks";
 import TierShowcase from "@/components/agency/TierShowcase";
 import TechnicalEdge from "@/components/agency/TechnicalEdge";
+import FAQSection from "@/components/agency/FAQSection";
+import FinalCTA from "@/components/agency/FinalCTA";
 
 export default function Home() {
   return (
@@ -14,6 +16,8 @@ export default function Home() {
       <HowItWorks />
       <TierShowcase />
       <TechnicalEdge />
+      <FAQSection />
+      <FinalCTA />
     </>
   );
 }
