@@ -68,7 +68,7 @@ export default function ApexAboutPage() {
               </h2>
               <p className="mt-5 font-(family-name:--font-apex-body) text-base leading-relaxed text-white/70">
                 James Kowalski started Apex Electrical in 2013 after 12 years
-                working for larger contractors — frustrated by the lack of
+                working for larger contractors &mdash; frustrated by the lack of
                 personal service and transparent pricing in the industry.
               </p>
               <p className="mt-4 font-(family-name:--font-apex-body) text-base leading-relaxed text-white/70">
