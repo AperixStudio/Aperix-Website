@@ -93,7 +93,7 @@ export default function TierShowcase() {
               "Submitted to Google Search Console",
             ]}
             retainer="From $89/month Basic Care"
-            demoHref="/demo/starter"
+            demoHref="/demo/essential"
           />
         </motion.div>
 

@@ -32,7 +32,7 @@ const tiers: TierDetailData[] = [
     idealFor:
       "Sole traders, tradespeople, or new businesses that need a professional presence fast without a large upfront investment.",
     retainer: "From $89/month Basic Care",
-    demoLink: "/demo/starter",
+    demoLink: "/demo/essential",
   },
   {
     name: "Starter",

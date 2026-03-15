@@ -17,6 +17,19 @@
   --agency-accent2: #f59e0b;      /* amber */
   --agency-accent3: #a78bfa;      /* violet */
 
+  /* ---- Demo — Soothe Mobile Massage (Essential Tier) ---- */
+  --soothe-bg: #f7f5f2;
+  --soothe-surface: #ffffff;
+  --soothe-dark: #2c2825;
+  --soothe-primary: #7a9e87;
+  --soothe-primary-dark: #5c7a67;
+  --soothe-primary-light: #c8ddd0;
+  --soothe-accent: #c9a96e;
+  --soothe-text: #3a3530;
+  --soothe-muted: #8a8078;
+  --soothe-border: #e8e3dc;
+  --soothe-cream: #fdf9f4;
+
   /* ---- Demo — Hearthstone Café (Starter Tier) ---- */
   --hs-bg: #faf7f2;
   --hs-surface: #ffffff;
