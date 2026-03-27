@@ -1,3 +1,10 @@
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hearthstone Café Fitzroy — Demo | Aperix Studio",
+  description: "Demo Starter-tier site for Hearthstone Café, an independent café in Fitzroy, Melbourne.",
+};
+
 import HearthstoneNav from "@/components/demos/hearthstone/HearthstoneNav";
 import HearthstoneHero from "@/components/demos/hearthstone/HearthstoneHero";
 import AboutStrip from "@/components/demos/hearthstone/AboutStrip";

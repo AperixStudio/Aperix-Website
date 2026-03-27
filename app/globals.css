@@ -141,10 +141,16 @@ html {
   animation: marquee-scroll 30s linear infinite;
 }
 
+/* Tailwind v4 utility for marquee (used by Lumina awards strip) */
+@utility animate-marquee {
+  animation: marquee-scroll 40s linear infinite;
+}
+
 /* Respect reduced-motion (already handled globally above,
    but being explicit for the marquee) */
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
+  .marquee-track,
+  .animate-marquee {
     animation: none;
   }
 }

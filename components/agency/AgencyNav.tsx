@@ -49,16 +49,17 @@ export default function AgencyNav() {
 
   return (
     <>
-      <header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-40 transition-colors duration-300",
-          scrolled
-            ? "bg-agency-surface/80 backdrop-blur-lg border-b border-agency-border"
-            : "bg-transparent",
-        )}
-      >
+      <header className="fixed top-0 left-0 right-0 z-40">
+        {/* Filled background — fades in on scroll via opacity only (composited) */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 bg-agency-surface/80 backdrop-blur-lg border-b border-agency-border transition-opacity duration-300",
+            scrolled ? "opacity-100" : "opacity-0",
+          )}
+        />
         <nav
-          className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12"
+          className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12"
           aria-label="Main navigation"
         >
           {/* ── Logo ────────────────────────────────────── */}
@@ -106,9 +107,16 @@ export default function AgencyNav() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-agency-muted transition-colors duration-150 hover:text-agency-text"
+                className="group relative text-sm font-medium"
               >
-                {link.label}
+                {/* muted layer — fades out on hover */}
+                <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
+                  <span className="text-agency-muted">{link.label}</span>
+                </span>
+                {/* bright layer — fades in on hover */}
+                <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  <span className="text-agency-text">{link.label}</span>
+                </span>
               </Link>
             ))}
 
@@ -128,7 +136,7 @@ export default function AgencyNav() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-lg md:hidden hover:bg-agency-surface transition-colors"
+            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-lg md:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -193,9 +201,16 @@ export default function AgencyNav() {
                   <Link
                     href={link.href}
                     onClick={closeMobile}
-                    className="font-display text-3xl font-bold text-agency-text hover:text-agency-accent transition-colors"
+                    className="group relative font-display text-3xl font-bold"
                   >
-                    {link.label}
+                    {/* base layer */}
+                    <span className="text-agency-text transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
+                      {link.label}
+                    </span>
+                    {/* accent layer — fades in on hover */}
+                    <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                      <span className="text-agency-accent">{link.label}</span>
+                    </span>
                   </Link>
                 </motion.div>
               ))}
