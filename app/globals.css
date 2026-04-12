@@ -6,16 +6,20 @@
    ============================================================ */
 
 :root {
-  /* ---- Agency Shell (dark/editorial palette) ---- */
-  --agency-bg: #09090b;
-  --agency-surface: #18181b;
-  --agency-surface2: #27272a;
-  --agency-border: #3f3f46;
-  --agency-text: #fafafa;
-  --agency-muted: #a1a1aa;
-  --agency-accent: #22d3ee;       /* cyan  */
-  --agency-accent2: #f59e0b;      /* amber */
-  --agency-accent3: #a78bfa;      /* violet */
+  /* ---- Agency Shell (light / editorial palette) ---- */
+  --agency-bg: #e8eef5;
+  --agency-surface: #f2f5f9;
+  --agency-surface2: #dde6f0;
+  --agency-border: #c1cedb;
+  --agency-border-dark: #8ea1b6;
+  --agency-text: #14202d;
+  --agency-text-secondary: #233140;
+  --agency-muted: #617181;
+  --agency-accent: #0a84ff;       /* Apple-style blue */
+  --agency-accent-dark: #0066cc;  /* deeper hover/focus blue */
+  --agency-accent2: #f59e0b;      /* amber — keep for demos */
+  --agency-accent3: #a78bfa;      /* violet — keep for demos */
+  --agency-ink: #0f1823;          /* deep ink for headlines */
 
   /* ---- Demo — Soothe Mobile Massage (Essential Tier) ---- */
   --soothe-bg: #f7f5f2;
@@ -79,11 +83,15 @@
   --color-agency-surface: var(--agency-surface);
   --color-agency-surface2: var(--agency-surface2);
   --color-agency-border: var(--agency-border);
+  --color-agency-border-dark: var(--agency-border-dark);
   --color-agency-text: var(--agency-text);
+  --color-agency-text-secondary: var(--agency-text-secondary);
   --color-agency-muted: var(--agency-muted);
   --color-agency-accent: var(--agency-accent);
+  --color-agency-accent-dark: var(--agency-accent-dark);
   --color-agency-accent2: var(--agency-accent2);
   --color-agency-accent3: var(--agency-accent3);
+  --color-agency-ink: var(--agency-ink);
 
   /* Fonts — variables are set by next/font in layout.tsx */
   --font-sans: var(--font-inter);
@@ -99,6 +107,8 @@ body {
   background: var(--agency-bg);
   color: var(--agency-text);
   font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Smooth scrolling for anchor links */

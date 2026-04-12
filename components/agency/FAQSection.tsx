@@ -59,7 +59,7 @@ export default function FAQSection() {
 
   return (
     <section
-      className="bg-agency-bg px-6 py-20 lg:px-12 lg:py-32"
+      className="bg-agency-surface px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-3xl">
@@ -73,12 +73,12 @@ export default function FAQSection() {
           }
           className="text-center"
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
             Frequently Asked Questions
           </p>
           <h2
             id="faq-heading"
-            className="font-display text-3xl font-bold sm:text-4xl"
+            className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
           >
             Got questions? We&rsquo;ve got answers.
           </h2>

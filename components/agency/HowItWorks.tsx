@@ -109,17 +109,17 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative bg-agency-bg px-6 py-20 lg:px-12 lg:py-32"
+      className="relative bg-agency-surface px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="hiw-heading"
     >
       {/* Section header */}
       <div className="mx-auto max-w-7xl text-center">
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent">
+        <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
           How It Works
         </p>
         <h2
           id="hiw-heading"
-          className="font-display text-3xl font-bold sm:text-4xl"
+          className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
         >
           Three steps to a site that works for you.
         </h2>
@@ -156,7 +156,7 @@ export default function HowItWorks() {
             </span>
 
             {/* Icon circle */}
-            <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-agency-border bg-agency-surface text-agency-accent">
+            <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-agency-border-dark bg-agency-bg text-agency-ink">
               {step.icon}
             </div>
 

@@ -50,25 +50,25 @@ function Check({ className }: { className?: string }) {
 
 /* ── Border-colour map (resolves to CSS vars the card uses) ── */
 const borderColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "border-agency-accent",
-  amber: "border-agency-accent2",
-  violet: "border-agency-accent3",
+  cyan: "border-agency-border-dark",
+  amber: "border-agency-border-dark",
+  violet: "border-agency-border-dark",
   muted: "border-agency-border",
 };
 
 const checkColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "text-agency-accent",
-  amber: "text-agency-accent2",
-  violet: "text-agency-accent3",
+  cyan: "text-agency-ink",
+  amber: "text-agency-ink",
+  violet: "text-agency-ink",
   muted: "text-agency-muted",
 };
 
 /* CTA variant per colour so the button matches the tier */
 const ctaBgMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "bg-agency-accent hover:bg-agency-accent/85",
-  amber: "bg-agency-accent2 hover:bg-agency-accent2/85",
-  violet: "bg-agency-accent3 hover:bg-agency-accent3/85",
-  muted: "bg-agency-muted hover:bg-agency-muted/85",
+  cyan: "bg-agency-ink hover:opacity-80",
+  amber: "bg-agency-ink hover:opacity-80",
+  violet: "bg-agency-ink hover:opacity-80",
+  muted: "bg-agency-ink hover:opacity-80",
 };
 
 export default function TierCard({
@@ -84,10 +84,10 @@ export default function TierCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-agency-surface p-8",
-        "transition-transform duration-150 ease-out hover:scale-[1.02]",
+        "relative flex flex-col rounded-2xl border bg-white p-8",
+        "transition-opacity duration-150 hover:opacity-90",
         popular
-          ? cn(borderColorMap[color], "border-2 shadow-lg shadow-agency-accent2/10")
+          ? cn(borderColorMap[color], "border-2")
           : "border-agency-border",
       )}
     >

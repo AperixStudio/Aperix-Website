@@ -32,7 +32,7 @@ export default function FinalCTA() {
 
   return (
     <section
-      className="bg-agency-accent px-6 py-20 lg:px-12 lg:py-32"
+      className="bg-agency-ink px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="final-cta-heading"
     >
       <motion.div
@@ -46,7 +46,7 @@ export default function FinalCTA() {
         <motion.h2
           id="final-cta-heading"
           variants={prefersReduced ? undefined : fadeUp}
-          className="font-display text-3xl font-bold text-agency-bg sm:text-4xl lg:text-5xl"
+          className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
         >
           Ready to stop losing customers to a bad&nbsp;website?
         </motion.h2>
@@ -54,7 +54,7 @@ export default function FinalCTA() {
         {/* Subtext */}
         <motion.p
           variants={prefersReduced ? undefined : fadeUp}
-          className="mt-5 text-base leading-relaxed text-agency-bg/80 sm:text-lg"
+          className="mt-5 text-base leading-relaxed text-white/70 sm:text-lg"
         >
           Book a free 20-minute discovery call. No obligation&nbsp;&mdash; just
           an honest look at what&rsquo;s possible for your business.
@@ -66,9 +66,9 @@ export default function FinalCTA() {
             href="/contact"
             className={cn(
               "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
-              "bg-agency-bg text-agency-accent",
-              "transition-all duration-150 hover:bg-agency-surface active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-agency-bg focus-visible:ring-offset-2 focus-visible:ring-offset-agency-accent",
+              "bg-white text-agency-ink",
+              "transition-opacity duration-150 hover:opacity-85 active:scale-[0.98]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-agency-ink",
             )}
           >
             Book a Free Call
@@ -78,7 +78,7 @@ export default function FinalCTA() {
         {/* Location line */}
         <motion.p
           variants={prefersReduced ? undefined : fadeUp}
-          className="mt-6 text-sm text-agency-bg/60"
+          className="mt-6 text-sm text-white/50"
         >
           Based in Melbourne · Serving all of Victoria
         </motion.p>

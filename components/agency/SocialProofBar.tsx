@@ -24,7 +24,7 @@ export default function SocialProofBar() {
   return (
     <section
       aria-label="Areas we serve"
-      className="relative overflow-hidden border-t border-agency-border bg-agency-surface py-5"
+      className="relative overflow-hidden border-t border-agency-border bg-agency-surface py-4"
     >
       {/* Edge fades */}
       <div
@@ -36,12 +36,12 @@ export default function SocialProofBar() {
         className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-agency-surface to-transparent"
       />
 
-      {/* Marquee track — pure CSS via the @keyframes in globals.css */}
-      <div className="marquee-track flex w-max gap-8">
+      {/* Marquee track */}
+      <div className="marquee-track flex w-max gap-10">
         {items.map((phrase, i) => (
           <span
             key={`${phrase}-${i}`}
-            className="shrink-0 text-sm font-medium tracking-wide text-agency-muted whitespace-nowrap"
+            className="shrink-0 text-xs font-medium tracking-[0.15em] uppercase text-agency-muted whitespace-nowrap"
           >
             {phrase}
           </span>

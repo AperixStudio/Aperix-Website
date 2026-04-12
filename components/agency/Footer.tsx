@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -193,7 +194,7 @@ export default function Footer() {
       };
 
   return (
-    <footer role="contentinfo" className="border-t border-agency-border bg-agency-bg">
+    <footer role="contentinfo" className="border-t border-agency-border bg-agency-surface">
       {/* ── main grid ─────────────────────────────────── */}
       <motion.div
         className="mx-auto max-w-7xl px-6 py-16 lg:py-20"
@@ -205,25 +206,16 @@ export default function Footer() {
           <motion.div variants={fadeUp} className="space-y-4">
             {/* wordmark */}
             <Link href="/" className="inline-flex items-center gap-2 group">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M16 2L29.856 10V26L16 34L2.144 26V10L16 2Z"
-                  className="fill-agency-accent/20 stroke-agency-accent"
-                  strokeWidth="1.5"
+              <span className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
+                <Image
+                  src="/aperix-logo.svg"
+                  alt=""
+                  width={40}
+                  height={44}
+                  aria-hidden="true"
+                  className="h-10 w-auto"
                 />
-                <path
-                  d="M16 8L24 13V23L16 28L8 23V13L16 8Z"
-                  className="fill-agency-accent/10 stroke-agency-accent"
-                  strokeWidth="1"
-                />
-              </svg>
+              </span>
               <span className="font-display text-xl font-bold tracking-tight text-agency-text transition-colors group-hover:text-agency-accent">
                 Aperix
               </span>

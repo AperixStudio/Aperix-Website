@@ -42,7 +42,7 @@ export default function TierShowcase() {
           whileInView={prefersReduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
           transition={prefersReduced ? undefined : { duration: 0.4, ease: "easeOut" }}
-          className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent"
+          className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted"
         >
           Four Tiers of Work
         </motion.p>
@@ -53,7 +53,7 @@ export default function TierShowcase() {
           whileInView={prefersReduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
           transition={prefersReduced ? undefined : { duration: 0.4, ease: "easeOut", delay: 0.08 }}
-          className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl"
+          className="font-display text-3xl font-bold text-agency-ink sm:text-4xl lg:text-5xl"
         >
           From a single page to a full custom build.
         </motion.h2>

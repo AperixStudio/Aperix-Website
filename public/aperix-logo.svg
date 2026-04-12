@@ -1,0 +1,17 @@
+<svg width="768" height="836" viewBox="0 0 768 836" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aperix-fill" x1="384" y1="106" x2="384" y2="730" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DFF2FF"/>
+      <stop offset="1" stop-color="#BFE5FF"/>
+    </linearGradient>
+  </defs>
+  <path d="M384 76L660 236V556L384 716L108 556V236L384 76Z" stroke="#0EA5E9" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#aperix-fill)"/>
+  <path d="M384 273L516 349V503L384 579L252 503V349L384 273Z" stroke="#050505" stroke-width="28" stroke-linejoin="round"/>
+  <g stroke="#CFCFCF" stroke-width="24" stroke-linecap="round">
+    <path d="M384 303V548"/>
+    <path d="M278 364L490 487"/>
+    <path d="M490 364L278 487"/>
+    <path d="M291 418H477"/>
+  </g>
+</svg>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -49,17 +50,19 @@ export default function AgencyNav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40">
-        {/* Filled background — fades in on scroll via opacity only (composited) */}
+      <header className="fixed top-0 left-0 right-0 z-40 px-4 pt-4 sm:px-6 lg:px-8">
+        {/* Glass pill backplate — tighter and more distinct */}
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute inset-0 bg-agency-surface/80 backdrop-blur-lg border-b border-agency-border transition-opacity duration-300",
-            scrolled ? "opacity-100" : "opacity-0",
+            "pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full border shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
+            scrolled
+              ? "border-white/42 bg-white/34 opacity-100"
+              : "border-white/28 bg-white/20 opacity-95",
           )}
         />
         <nav
-          className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12"
+          className="relative mx-auto flex h-18 max-w-6xl items-center justify-between rounded-full px-6 py-0 lg:px-8"
           aria-label="Main navigation"
         >
           {/* ── Logo ────────────────────────────────────── */}
@@ -68,35 +71,20 @@ export default function AgencyNav() {
             className="flex items-center gap-2 group"
             aria-label="Aperix — home"
           >
-            {/* Geometric mark */}
-            <span className="relative flex h-8 w-8 items-center justify-center">
-              <span className="absolute inset-0 rounded-lg bg-agency-accent/20 rotate-12 transition-transform duration-150 group-hover:rotate-0" />
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
+            <span className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
+              <Image
+                src="/aperix-logo.svg"
+                alt=""
+                width={34}
+                height={37}
+                priority
                 aria-hidden="true"
-                className="relative z-10"
-              >
-                <path
-                  d="M9 1L16.5 5.5V12.5L9 17L1.5 12.5V5.5L9 1Z"
-                  stroke="var(--agency-accent)"
-                  strokeWidth="1.5"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M9 1V17M1.5 5.5L16.5 12.5M16.5 5.5L1.5 12.5"
-                  stroke="var(--agency-accent)"
-                  strokeWidth="1.5"
-                  strokeLinejoin="round"
-                  opacity="0.4"
-                />
-              </svg>
+                className="h-[2.15rem] w-auto"
+              />
             </span>
 
             {/* Wordmark */}
-            <span className="font-display text-xl font-bold tracking-tight text-agency-text">
+            <span className="font-display text-lg font-bold tracking-tight text-agency-ink">
               Aperix
             </span>
           </Link>
@@ -113,9 +101,9 @@ export default function AgencyNav() {
                 <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
                   <span className="text-agency-muted">{link.label}</span>
                 </span>
-                {/* bright layer — fades in on hover */}
+                {/* ink layer — fades in on hover */}
                 <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  <span className="text-agency-text">{link.label}</span>
+                  <span className="text-agency-ink">{link.label}</span>
                 </span>
               </Link>
             ))}
@@ -123,9 +111,9 @@ export default function AgencyNav() {
             <Link
               href="/contact"
               className={cn(
-                "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium",
-                "bg-agency-accent text-agency-bg",
-                "transition-all duration-150 hover:brightness-90 active:scale-[0.98]",
+                "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold",
+                "bg-agency-ink/92 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
+                "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
               )}
             >
               Book a Call
@@ -136,7 +124,7 @@ export default function AgencyNav() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-lg md:hidden"
+            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/28 shadow-[0_10px_30px_rgba(67,92,122,0.12)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -147,7 +135,7 @@ export default function AgencyNav() {
                     ? { rotate: 45, y: 7, transition: { duration: dur } }
                     : { rotate: 0, y: 0, transition: { duration: dur } }
                 }
-                className="block h-0.5 w-full bg-agency-text rounded-full origin-center"
+                className="block h-0.5 w-full bg-agency-ink rounded-full origin-center"
               />
               <motion.span
                 animate={
@@ -155,7 +143,7 @@ export default function AgencyNav() {
                     ? { opacity: 0, transition: { duration: dur * 0.5 } }
                     : { opacity: 1, transition: { duration: dur } }
                 }
-                className="block h-0.5 w-full bg-agency-text rounded-full"
+                className="block h-0.5 w-full bg-agency-ink rounded-full"
               />
               <motion.span
                 animate={
@@ -163,7 +151,7 @@ export default function AgencyNav() {
                     ? { rotate: -45, y: -7, transition: { duration: dur } }
                     : { rotate: 0, y: 0, transition: { duration: dur } }
                 }
-                className="block h-0.5 w-full bg-agency-text rounded-full origin-center"
+                className="block h-0.5 w-full bg-agency-ink rounded-full origin-center"
               />
             </div>
           </button>
@@ -183,10 +171,10 @@ export default function AgencyNav() {
                 ? { duration: 0 }
                 : { duration: 0.3, ease: "easeOut" }
             }
-            className="fixed inset-0 z-40 flex flex-col bg-agency-bg md:hidden"
+            className="fixed inset-0 z-40 flex flex-col bg-[rgba(232,238,245,0.72)] supports-backdrop-filter:backdrop-blur-2xl md:hidden"
           >
             {/* Push content below the nav bar height */}
-            <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
+            <div className="m-4 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl border border-white/45 bg-white/38 px-6 shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.label}
@@ -204,12 +192,12 @@ export default function AgencyNav() {
                     className="group relative font-display text-3xl font-bold"
                   >
                     {/* base layer */}
-                    <span className="text-agency-text transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
+                    <span className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
                       {link.label}
                     </span>
-                    {/* accent layer — fades in on hover */}
+                    {/* muted layer — fades in on hover */}
                     <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      <span className="text-agency-accent">{link.label}</span>
+                      <span className="text-agency-muted">{link.label}</span>
                     </span>
                   </Link>
                 </motion.div>
@@ -229,9 +217,9 @@ export default function AgencyNav() {
                   href="/contact"
                   onClick={closeMobile}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-medium",
-                    "bg-agency-accent text-agency-bg",
-                    "transition-all duration-150 hover:brightness-90 active:scale-[0.98]",
+                    "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
+                    "bg-agency-ink/92 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
+                    "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
                   )}
                 >
                   Book a Call
