@@ -32,7 +32,7 @@ export default function TierShowcase() {
   return (
     <section
       id="tiers"
-      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
+      className="px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="tiers-heading"
     >
       {/* ── Section header ──────────────────────────────────── */}

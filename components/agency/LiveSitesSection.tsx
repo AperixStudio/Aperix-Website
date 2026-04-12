@@ -37,7 +37,7 @@ export default function LiveSitesSection() {
   return (
     <section
       id="live-sites"
-      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
+      className="px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="live-sites-heading"
     >
       <div className="mx-auto max-w-7xl">

@@ -22,30 +22,29 @@ export default function SocialProofBar() {
   const items = [...PHRASES, ...PHRASES];
 
   return (
-    <section
-      aria-label="Areas we serve"
-      className="agency-panel-section relative overflow-hidden py-4"
-    >
-      {/* Edge fades */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-agency-surface to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-agency-surface to-transparent"
-      />
+    <section aria-label="Areas we serve" className="px-6 py-6 lg:px-12">
+      <div className="relative mx-auto max-w-7xl overflow-hidden border-y border-agency-border/80 py-4">
+        {/* Edge fades */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-agency-bg to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-agency-bg to-transparent"
+        />
 
-      {/* Marquee track */}
-      <div className="marquee-track flex w-max gap-10">
-        {items.map((phrase, i) => (
-          <span
-            key={`${phrase}-${i}`}
-            className="shrink-0 text-xs font-medium tracking-[0.15em] uppercase text-agency-muted whitespace-nowrap"
-          >
-            {phrase}
-          </span>
-        ))}
+        {/* Marquee track */}
+        <div className="marquee-track flex w-max gap-10">
+          {items.map((phrase, i) => (
+            <span
+              key={`${phrase}-${i}`}
+              className="shrink-0 whitespace-nowrap text-xs font-medium tracking-[0.15em] uppercase text-agency-muted"
+            >
+              {phrase}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );

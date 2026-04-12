@@ -52,10 +52,10 @@ export default function DemoCustomizerSection() {
   return (
     <section
       id="demo-brief"
-      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
+      className="px-4 py-4 sm:px-6 lg:px-8"
       aria-labelledby="demo-brief-heading"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
         <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">

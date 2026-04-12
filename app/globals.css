@@ -117,9 +117,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.agency-panel-section {
+.agency-panel-wrap {
   position: relative;
-  margin: 0.9rem 1rem 0;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 2rem;
@@ -131,9 +130,8 @@ body {
   backdrop-filter: blur(16px);
 }
 
-.agency-panel-dark {
+.agency-panel-dark-wrap {
   position: relative;
-  margin: 0.9rem 1rem 0;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
@@ -142,20 +140,6 @@ body {
   box-shadow:
     0 22px 65px rgba(30, 45, 65, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-@media (min-width: 640px) {
-  .agency-panel-section,
-  .agency-panel-dark {
-    margin-inline: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .agency-panel-section,
-  .agency-panel-dark {
-    margin-inline: 2rem;
-  }
 }
 
 /* Smooth scrolling for anchor links */

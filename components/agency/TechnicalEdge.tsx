@@ -87,10 +87,10 @@ export default function TechnicalEdge() {
 
   return (
     <section
-      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
+      className="px-4 py-4 sm:px-6 lg:px-8"
       aria-labelledby="benefits-heading"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
         {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 16 }}

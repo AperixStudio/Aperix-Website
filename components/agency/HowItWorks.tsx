@@ -109,11 +109,12 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="agency-panel-section relative px-6 py-20 lg:px-12 lg:py-32"
+      className="px-4 py-4 sm:px-6 lg:px-8"
       aria-labelledby="hiw-heading"
     >
+      <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
       {/* Section header */}
-      <div className="mx-auto max-w-7xl text-center">
+      <div className="text-center">
         <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
           How It Works
         </p>
@@ -171,6 +172,7 @@ export default function HowItWorks() {
             </p>
           </motion.div>
         ))}
+      </div>
       </div>
     </section>
   );

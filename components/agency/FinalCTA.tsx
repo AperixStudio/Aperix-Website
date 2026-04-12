@@ -32,7 +32,7 @@ export default function FinalCTA() {
 
   return (
     <section
-      className="agency-panel-dark px-6 py-20 lg:px-12 lg:py-32"
+      className="px-4 py-4 sm:px-6 lg:px-8"
       aria-labelledby="final-cta-heading"
     >
       <motion.div
@@ -40,7 +40,7 @@ export default function FinalCTA() {
         initial={prefersReduced ? undefined : "hidden"}
         whileInView={prefersReduced ? undefined : "visible"}
         viewport={{ once: true, amount: 0.15 }}
-        className="mx-auto max-w-2xl text-center"
+        className="agency-panel-dark-wrap mx-auto max-w-5xl px-6 py-20 text-center sm:px-8 lg:px-12 lg:py-24"
       >
         {/* H2 */}
         <motion.h2
