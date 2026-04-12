@@ -396,8 +396,8 @@ export default function ApexContactPage() {
 
                   {/* disclaimer */}
                   <p className="text-center font-(family-name:--font-apex-body) text-xs text-[#64748b]">
-                    In the real build, this submits via a Next.js API route to
-                    Resend.
+                    Demo form only — use the main Aperix contact page to request
+                    a real site like this.
                   </p>
                 </motion.form>
               )}

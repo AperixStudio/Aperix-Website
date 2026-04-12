@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aperix Portfolio
 
-## Getting Started
+Marketing site and interactive demo showroom for Aperix Studio, built with Next.js App Router, TypeScript, Tailwind CSS v4, and Framer Motion.
 
-First, run the development server:
+## What’s Included
+
+- Main marketing site for acquiring real clients
+- Demo tiers under `/demo/*` for showcase conversations
+- Production contact API backed by Resend
+- Basic anti-spam protection with server-side validation and rate limiting
+- CI pipeline for lint, test, and build verification
+
+## Local Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy the environment template and fill in real values:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Required Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Public canonical base URL, used for metadata, sitemap, and robots |
+| `RESEND_API_KEY` | Resend API key used by `app/api/contact/route.ts` |
+| `CONTACT_TO_EMAIL` | Inbox that receives new enquiries |
+| `CONTACT_FROM_EMAIL` | Verified sender identity in Resend |
 
-## Learn More
+## Contact Flow
 
-To learn more about Next.js, take a look at the following resources:
+- The main form lives in `components/agency/ContactForm.tsx`
+- Validation is shared via `lib/contactSchema.ts`
+- Requests post to `app/api/contact/route.ts`
+- Delivery uses Resend via `lib/contactEmail.ts`
+- Rate limiting is handled in `lib/contactRateLimit.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Quality Checks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+npm run test
+npm run typecheck
+npm run build
+```
 
-## Deploy on Vercel
+## Deployment Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Deploy on a Node.js-compatible Next.js platform such as Vercel.
+- Add the environment variables from `.env.example` in the hosting dashboard.
+- Verify `CONTACT_FROM_EMAIL` is a verified Resend sender before going live.
+- CI runs from `.github/workflows/ci.yml` on pushes and pull requests.

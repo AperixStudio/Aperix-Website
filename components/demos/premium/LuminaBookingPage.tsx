@@ -196,8 +196,8 @@ export default function LuminaBookingPage() {
                 </Link>
               </p>
               <p className="mt-8 font-(family-name:--font-lm-body) text-xs text-[#8b7a83]">
-                In the real build, this integrates with Cliniko or Timely and
-                triggers a confirmation email via Resend.
+                Demo flow only — use the Aperix contact page if you want a real
+                booking experience built for your business.
               </p>
             </motion.div>
           ) : (

@@ -2,64 +2,59 @@
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
+import {
+  businessTypeOptions,
+  contactSchema,
+  needsOptions,
+  toFieldErrors,
+  type ContactFieldErrors,
+  type ContactSubmission,
+} from "@/lib/contactSchema";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
-/* ────────────────────────────────────────────────────────────
-   AgencyContactForm — right panel for /contact
-   Fields: name, email, phone, businessName, businessType,
-           needs (checkboxes), description, contactMethod (radio)
-   1.5s fake submit → success state
-   ──────────────────────────────────────────────────────────── */
+type FormState = ContactSubmission;
 
-const businessTypes = [
-  "",
-  "Café / Restaurant",
-  "Trades / Contractor",
-  "Health & Beauty",
-  "Professional Services",
-  "Retail",
-  "Other",
-];
+const initialForm: FormState = {
+  name: "",
+  email: "",
+  phone: "",
+  businessName: "",
+  businessType: "",
+  needs: [],
+  description: "",
+  contactMethod: "email",
+  website: "",
+};
 
-const needsOptions = [
-  "New Website",
-  "Website Redesign",
-  "Social Media Management",
-  "SEO",
-  "Not Sure Yet",
-];
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) {
+    return null;
+  }
 
-interface FormState {
-  name: string;
-  email: string;
-  phone: string;
-  businessName: string;
-  businessType: string;
-  needs: string[];
-  description: string;
-  contactMethod: "phone" | "email";
+  return (
+    <p id={id} className="mt-1.5 text-xs text-red-600" role="alert">
+      {message}
+    </p>
+  );
 }
 
 export default function AgencyContactForm() {
   const prefersReduced = useReducedMotion();
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    email: "",
-    phone: "",
-    businessName: "",
-    businessType: "",
-    needs: [],
-    description: "",
-    contactMethod: "email",
-  });
+  const [form, setForm] = useState<FormState>(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedName, setSubmittedName] = useState("there");
+  const [errors, setErrors] = useState<ContactFieldErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    setSubmitError(null);
   }
 
   function handleNeedsChange(e: ChangeEvent<HTMLInputElement>) {
@@ -70,20 +65,68 @@ export default function AgencyContactForm() {
         ? [...prev.needs, value]
         : prev.needs.filter((n) => n !== value),
     }));
+    setErrors((prev) => ({ ...prev, needs: undefined }));
+    setSubmitError(null);
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setSubmitting(false);
-    setSubmitted(true);
-  }
+    setSubmitError(null);
+    setRequestId(null);
 
-  const firstName = form.name.split(" ")[0] || "there";
+    const parsed = contactSchema.safeParse(form);
+
+    if (!parsed.success) {
+      setErrors(toFieldErrors(parsed.error));
+      return;
+    }
+
+    setErrors({});
+    setSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parsed.data),
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string; fieldErrors?: ContactFieldErrors; requestId?: string }
+        | null;
+
+      if (!response.ok) {
+        if (payload?.fieldErrors) {
+          setErrors(payload.fieldErrors);
+        }
+
+        setRequestId(payload?.requestId ?? null);
+        setSubmitError(
+          payload?.error ?? "Your enquiry could not be sent. Please try again.",
+        );
+        return;
+      }
+
+      setSubmittedName(parsed.data.name.split(" ")[0] || "there");
+      setSubmitted(true);
+      setForm(initialForm);
+    } catch {
+      setSubmitError(
+        "The connection dropped before we could send your enquiry. Please try again or email hello@aperix.com.au.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   const baseInput =
     "w-full rounded-xl border border-agency-border bg-agency-surface2 px-4 py-3 text-sm text-agency-text outline-none transition-colors focus:border-agency-accent focus:ring-2 focus:ring-agency-accent/20 placeholder:text-agency-muted";
+
+  function getFieldClass(name: keyof FormState) {
+    return `${baseInput} ${errors[name] ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}`;
+  }
 
   if (submitted) {
     return (
@@ -105,14 +148,12 @@ export default function AgencyContactForm() {
           </svg>
         </div>
         <h3 className="font-display text-2xl font-bold text-agency-text">
-          Thanks, {firstName}!
+          Thanks, {submittedName}!
         </h3>
         <p className="mt-2 text-base text-agency-muted">
           I&apos;ll review your details and be in touch within 24 hours.
         </p>
-        <p className="mt-6 text-xs text-agency-muted">
-          In the real build, this submits to hello@aperix.com.au via Resend.
-        </p>
+        <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
       </motion.div>
     );
   }
@@ -124,6 +165,19 @@ export default function AgencyContactForm() {
       className="space-y-5 px-8 py-10"
       aria-label="Contact enquiry form"
     >
+      <div className="sr-only">
+        <label htmlFor="ac-website">Website</label>
+        <input
+          id="ac-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={form.website}
+          onChange={handleChange}
+        />
+      </div>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="ac-name" className="mb-1.5 block text-sm font-medium text-agency-text">
@@ -136,9 +190,11 @@ export default function AgencyContactForm() {
             required
             value={form.name}
             onChange={handleChange}
-            className={baseInput}
+            className={getFieldClass("name")}
             placeholder="Your name"
+            aria-describedby={errors.name ? "err-name" : undefined}
           />
+          <FieldError id="err-name" message={errors.name} />
         </div>
         <div>
           <label htmlFor="ac-email" className="mb-1.5 block text-sm font-medium text-agency-text">
@@ -151,9 +207,11 @@ export default function AgencyContactForm() {
             required
             value={form.email}
             onChange={handleChange}
-            className={baseInput}
+            className={getFieldClass("email")}
             placeholder="you@example.com"
+            aria-describedby={errors.email ? "err-email" : undefined}
           />
+          <FieldError id="err-email" message={errors.email} />
         </div>
       </div>
 
@@ -169,9 +227,11 @@ export default function AgencyContactForm() {
             type="tel"
             value={form.phone}
             onChange={handleChange}
-            className={baseInput}
+            className={getFieldClass("phone")}
             placeholder="0412 345 678"
+            aria-describedby={errors.phone ? "err-phone" : undefined}
           />
+          <FieldError id="err-phone" message={errors.phone} />
         </div>
         <div>
           <label htmlFor="ac-biz" className="mb-1.5 block text-sm font-medium text-agency-text">
@@ -184,9 +244,11 @@ export default function AgencyContactForm() {
             required
             value={form.businessName}
             onChange={handleChange}
-            className={baseInput}
+            className={getFieldClass("businessName")}
             placeholder="e.g. Apex Electrical"
+            aria-describedby={errors.businessName ? "err-business-name" : undefined}
           />
+          <FieldError id="err-business-name" message={errors.businessName} />
         </div>
       </div>
 
@@ -200,20 +262,24 @@ export default function AgencyContactForm() {
           required
           value={form.businessType}
           onChange={handleChange}
-          className={baseInput}
+          className={getFieldClass("businessType")}
+          aria-describedby={errors.businessType ? "err-business-type" : undefined}
         >
-          {businessTypes.map((t) => (
+          <option value="">Select your industry…</option>
+          {businessTypeOptions.map((t) => (
             <option key={t} value={t}>
-              {t || "Select your industry…"}
+              {t}
             </option>
           ))}
         </select>
+        <FieldError id="err-business-type" message={errors.businessType} />
       </div>
 
       <fieldset>
         <legend className="mb-2 text-sm font-medium text-agency-text">
           What do you need?
         </legend>
+        <FieldError id="err-needs" message={errors.needs} />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {needsOptions.map((opt) => (
             <label
@@ -227,6 +293,7 @@ export default function AgencyContactForm() {
                 checked={form.needs.includes(opt)}
                 onChange={handleNeedsChange}
                 className="h-3.5 w-3.5 accent-[#22d3ee]"
+                aria-describedby={errors.needs ? "err-needs" : undefined}
               />
               {opt}
             </label>
@@ -245,9 +312,11 @@ export default function AgencyContactForm() {
           required
           value={form.description}
           onChange={handleChange}
-          className={`${baseInput} resize-none`}
+          className={`${getFieldClass("description")} resize-none`}
           placeholder="What does your business do, who are your customers, and what's your goal with a new website?"
+          aria-describedby={errors.description ? "err-description" : undefined}
         />
+        <FieldError id="err-description" message={errors.description} />
       </div>
 
       {/* Contact method */}
@@ -279,6 +348,13 @@ export default function AgencyContactForm() {
         </div>
       </fieldset>
 
+      {submitError ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <p>{submitError}</p>
+          {requestId ? <p className="mt-1 text-xs">Request ID: {requestId}</p> : null}
+        </div>
+      ) : null}
+
       <button
         type="submit"
         disabled={submitting}
@@ -298,7 +374,7 @@ export default function AgencyContactForm() {
       </button>
 
       <p className="text-center text-xs text-agency-muted">
-        In the real build, this submits to hello@aperix.com.au via Resend.
+        Submissions go directly to the Aperix inbox and include your preferred contact method.
       </p>
     </form>
   );

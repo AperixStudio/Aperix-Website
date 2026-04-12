@@ -36,7 +36,7 @@ function useCountUp(
   useEffect(() => {
     if (!inView) return;
 
-    let start = 0;
+    const start = 0;
     const startTime = performance.now();
 
     function tick(now: number) {
