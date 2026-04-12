@@ -87,7 +87,7 @@ export default function TechnicalEdge() {
 
   return (
     <section
-      className="bg-agency-bg px-6 py-20 lg:px-12 lg:py-32"
+      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="benefits-heading"
     >
       <div className="mx-auto max-w-7xl">

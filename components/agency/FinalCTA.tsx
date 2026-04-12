@@ -32,7 +32,7 @@ export default function FinalCTA() {
 
   return (
     <section
-      className="bg-agency-ink px-6 py-20 lg:px-12 lg:py-32"
+      className="agency-panel-dark px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="final-cta-heading"
     >
       <motion.div

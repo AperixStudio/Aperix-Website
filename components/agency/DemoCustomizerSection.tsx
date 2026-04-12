@@ -52,7 +52,7 @@ export default function DemoCustomizerSection() {
   return (
     <section
       id="demo-brief"
-      className="bg-agency-surface px-6 py-20 lg:px-12 lg:py-32"
+      className="agency-panel-section px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="demo-brief-heading"
     >
       <div className="mx-auto max-w-7xl">

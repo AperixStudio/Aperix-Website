@@ -24,7 +24,7 @@ export default function SocialProofBar() {
   return (
     <section
       aria-label="Areas we serve"
-      className="relative overflow-hidden border-t border-agency-border bg-agency-surface py-4"
+      className="agency-panel-section relative overflow-hidden py-4"
     >
       {/* Edge fades */}
       <div

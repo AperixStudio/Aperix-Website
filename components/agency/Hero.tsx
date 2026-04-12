@@ -24,21 +24,9 @@ export default function Hero() {
 
   return (
     <section
-      className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-agency-bg px-6 pt-32 pb-20 lg:px-12"
+      className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 lg:px-12"
       aria-label="Hero"
     >
-      {/* â”€â”€ Subtle grid rule â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--agency-border) 1px, transparent 1px), linear-gradient(90deg, var(--agency-border) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-          opacity: 0.35,
-        }}
-      />
-
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         {/* â”€â”€ Overline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.p

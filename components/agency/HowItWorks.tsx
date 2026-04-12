@@ -109,7 +109,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative bg-agency-surface px-6 py-20 lg:px-12 lg:py-32"
+      className="agency-panel-section relative px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="hiw-heading"
     >
       {/* Section header */}
