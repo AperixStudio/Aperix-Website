@@ -9,12 +9,14 @@ import TechnicalEdge from "@/components/agency/TechnicalEdge";
 import FAQSection from "@/components/agency/FAQSection";
 import FinalCTA from "@/components/agency/FinalCTA";
 import Footer from "@/components/agency/Footer";
+import HeroV2 from "@/components/agency/HeroV2";
+import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 
 export default function Home() {
   return (
     <>
-      <AgencyNav />
-      <Hero />
+      <AgencyNavV2 />
+      <HeroV2 />
       <SocialProofBar />
       <HowItWorks />
       <TierShowcase />
