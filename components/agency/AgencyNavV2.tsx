@@ -104,6 +104,7 @@ export default function AgencyNav() {
               <Link
                 key={link.label}
                 href={link.href}
+                data-cursor-pill
                 className="group relative text-sm font-medium"
               >
                 {/* muted layer — fades out on hover */}
