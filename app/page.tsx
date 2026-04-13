@@ -11,10 +11,12 @@ import FinalCTA from "@/components/agency/FinalCTA";
 import Footer from "@/components/agency/Footer";
 import HeroV2 from "@/components/agency/HeroV2";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
+import CursorFollower from "@/components/animations/CursorFollower";
 
 export default function Home() {
   return (
     <>
+      <CursorFollower />
       <AgencyNavV2 />
       <HeroV2 />
       <SocialProofBar />
