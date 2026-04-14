@@ -30,7 +30,7 @@ const FAQS: FAQ[] = [
   {
     question: "How long does a build take?",
     answer:
-      "Starter sites typically take 2\u20133 weeks. Business tier sites take 3\u20135 weeks. Premium builds are scoped individually but typically 6\u201310 weeks from design sign-off.",
+      "Starter sites typically take 2–3 weeks. Business tier sites take 3–5 weeks. Premium builds are scoped individually but typically 6–10 weeks from design sign-off.",
   },
   {
     question: "What do I need to provide?",
@@ -38,19 +38,19 @@ const FAQS: FAQ[] = [
       "Your logo (or we recommend a designer), your brand colours if you have them, any photos of your business, and the key information about your services. We handle the rest.",
   },
   {
-    question: "What\u2019s included in the monthly retainer?",
+    question: "What’s included in the monthly retainer?",
     answer:
-      "Hosting on fast, secure infrastructure, monthly dependency updates, uptime monitoring, SSL management, one monthly analytics report, and 1\u20132 hours of content updates per month. No surprises.",
+      "Hosting on fast, secure infrastructure, monthly dependency updates, uptime monitoring, SSL management, one monthly analytics report, and 1–2 hours of content updates per month. No surprises.",
   },
   {
     question: "Do you do WordPress?",
     answer:
-      "We don\u2019t. All our sites are custom-coded in Next.js, which consistently outperforms WordPress on speed, security, and SEO. If you need a simple content management interface, we use Sanity CMS \u2014 a modern, purpose-built tool that\u2019s faster and safer than WordPress.",
+      "We don’t. All our sites are custom-coded in Next.js, which consistently outperforms WordPress on speed, security, and SEO. If you need a simple content management interface, we use Sanity CMS — a modern, purpose-built tool that’s faster and safer than WordPress.",
   },
   {
-    question: "I\u2019m in [suburb], can we meet in person?",
+    question: "I’m in [suburb], can we meet in person?",
     answer:
-      "Yes. I\u2019m Melbourne-based and happy to meet in person for the discovery call. Most ongoing work happens remotely, but a face-to-face introduction is always an option.",
+      "Yes. I’m Melbourne-based and happy to meet in person if that suits you. Most ongoing work happens remotely, but a face-to-face introduction is always an option.",
   },
 ];
 

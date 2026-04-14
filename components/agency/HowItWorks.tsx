@@ -21,9 +21,9 @@ interface Step {
 const STEPS: Step[] = [
   {
     number: "01",
-    title: "Discovery Call (Free)",
+    title: "Get in Contact",
     description:
-      "We spend 20 minutes understanding your business, your customers, and what\u2019s not working about your current online presence. No sales pitch \u2014 just honest assessment.",
+      "Send through an enquiry and we’ll learn about your business, your customers, and what’s not working about your current online presence. You can email first, request a call, or meet in person if that suits you best.",
     icon: (
       <svg
         width="28"
@@ -47,7 +47,7 @@ const STEPS: Step[] = [
     number: "02",
     title: "Design First",
     description:
-      "Before any code is written, I produce a full Figma design of your site and get your sign-off. You see exactly what you\u2019re getting before anything is built.",
+      "Before any code is written, I produce a full Figma design of your site and get your sign-off. You see exactly what you’re getting before anything is built.",
     icon: (
       <svg
         width="28"

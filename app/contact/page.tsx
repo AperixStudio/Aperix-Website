@@ -11,7 +11,7 @@ import ContactForm from "@/components/agency/ContactForm";
 export const metadata: Metadata = {
   title: "Contact — Aperix Studio",
   description:
-    "Book a free 20-minute discovery call with Aperix Studio. Melbourne web development and social media management for small businesses.",
+    "Get in contact with Aperix Studio about web development and social media management for your business in Melbourne.",
 };
 
 export default function ContactPage() {
@@ -30,9 +30,9 @@ export default function ContactPage() {
               Let&apos;s talk about your business.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-agency-muted">
-              Book a free 20-minute discovery call and I&apos;ll show you
-              exactly what&apos;s possible for your business online. No sales
-              pitch — just honest conversation.
+              Get in contact and tell me what you need. If email is easier,
+              that works. If you&apos;d rather chat by phone or meet in person,
+              we can do that too.
             </p>
 
             {/* Contact details */}
@@ -59,8 +59,8 @@ export default function ContactPage() {
               </p>
               <ol className="space-y-3">
                 {[
-                  "I review your current online presence before the call",
-                  "We discuss your goals — I show you relevant demo sites",
+                  "I review your current online presence after your enquiry",
+                  "We talk through your goals in whatever format suits you best",
                   "I follow up with a proposal within 48 hours",
                 ].map((step, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-agency-muted">

@@ -15,10 +15,10 @@ interface Phase {
 const phases: Phase[] = [
   {
     step: 1,
-    title: "Discovery Call",
+    title: "Initial Contact",
     description:
-      "We learn about your business, goals, competitors, and ideal customers. You walk us through what you need.",
-    duration: "30–60 min",
+      "You reach out by email or phone, and we learn about your business, goals, competitors, and ideal customers before shaping the right next step.",
+    duration: "1–2 business days",
     owner: "Both",
   },
   {
@@ -152,7 +152,7 @@ export default function ProjectTimeline() {
             Your project, step by step
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-agency-muted">
-            From first call to launch day — here&apos;s exactly what happens
+            From first contact to launch day — here&apos;s exactly what happens
             and who&apos;s responsible at every stage.
           </p>
         </motion.div>

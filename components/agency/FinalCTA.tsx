@@ -56,8 +56,8 @@ export default function FinalCTA() {
           variants={prefersReduced ? undefined : fadeUp}
           className="mt-5 text-base leading-relaxed text-white/70 sm:text-lg"
         >
-          Book a free 20-minute discovery call. No obligation&nbsp;&mdash; just
-          an honest look at what&rsquo;s possible for your business.
+          Get in contact for a no-pressure conversation about what&rsquo;s possible
+          for your business. Email is completely fine.
         </motion.p>
 
         {/* CTA button */}
@@ -71,7 +71,7 @@ export default function FinalCTA() {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-agency-ink",
             )}
           >
-            Book a Free Call
+            Get in Contact
           </Link>
         </motion.div>
 

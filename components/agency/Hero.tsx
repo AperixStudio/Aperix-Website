@@ -77,7 +77,7 @@ export default function Hero() {
               href="/contact"
               className="inline-flex items-center justify-center rounded-lg bg-agency-ink px-7 py-3.5 text-sm font-semibold text-white transition-opacity duration-150 hover:opacity-80 active:scale-[0.98]"
             >
-              Book a free call
+              Get in Contact
             </Link>
             <Link
               href="#tiers"

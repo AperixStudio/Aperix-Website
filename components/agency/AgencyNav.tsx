@@ -14,7 +14,7 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
    • Nav links right: Services, Our Work, Pricing, Contact
    • Scroll-past-hero → bg fills with --agency-surface + blur
    • Mobile: hamburger → full-screen slide-in overlay
-   • CTA: "Book a Call" → /contact
+  • CTA: "Get in Contact" → /contact
    ──────────────────────────────────────────────────────────── */
 
 const NAV_LINKS: { label: string; href: string }[] = [
@@ -116,7 +116,7 @@ export default function AgencyNav() {
                 "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
               )}
             >
-              Book a Call
+              Get in Contact
             </Link>
           </div>
 
@@ -222,7 +222,7 @@ export default function AgencyNav() {
                     "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
                   )}
                 >
-                  Book a Call
+                  Get in Contact
                 </Link>
               </motion.div>
             </div>

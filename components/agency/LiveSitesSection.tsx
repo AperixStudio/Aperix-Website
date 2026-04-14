@@ -58,7 +58,7 @@ export default function LiveSitesSection() {
             href="/contact"
             className="inline-flex items-center justify-center rounded-full border border-agency-border-dark px-5 py-3 text-sm font-semibold text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
           >
-            Book a project call
+            Get in Contact
           </Link>
         </div>
 
