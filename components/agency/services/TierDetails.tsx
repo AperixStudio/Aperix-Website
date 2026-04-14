@@ -28,18 +28,18 @@ const tiers: TierDetailData[] = [
       "Booking or payment integrations",
       "SEO strategy or ongoing optimisation",
     ],
-    timeline: "1–2 weeks from sign-off",
+    timeline: "3–7 business days once content is ready",
     idealFor:
       "Sole traders, tradespeople, or new businesses that need a professional presence fast without a large upfront investment.",
-    retainer: "From $89/month Basic Care",
+    retainer: "From $99/month Basic Care",
     demoLink: "/demo/essential",
   },
   {
     name: "Starter",
     badge: "cyan",
-    price: "$999",
+    price: "$1,290",
     valueProp:
-      "A clean, fast, professional web presence for businesses ready to be found on Google.",
+      "A clean, fast, professional web presence for businesses that need more than a single page but still want to keep the budget sensible.",
     features: [
       "4–5 custom-coded pages",
       "Mobile-first, fully responsive design",
@@ -55,18 +55,18 @@ const tiers: TierDetailData[] = [
       "Brand identity or logo design",
       "Custom animations beyond standard transitions",
     ],
-    timeline: "2–3 weeks from sign-off",
+    timeline: "2–3 weeks from approved direction",
     idealFor:
       "Cafés, salons, local services, and small businesses that need a polished multi-page site and local SEO presence.",
-    retainer: "From $89/month Basic Care",
+    retainer: "From $99/month Basic Care",
     demoLink: "/demo/starter",
   },
   {
     name: "Business",
     badge: "amber",
-    price: "$1,799",
+    price: "$3,290",
     valueProp:
-      "A conversion-focused site with everything a growing Melbourne business needs to win customers from Google.",
+      "A more developed custom site for businesses that need a stronger brand presence, better structure, and content they can manage properly.",
     features: [
       "6–10 custom-coded pages",
       "Custom design system built for your brand",
@@ -74,7 +74,7 @@ const tiers: TierDetailData[] = [
       "Booking or enquiry flow integration",
       "Full local SEO package",
       "Google Analytics + Search Console setup",
-      "Core Web Vitals optimised (Lighthouse 100/100)",
+      "Performance-focused build with Core Web Vitals in mind",
       "2 rounds of revisions included",
     ],
     notIncluded: [
@@ -84,19 +84,19 @@ const tiers: TierDetailData[] = [
       "Custom portals or login areas",
       "Ongoing SEO retainer (available as add-on)",
     ],
-    timeline: "3–5 weeks from design sign-off",
+    timeline: "4–6 weeks from approved direction",
     idealFor:
-      "Established businesses, multi-location services, or trades companies ready to invest in growth and dominate local search results.",
-    retainer: "From $179/month Standard Care",
+      "Established businesses, multi-location services, or professional teams that need a site with more depth and a clearer sales flow.",
+    retainer: "From $249/month Standard Care",
     demoLink: "/demo/business",
     popular: true,
   },
   {
     name: "Premium",
     badge: "violet",
-    price: "$3,999+",
+    price: "$5,999+",
     valueProp:
-      "A bespoke, high-performance build that positions your business as the market leader in your category.",
+      "A bespoke build for businesses that need a more considered brand experience, deeper functionality, and more hands-on project work.",
     features: [
       "Unlimited pages, full custom architecture",
       "Brand identity consultation included",
@@ -104,7 +104,7 @@ const tiers: TierDetailData[] = [
       "Headless CMS with full content model",
       "Custom integrations (booking, payments, portals)",
       "Advanced SEO strategy + schema markup",
-      "Performance report on delivery (Lighthouse 100/100 guaranteed)",
+      "Performance report on delivery",
       "Priority support, 3 months included post-launch",
     ],
     notIncluded: [
@@ -113,10 +113,10 @@ const tiers: TierDetailData[] = [
       "App development (iOS / Android)",
       "Print design or physical branding materials",
     ],
-    timeline: "6–10 weeks from design sign-off (scoped individually)",
+    timeline: "6–10 weeks, scoped individually",
     idealFor:
-      "Premium service providers, med spas, architects, and brands that need a website as polished as their service.",
-    retainer: "From $349/month Growth Care",
+      "Premium service providers, clinics, architects, and brands that need a more tailored build with room for custom functionality.",
+    retainer: "From $449/month Growth Care",
     demoLink: "/demo/premium",
   },
 ];

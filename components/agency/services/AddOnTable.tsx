@@ -9,45 +9,45 @@ const addOns = [
     name: "Social Media Starter",
     description:
       "2 posts/week, 1 platform (Instagram or Facebook), scheduling",
-    price: "$299/mo",
+    price: "$349/mo",
   },
   {
     name: "Social Media Active",
     description: "4 posts/week, 2 platforms, basic story content",
-    price: "$499/mo",
+    price: "$649/mo",
   },
   {
     name: "Social Media Full",
     description:
       "Daily content, 2–3 platforms, stories + reels, engagement monitoring",
-    price: "$799/mo",
+    price: "$1,190/mo",
   },
   {
     name: "Local SEO Package",
     description:
       "Google Business optimisation, citation building, reporting",
-    price: "$299–$599/mo",
+    price: "$450–$900/mo",
   },
   {
     name: "Google Ads Management",
-    description: "Campaign setup, management, reporting",
-    price: "$299–$599/mo",
+    description: "Campaign setup, management, reporting (ad spend separate)",
+    price: "$450–$900/mo",
   },
   {
     name: "Extra Revision Round",
     description: "One additional round of design or copy revisions",
-    price: "$150/round",
+    price: "$250/round",
   },
   {
     name: "Rush Delivery",
     description: "Accelerated timeline (50% faster)",
-    price: "+$300 flat",
+    price: "+25% project fee",
   },
   {
     name: "Photography Co-ordination",
     description:
       "Connecting client with Melbourne photographer, creative direction",
-    price: "$200 flat",
+    price: "$350 flat",
   },
 ];
 

@@ -16,7 +16,7 @@ import ApexCTA from "@/components/demos/business/ApexCTA";
 
 /* ────────────────────────────────────────────────────────────
    /demo/business — PRD §8.3.2
-   Apex Electrical — Business tier ($1,799). Multi-page home.
+  Apex Electrical — Business tier ($3,290). Multi-page home.
    ──────────────────────────────────────────────────────────── */
 
 export default function BusinessHomePage() {

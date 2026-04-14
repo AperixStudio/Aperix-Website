@@ -50,25 +50,25 @@ function Check({ className }: { className?: string }) {
 
 /* ── Border-colour map (resolves to CSS vars the card uses) ── */
 const borderColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "border-agency-border-dark",
-  amber: "border-agency-border-dark",
-  violet: "border-agency-border-dark",
+  cyan: "border-agency-accent/45",
+  amber: "border-agency-accent2/45",
+  violet: "border-agency-accent3/45",
   muted: "border-agency-border",
 };
 
 const checkColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "text-agency-ink",
-  amber: "text-agency-ink",
-  violet: "text-agency-ink",
+  cyan: "text-agency-accent",
+  amber: "text-agency-accent2",
+  violet: "text-agency-accent3",
   muted: "text-agency-muted",
 };
 
 /* CTA variant per colour so the button matches the tier */
 const ctaBgMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "bg-agency-ink hover:opacity-80",
-  amber: "bg-agency-ink hover:opacity-80",
-  violet: "bg-agency-ink hover:opacity-80",
-  muted: "bg-agency-ink hover:opacity-80",
+  cyan: "border-agency-accent/50 bg-agency-accent text-white hover:bg-agency-accent/90",
+  amber: "border-agency-accent2/50 bg-agency-accent2 text-agency-ink hover:bg-agency-accent2/90",
+  violet: "border-agency-accent3/50 bg-agency-accent3 text-white hover:bg-agency-accent3/90",
+  muted: "border-agency-border-dark bg-agency-ink text-agency-bg hover:opacity-85",
 };
 
 export default function TierCard({
@@ -84,8 +84,8 @@ export default function TierCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-white p-8",
-        "transition-opacity duration-150 hover:opacity-90",
+        "relative flex flex-col rounded-2xl border bg-agency-surface p-8 text-agency-text shadow-[0_18px_50px_rgba(67,92,122,0.08)]",
+        "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(67,92,122,0.14)]",
         popular
           ? cn(borderColorMap[color], "border-2")
           : "border-agency-border",
@@ -106,7 +106,7 @@ export default function TierCard({
       </Badge>
 
       {/* ── Price ───────────────────────────────────────────── */}
-      <p className="mt-5 font-display text-3xl font-bold tracking-tight">
+      <p className="mt-5 font-display text-3xl font-bold tracking-tight text-agency-ink">
         {price}
       </p>
       <p className="mt-1 text-xs text-agency-muted">AUD, excl. GST</p>
@@ -136,8 +136,8 @@ export default function TierCard({
       <Link
         href={demoHref}
         className={cn(
-          "mt-6 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium",
-          "text-agency-bg transition-all duration-150 active:scale-[0.98]",
+          "mt-6 inline-flex items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-medium",
+          "transition-all duration-150 active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-agency-surface",
           ctaBgMap[color],
         )}

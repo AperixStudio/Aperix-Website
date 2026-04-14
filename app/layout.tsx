@@ -3,6 +3,19 @@ import { Inter, Syne, JetBrains_Mono } from "next/font/google";
 import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
 
+const themeInitScript = `
+  (() => {
+    try {
+      const stored = window.localStorage.getItem("aperix-theme");
+      const system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const theme = stored === "dark" || stored === "light" ? stored : system;
+      document.documentElement.dataset.theme = theme;
+    } catch {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+`;
+
 /* ── Agency Shell fonts (Section 3.2) ────────────────────── */
 const inter = Inter({
   variable: "--font-inter",
@@ -55,10 +68,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {children}
       </body>
     </html>

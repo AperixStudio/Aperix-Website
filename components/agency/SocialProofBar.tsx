@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 /* ────────────────────────────────────────────────────────────
    SocialProofBar — PRD §4.2.3
    Full-width section directly below hero. Dark background,
@@ -17,13 +19,20 @@ const PHRASES = [
   "CBD · Corporate",
 ];
 
+const PHRASE_STYLES = [
+  "text-agency-accent",
+  "text-agency-accent2",
+  "text-agency-accent3",
+  "text-agency-ink",
+] as const;
+
 export default function SocialProofBar() {
   /* Duplicate the list so the second copy seamlessly follows the first */
   const items = [...PHRASES, ...PHRASES];
 
   return (
     <section aria-label="Areas we serve" className="px-6 py-6 lg:px-12">
-      <div className="relative mx-auto max-w-7xl overflow-hidden border-y border-agency-border/80 py-4">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-full border border-agency-border/80 bg-linear-to-r from-agency-surface2/70 via-agency-surface to-agency-surface2/70 px-4 py-4 shadow-[0_18px_45px_rgba(67,92,122,0.06)]">
         {/* Edge fades */}
         <div
           aria-hidden="true"
@@ -39,7 +48,10 @@ export default function SocialProofBar() {
           {items.map((phrase, i) => (
             <span
               key={`${phrase}-${i}`}
-              className="shrink-0 whitespace-nowrap text-xs font-medium tracking-[0.15em] uppercase text-agency-muted"
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-full border border-agency-border/70 bg-agency-bg/70 px-3 py-1.5 text-xs font-semibold tracking-[0.15em] uppercase",
+                PHRASE_STYLES[i % PHRASE_STYLES.length],
+              )}
             >
               {phrase}
             </span>

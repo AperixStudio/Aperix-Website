@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useReducedMotion } from "@/lib/useReducedMotion";
+import { Reveal } from "@/components/animations";
 import {
   Accordion,
   AccordionItem,
@@ -30,33 +29,31 @@ const FAQS: FAQ[] = [
   {
     question: "How long does a build take?",
     answer:
-      "Starter sites typically take 2–3 weeks. Business tier sites take 3–5 weeks. Premium builds are scoped individually but typically 6–10 weeks from design sign-off.",
+      "Essential sites are usually the quickest. Starter sites typically take 2–3 weeks, Business tier sites usually land around 4–6 weeks, and Premium builds are scoped individually but often run 6–10 weeks depending on complexity.",
   },
   {
     question: "What do I need to provide?",
     answer:
-      "Your logo (or we recommend a designer), your brand colours if you have them, any photos of your business, and the key information about your services. We handle the rest.",
+      "Usually your logo, any brand colours or references you already have, photos if you’ve got them, and the key details about your services. We handle the structure, design, and build from there.",
   },
   {
     question: "What’s included in the monthly retainer?",
     answer:
-      "Hosting on fast, secure infrastructure, monthly dependency updates, uptime monitoring, SSL management, one monthly analytics report, and 1–2 hours of content updates per month. No surprises.",
+      "The care plans cover hosting, security updates, uptime monitoring, SSL management, and general maintenance. The higher tiers can also include content changes, reporting, faster support, and more hands-on help, depending on what the business needs.",
   },
   {
     question: "Do you do WordPress?",
     answer:
-      "We don’t. All our sites are custom-coded in Next.js, which consistently outperforms WordPress on speed, security, and SEO. If you need a simple content management interface, we use Sanity CMS — a modern, purpose-built tool that’s faster and safer than WordPress.",
+      "Not for this kind of work. We build these sites custom in Next.js because it gives us more control over speed, structure, and long-term maintenance. If you need an easy way to edit content, we usually pair it with Sanity CMS.",
   },
   {
     question: "I’m in [suburb], can we meet in person?",
     answer:
-      "Yes. I’m Melbourne-based and happy to meet in person if that suits you. Most ongoing work happens remotely, but a face-to-face introduction is always an option.",
+      "Yes. We’re Melbourne-based and happy to meet in person if that’s easier. Most of the work happens remotely, but a face-to-face first meeting is always an option.",
   },
 ];
 
 export default function FAQSection() {
-  const prefersReduced = useReducedMotion();
-
   return (
     <section
       className="px-6 py-20 lg:px-12 lg:py-32"
@@ -64,15 +61,7 @@ export default function FAQSection() {
     >
       <div className="mx-auto max-w-3xl">
         {/* ── Section header ────────────────────────────────── */}
-        <motion.div
-          initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-          whileInView={prefersReduced ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={
-            prefersReduced ? undefined : { duration: 0.4, ease: "easeOut" }
-          }
-          className="text-center"
-        >
+        <Reveal className="text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
             Frequently Asked Questions
           </p>
@@ -80,22 +69,12 @@ export default function FAQSection() {
             id="faq-heading"
             className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
           >
-            Got questions? We&rsquo;ve got answers.
+            Questions we get asked a lot.
           </h2>
-        </motion.div>
+        </Reveal>
 
         {/* ── Accordion ─────────────────────────────────────── */}
-        <motion.div
-          initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-          whileInView={prefersReduced ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={
-            prefersReduced
-              ? undefined
-              : { duration: 0.4, ease: "easeOut", delay: 0.1 }
-          }
-          className="mt-12"
-        >
+        <Reveal className="mt-12">
           <Accordion>
             {FAQS.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`}>
@@ -104,7 +83,7 @@ export default function FAQSection() {
               </AccordionItem>
             ))}
           </Accordion>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

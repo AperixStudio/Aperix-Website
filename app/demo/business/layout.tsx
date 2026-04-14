@@ -38,7 +38,7 @@ export default function BusinessDemoLayout({
     >
       <DemoBanner
         tierName="Business"
-        description="This is a demo showcasing our Business tier ($1,799). Multi-page with form validation, stat counters, and service filtering."
+        description="This is a demo showcasing our Business tier ($3,290). Multi-page with form validation, stat counters, and service filtering."
       />
       {/* offset for fixed banner */}
       <div className="pt-15">

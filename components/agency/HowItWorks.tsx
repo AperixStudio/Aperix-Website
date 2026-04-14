@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import { useReducedMotion } from "@/lib/useReducedMotion";
+import { Reveal, StaggerGroup, StaggerItem } from "@/components/animations";
 
 /* ────────────────────────────────────────────────────────────
    HowItWorks — PRD §4.2.4
@@ -21,9 +20,9 @@ interface Step {
 const STEPS: Step[] = [
   {
     number: "01",
-    title: "Get in Contact",
+    title: "Start the Conversation",
     description:
-      "Send through an enquiry and we’ll learn about your business, your customers, and what’s not working about your current online presence. You can email first, request a call, or meet in person if that suits you best.",
+      "Send us a message and tell us a bit about the business, what you need, and what is not working right now. We can keep it to email, talk things through properly, or meet in person if that is easier.",
     icon: (
       <svg
         width="28"
@@ -45,9 +44,9 @@ const STEPS: Step[] = [
   },
   {
     number: "02",
-    title: "Design First",
+    title: "Work Through the Direction",
     description:
-      "Before any code is written, I produce a full Figma design of your site and get your sign-off. You see exactly what you’re getting before anything is built.",
+      "Once we know the direction, we put together a mockup and work through it with you. Depending on the project, that might be done in Figma or straight in code if that is the faster way to test ideas properly.",
     icon: (
       <svg
         width="28"
@@ -70,9 +69,9 @@ const STEPS: Step[] = [
   },
   {
     number: "03",
-    title: "Build & Launch",
+    title: "Build, Refine & Launch",
     description:
-      "Your site is hand-coded for speed and SEO. We launch, I show you through everything, and your customers start finding you on Google within weeks.",
+      "Once the approach feels right, we build the site, tighten up the details, test everything properly, and get it live. We also help with the handover so you are not left guessing once it is launched.",
     icon: (
       <svg
         width="28"
@@ -93,19 +92,7 @@ const STEPS: Step[] = [
   },
 ];
 
-/* Framer Motion variants — §3.4 */
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
-
 export default function HowItWorks() {
-  const prefersReduced = useReducedMotion();
-
   return (
     <section
       id="how-it-works"
@@ -114,7 +101,7 @@ export default function HowItWorks() {
     >
       <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
       {/* Section header */}
-      <div className="text-center">
+      <Reveal className="text-center">
         <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
           How It Works
         </p>
@@ -122,36 +109,31 @@ export default function HowItWorks() {
           id="hiw-heading"
           className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
         >
-          Three steps to a site that works for you.
+          A clear process, from first message to finished site.
         </h2>
-      </div>
+      </Reveal>
 
       {/* Steps grid */}
-      <div className="relative mx-auto mt-16 grid max-w-7xl gap-12 lg:mt-20 lg:grid-cols-3 lg:gap-0">
+      <StaggerGroup
+        staggerChildren={0.1}
+        className="relative mx-auto mt-16 grid max-w-7xl gap-12 lg:mt-20 lg:grid-cols-3 lg:gap-0"
+      >
         {/* ── Desktop dashed connecting line (spans full width behind the cards) ── */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute top-14 left-[16.67%] right-[16.67%] hidden h-px border-t border-dashed border-agency-border lg:block"
         />
 
-        {STEPS.map((step, i) => (
-          <motion.div
+        {STEPS.map((step) => (
+          <StaggerItem
             key={step.number}
-            variants={prefersReduced ? undefined : cardVariants}
-            initial={prefersReduced ? undefined : "hidden"}
-            whileInView={prefersReduced ? undefined : "visible"}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={
-              prefersReduced
-                ? undefined
-                : { delay: i * 0.08 }
-            }
+            preset="fadeUp"
             className="relative flex flex-col items-center text-center lg:px-10"
           >
             {/* Large decorative step number */}
             <span
               aria-hidden="true"
-              className="absolute -top-4 font-display text-8xl font-bold leading-none text-agency-surface2 select-none lg:-top-6 lg:text-9xl"
+              className="absolute -top-4 z-0 font-display text-8xl font-bold leading-none text-agency-surface2 select-none lg:-top-6 lg:text-9xl"
             >
               {step.number}
             </span>
@@ -162,17 +144,17 @@ export default function HowItWorks() {
             </div>
 
             {/* Heading */}
-            <h3 className="mt-6 font-display text-xl font-semibold">
+            <h3 className="relative z-10 mt-6 font-display text-xl font-semibold">
               {step.title}
             </h3>
 
             {/* Description */}
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-agency-muted">
+            <p className="relative z-10 mt-3 max-w-xs text-sm leading-relaxed text-agency-muted">
               {step.description}
             </p>
-          </motion.div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
       </div>
     </section>
   );

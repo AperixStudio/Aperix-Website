@@ -17,87 +17,87 @@ const phases: Phase[] = [
     step: 1,
     title: "Initial Contact",
     description:
-      "You reach out by email or phone, and we learn about your business, goals, competitors, and ideal customers before shaping the right next step.",
+      "You reach out and we get a feel for the business, what you need, and where the current site or setup is falling short.",
     duration: "1–2 business days",
     owner: "Both",
   },
   {
     step: 2,
-    title: "Proposal",
+    title: "Scope & Proposal",
     description:
-      "We send you a detailed proposal outlining scope, timeline, investment, and what success looks like.",
+      "We put together the recommended scope, timeline, pricing, and a clear plan for how the project should run.",
     duration: "1–2 business days",
     owner: "Aperix",
   },
   {
     step: 3,
+    title: "Rough Design & Direction",
+    description:
+      "Before locking anything in, we sketch out the structure, layout, and general direction so you can see how the site is taking shape. That can happen in Figma or in a coded mockup, depending on what suits the project best.",
+    duration: "2–5 business days",
+    owner: "Both",
+  },
+  {
+    step: 4,
     title: "Contract & Deposit",
     description:
-      "You sign the agreement and pay a 50% deposit to secure your spot in our build schedule.",
+      "Once the direction feels right, we finalise the scope, sort the agreement, and take the deposit so the project can move into the build phase properly.",
     duration: "Same day",
     owner: "Client",
   },
   {
-    step: 4,
-    title: "Design (Figma)",
-    description:
-      "We create full-fidelity mockups of every page in Figma. You get to see exactly what your site will look like before a line of code is written.",
-    duration: "1–2 weeks",
-    owner: "Aperix",
-  },
-  {
     step: 5,
-    title: "Design Sign-Off",
-    description:
-      "You review the designs, request any changes, and give final approval to move to development.",
-    duration: "1–3 business days",
-    owner: "Client",
-  },
-  {
-    step: 6,
     title: "Build",
     description:
-      "We build your site in Next.js with pixel-perfect fidelity to the approved design. Fully responsive, lightning fast.",
+      "We turn the approved direction into the full site, make it responsive across devices, connect the important functionality, and keep refining it as it comes together.",
     duration: "1–4 weeks",
     owner: "Aperix",
   },
   {
-    step: 7,
+    step: 6,
     title: "Staging Review",
     description:
-      "You review the live staging site on a private link. Test every page, form, and interaction on your devices.",
+      "We send you a private staging link so you can review the site properly in a real browser and flag anything that needs adjusting.",
     duration: "2–3 business days",
     owner: "Client",
   },
   {
-    step: 8,
-    title: "Revisions",
+    step: 7,
+    title: "Revisions & Polish",
     description:
-      "We implement your feedback from the staging review. Business tier includes 2 rounds; Premium includes 3.",
+      "We work through your feedback, tidy up the finer details, and get everything ready for final approval and launch.",
     duration: "3–5 business days",
     owner: "Aperix",
   },
   {
-    step: 9,
-    title: "Final Payment",
+    step: 8,
+    title: "Final Approval & Payment",
     description:
-      "Once you are happy with the final build, you pay the remaining 50% balance before we go live.",
+      "Once the finished site is approved, the final balance is paid and we line everything up for launch.",
     duration: "Same day",
-    owner: "Client",
+    owner: "Both",
   },
   {
-    step: 10,
+    step: 9,
     title: "Launch",
     description:
-      "We deploy to production, configure your domain, set up SSL, and submit to Google Search Console. You are live.",
+      "We push the site live, connect the domain, check the essentials, and make sure everything is working as expected once it is out in the world.",
     duration: "Same day",
     owner: "Aperix",
   },
   {
-    step: 11,
-    title: "Monthly Retainer",
+    step: 10,
+    title: "Handover & Support",
     description:
-      "Ongoing hosting, maintenance, security updates, uptime monitoring, and monthly content updates as needed.",
+      "Once the site is live, we help with handover, answer questions, and make sure you know how everything fits together.",
+    duration: "1–3 business days",
+    owner: "Both",
+  },
+  {
+    step: 11,
+    title: "Ongoing Support",
+    description:
+      "If you need it, we can keep looking after hosting, maintenance, updates, and general support once the site is live.",
     duration: "Ongoing",
     owner: "Aperix",
   },
@@ -152,8 +152,8 @@ export default function ProjectTimeline() {
             Your project, step by step
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-agency-muted">
-            From first contact to launch day — here&apos;s exactly what happens
-            and who&apos;s responsible at every stage.
+            From the first message through to launch, here&apos;s how the project
+            usually runs and where each part sits.
           </p>
         </motion.div>
 
