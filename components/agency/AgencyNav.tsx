@@ -6,12 +6,13 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import ThemeToggle from "@/components/agency/ThemeToggle";
 
 /* ────────────────────────────────────────────────────────────
    AgencyNav — PRD §4.2.1
    Fixed/sticky top navigation for the Agency Shell.
    • Logo left: "Aperix" wordmark + geometric mark
-   • Nav links right: Services, Our Work, Pricing, Contact
+  • Nav links right: Services, Our Work, Contact
    • Scroll-past-hero → bg fills with --agency-surface + blur
    • Mobile: hamburger → full-screen slide-in overlay
   • CTA: "Get in Contact" → /contact
@@ -19,8 +20,7 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Services", href: "/services" },
-  { label: "Our Work", href: "/#tiers" },
-  { label: "Pricing", href: "/#tiers" },
+  { label: "Our Work", href: "/our-work" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -55,10 +55,8 @@ export default function AgencyNav() {
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full border shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
-            scrolled
-              ? "border-white/42 bg-white/34 opacity-100"
-              : "border-white/28 bg-white/20 opacity-95",
+            "agency-glass-pill pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full supports-backdrop-filter:backdrop-blur-2xl sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
+            scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
           )}
         />
         <nav
@@ -108,11 +106,13 @@ export default function AgencyNav() {
               </Link>
             ))}
 
+            <ThemeToggle />
+
             <Link
               href="/contact"
               className={cn(
                 "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold",
-                "bg-agency-ink/92 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
+                "agency-button-primary",
                 "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
               )}
             >
@@ -124,7 +124,7 @@ export default function AgencyNav() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/28 shadow-[0_10px_30px_rgba(67,92,122,0.12)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
+            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-agency-border bg-agency-surface/80 text-agency-ink shadow-[0_10px_30px_rgba(67,92,122,0.12)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -171,10 +171,10 @@ export default function AgencyNav() {
                 ? { duration: 0 }
                 : { duration: 0.3, ease: "easeOut" }
             }
-            className="fixed inset-0 z-40 flex flex-col bg-[rgba(232,238,245,0.72)] supports-backdrop-filter:backdrop-blur-2xl md:hidden"
+            className="agency-mobile-overlay fixed inset-0 z-40 flex flex-col supports-backdrop-filter:backdrop-blur-2xl md:hidden"
           >
             {/* Push content below the nav bar height */}
-            <div className="m-4 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl border border-white/45 bg-white/38 px-6 shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
+            <div className="agency-mobile-panel m-4 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl px-6 shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.label}
@@ -203,6 +203,8 @@ export default function AgencyNav() {
                 </motion.div>
               ))}
 
+              <ThemeToggle className="mt-2" />
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -218,7 +220,7 @@ export default function AgencyNav() {
                   onClick={closeMobile}
                   className={cn(
                     "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
-                    "bg-agency-ink/92 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
+                    "agency-button-primary",
                     "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
                   )}
                 >

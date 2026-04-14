@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { motion } from "framer-motion";
-import { useReducedMotion } from "@/lib/useReducedMotion";
+import { HoverLift, Reveal, StaggerGroup, StaggerItem } from "@/components/animations";
+import { cn } from "@/lib/utils";
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    TechnicalEdge (Benefits grid)
@@ -13,12 +13,28 @@ interface Benefit {
   title: string;
   body: string;
   icon: React.ReactNode;
+  tone: "blue" | "amber" | "violet";
 }
+
+const TONE_STYLES = {
+  blue: {
+    card: "border-t-4 border-agency-accent",
+    icon: "border-agency-accent/25 bg-agency-accent/10 text-agency-accent",
+  },
+  amber: {
+    card: "border-t-4 border-agency-accent2",
+    icon: "border-agency-accent2/25 bg-agency-accent2/10 text-agency-accent2",
+  },
+  violet: {
+    card: "border-t-4 border-agency-accent3",
+    icon: "border-agency-accent3/25 bg-agency-accent3/10 text-agency-accent3",
+  },
+} as const;
 
 const BENEFITS: Benefit[] = [
   {
     title: "Fixed Monthly Rate",
-    body: "One predictable fee covers design, development, hosting, and support. No invoices full of line-items.",
+    body: "One clear monthly rate covers design, development, hosting, and support. No messy invoices or vague add-ons.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <rect x="2" y="4" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="1.5" />
@@ -26,30 +42,33 @@ const BENEFITS: Benefit[] = [
         <path d="M7 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
+    tone: "blue",
   },
   {
     title: "Fast Turnaround",
-    body: "Most sites are live within two weeks. We keep things moving so you're not waiting months to go online.",
+    body: "We move quickly once content and approvals are in place, so projects don’t drag on for months.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <circle cx="11" cy="11" r="8.5" stroke="currentColor" strokeWidth="1.5" />
         <path d="M11 6v5l3 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
+    tone: "amber",
   },
   {
     title: "You Own Everything",
-    body: "The code, domain, and hosting account are yours from day one. Walk away any time â€” no lock-in, ever.",
+    body: "The code, domain, and accounts are yours. If you ever want to move on, you’re not stuck with us.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <rect x="4" y="10" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="1.5" />
         <path d="M7 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
+    tone: "violet",
   },
   {
-    title: "SEO Built-In",
-    body: "Every site is submitted to Google Search Console and structured for rankings from the moment it's live.",
+    title: "Search-Ready",
+    body: "We build with search in mind from the start, including the basics that help your site launch in good shape.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
@@ -57,10 +76,11 @@ const BENEFITS: Benefit[] = [
         <path d="M10 7v3l2 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
+    tone: "blue",
   },
   {
     title: "Hosted & Maintained",
-    body: "We handle the server, security updates, and renewals. You focus on running your business.",
+    body: "We handle hosting, updates, and the routine technical maintenance so you can stay focused on the business.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <path d="M4 5h14a1 1 0 0 1 1 1v4H3V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.5" />
@@ -69,22 +89,22 @@ const BENEFITS: Benefit[] = [
         <circle cx="7" cy="13" r="1" fill="currentColor" />
       </svg>
     ),
+    tone: "amber",
   },
   {
     title: "Melbourne Based",
-    body: "We're local. Meet us for coffee, call us directly, or just email â€” no offshore handoffs, no time-zone lag.",
+    body: "We’re based in Melbourne, easy to reach, and hands-on throughout the project. No offshore handoffs and no being bounced around.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
         <path d="M11 2C7.69 2 5 4.9 5 8.5 5 13.5 11 20 11 20s6-6.5 6-11.5C17 4.9 14.31 2 11 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         <circle cx="11" cy="8.5" r="2" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     ),
+    tone: "violet",
   },
 ];
 
 export default function TechnicalEdge() {
-  const prefersReduced = useReducedMotion();
-
   return (
     <section
       className="px-4 py-4 sm:px-6 lg:px-8"
@@ -92,13 +112,7 @@ export default function TechnicalEdge() {
     >
       <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
         {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <motion.div
-          initial={prefersReduced ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12 max-w-xl"
-        >
+        <Reveal className="mb-12 max-w-xl">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
             Why Aperix
           </p>
@@ -106,33 +120,24 @@ export default function TechnicalEdge() {
             id="benefits-heading"
             className="font-display text-3xl font-bold leading-tight text-agency-ink sm:text-4xl lg:text-5xl"
           >
-            What you get when you work with us.
+            What working with us actually looks like.
           </h2>
-        </motion.div>
+        </Reveal>
 
         {/* â”€â”€ Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div className="grid gap-px border border-agency-border bg-agency-border sm:grid-cols-2 lg:grid-cols-3">
-          {BENEFITS.map((b, i) => (
-            <motion.div
-              key={b.title}
-              initial={prefersReduced ? false : { opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{
-                duration: 0.45,
-                ease: [0.22, 1, 0.36, 1],
-                delay: prefersReduced ? 0 : i * 0.06,
-              }}
-              className="flex flex-col gap-4 bg-agency-bg p-8"
-            >
-              <span className="text-agency-ink">{b.icon}</span>
+        <StaggerGroup className="grid gap-px border border-agency-border bg-agency-border sm:grid-cols-2 lg:grid-cols-3" staggerChildren={0.06}>
+          {BENEFITS.map((b) => (
+            <StaggerItem key={b.title} className="bg-agency-bg">
+              <HoverLift className={cn("flex h-full flex-col gap-4 p-8", TONE_STYLES[b.tone].card)}>
+              <span className={cn("flex h-12 w-12 items-center justify-center rounded-2xl border", TONE_STYLES[b.tone].icon)}>{b.icon}</span>
               <h3 className="font-display text-lg font-semibold text-agency-ink">
                 {b.title}
               </h3>
               <p className="text-sm leading-relaxed text-agency-muted">{b.body}</p>
-            </motion.div>
+              </HoverLift>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       </div>
     </section>
   );

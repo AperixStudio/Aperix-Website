@@ -49,7 +49,7 @@ export default function StarterDemoLayout({
     >
       <DemoBanner
         tierName="Starter"
-        description="This is a demo showcasing our Starter tier ($999). Multi-section site with animations, menu grid, reviews, and location."
+        description="This is a demo showcasing our Starter tier ($1,290). Multi-section site with animations, menu grid, reviews, and location."
       />
       {/* offset for fixed banner */}
       <div className="pt-15">{children}</div>

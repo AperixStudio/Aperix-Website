@@ -9,7 +9,7 @@ import Guarantee from "@/components/agency/services/Guarantee";
 export const metadata = {
   title: "Services & Pricing | Aperix Studio",
   description:
-    "Custom web development packages for Melbourne businesses. Transparent pricing from $499 to $3,999+. All sites score 100/100 on Lighthouse.",
+    "Custom web development packages for Melbourne businesses. Transparent pricing from $499 to $5,999+, with lower-cost starter options and more complete custom tiers.",
 };
 
 export default function ServicesPage() {

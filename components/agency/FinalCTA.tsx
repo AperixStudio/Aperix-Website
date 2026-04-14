@@ -1,67 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import { StaggerGroup, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
-import { useReducedMotion } from "@/lib/useReducedMotion";
-
-/* ────────────────────────────────────────────────────────────
-   FinalCTA — PRD §4.2.8
-   Full-width cyan background. Dark text.
-   H2, subtext, large primary button → /contact,
-   "Based in Melbourne · Serving all of Victoria" below.
-   Scroll-triggered fade-up reveal.
-   ──────────────────────────────────────────────────────────── */
-
-const containerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
 
 export default function FinalCTA() {
-  const prefersReduced = useReducedMotion();
-
   return (
     <section
       className="px-4 py-4 sm:px-6 lg:px-8"
       aria-labelledby="final-cta-heading"
     >
-      <motion.div
-        variants={prefersReduced ? undefined : containerVariants}
-        initial={prefersReduced ? undefined : "hidden"}
-        whileInView={prefersReduced ? undefined : "visible"}
-        viewport={{ once: true, amount: 0.15 }}
+      <StaggerGroup
         className="agency-panel-dark-wrap mx-auto max-w-5xl px-6 py-20 text-center sm:px-8 lg:px-12 lg:py-24"
       >
         {/* H2 */}
-        <motion.h2
+        <StaggerItem
           id="final-cta-heading"
-          variants={prefersReduced ? undefined : fadeUp}
           className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
         >
-          Ready to stop losing customers to a bad&nbsp;website?
-        </motion.h2>
+          If the website no longer feels right, let&rsquo;s sort it out.
+        </StaggerItem>
 
         {/* Subtext */}
-        <motion.p
-          variants={prefersReduced ? undefined : fadeUp}
+        <StaggerItem
           className="mt-5 text-base leading-relaxed text-white/70 sm:text-lg"
         >
-          Get in contact for a no-pressure conversation about what&rsquo;s possible
-          for your business. Email is completely fine.
-        </motion.p>
+          Send us a message, tell us what&rsquo;s going on, and we&rsquo;ll come back to you
+          with honest advice on the next step. Email is absolutely fine.
+        </StaggerItem>
 
         {/* CTA button */}
-        <motion.div variants={prefersReduced ? undefined : fadeUp} className="mt-8">
+        <StaggerItem className="mt-8">
           <Link
             href="/contact"
             className={cn(
@@ -73,16 +42,15 @@ export default function FinalCTA() {
           >
             Get in Contact
           </Link>
-        </motion.div>
+        </StaggerItem>
 
         {/* Location line */}
-        <motion.p
-          variants={prefersReduced ? undefined : fadeUp}
+        <StaggerItem
           className="mt-6 text-sm text-white/50"
         >
           Based in Melbourne · Serving all of Victoria
-        </motion.p>
-      </motion.div>
+        </StaggerItem>
+      </StaggerGroup>
     </section>
   );
 }

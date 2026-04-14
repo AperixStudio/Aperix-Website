@@ -75,13 +75,13 @@ export default function Hero() {
           <div className="flex shrink-0 flex-wrap gap-3">
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-lg bg-agency-ink px-7 py-3.5 text-sm font-semibold text-white transition-opacity duration-150 hover:opacity-80 active:scale-[0.98]"
+              className="agency-button-primary inline-flex items-center justify-center rounded-lg px-7 py-3.5 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98]"
             >
               Get in Contact
             </Link>
             <Link
-              href="#tiers"
-              className="inline-flex items-center justify-center rounded-lg border border-agency-border-dark px-7 py-3.5 text-sm font-semibold text-agency-ink transition-opacity duration-150 hover:opacity-60 active:scale-[0.98]"
+              href="/our-work"
+              className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-7 py-3.5 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98]"
             >
               See our work
             </Link>

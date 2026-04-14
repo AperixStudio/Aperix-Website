@@ -14,38 +14,45 @@ type PillRect = {
 
 export default function CursorFollower() {
   const prefersReduced = useReducedMotion();
-  const [enabled, setEnabled] = useState(false);
+  const [isFinePointer, setIsFinePointer] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return !window.matchMedia("(pointer: coarse)").matches;
+  });
   const [visible, setVisible] = useState(false);
   const [pillRect, setPillRect] = useState<PillRect | null>(null);
   const hoveredPillRef = useRef<HTMLElement | null>(null);
+  const enabled = !prefersReduced && isFinePointer;
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
   const mainX = useMotionValue(-100);
   const mainY = useMotionValue(-100);
 
-  const xSoft = useSpring(x, { stiffness: 220, damping: 28, mass: 0.4 });
-  const ySoft = useSpring(y, { stiffness: 220, damping: 28, mass: 0.4 });
-  const mainXSoft = useSpring(mainX, { stiffness: 260, damping: 30, mass: 0.45 });
-  const mainYSoft = useSpring(mainY, { stiffness: 260, damping: 30, mass: 0.45 });
-  const xTrail = useSpring(x, { stiffness: 120, damping: 24, mass: 0.7 });
-  const yTrail = useSpring(y, { stiffness: 120, damping: 24, mass: 0.7 });
+  const mainXSoft = useSpring(mainX, { stiffness: 380, damping: 34, mass: 0.32 });
+  const mainYSoft = useSpring(mainY, { stiffness: 380, damping: 34, mass: 0.32 });
+  const xTrail = useSpring(x, { stiffness: 240, damping: 28, mass: 0.35 });
+  const yTrail = useSpring(y, { stiffness: 240, damping: 28, mass: 0.35 });
 
   useEffect(() => {
-    if (prefersReduced) {
-      setEnabled(false);
-      setVisible(false);
-      return;
-    }
-
     const mq = window.matchMedia("(pointer: coarse)");
-    if (mq.matches) {
-      setEnabled(false);
-      setVisible(false);
+    const onChange = (event: MediaQueryListEvent) => {
+      setIsFinePointer(!event.matches);
+    };
+
+    mq.addEventListener("change", onChange);
+
+    return () => {
+      mq.removeEventListener("change", onChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) {
       return;
     }
-
-    setEnabled(true);
 
     const setFromPill = (pill: HTMLElement | null) => {
       hoveredPillRef.current = pill;
@@ -110,7 +117,7 @@ export default function CursorFollower() {
       window.removeEventListener("scroll", onViewportChange);
       window.removeEventListener("resize", onViewportChange);
     };
-  }, [mainX, mainY, prefersReduced, x, y]);
+  }, [enabled, mainX, mainY, x, y]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -124,7 +131,7 @@ export default function CursorFollower() {
   if (!enabled) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[45]">
+    <div className="pointer-events-none fixed inset-0 z-45">
       <motion.div
         style={{ x: xTrail, y: yTrail }}
         animate={{ opacity: visible && !pillRect ? 0.35 : 0 }}
@@ -132,7 +139,7 @@ export default function CursorFollower() {
         className="absolute h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-agency-ink/40"
       />
       <motion.div
-        style={{ x: pillRect ? mainXSoft : xSoft, y: pillRect ? mainYSoft : ySoft }}
+        style={{ x: pillRect ? mainXSoft : x, y: pillRect ? mainYSoft : y }}
         animate={{
           opacity: visible ? 1 : 0,
           width: pillRect ? pillRect.width : 10,

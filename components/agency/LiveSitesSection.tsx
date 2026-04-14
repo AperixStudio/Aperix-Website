@@ -1,35 +1,55 @@
 import Link from "next/link";
+import { HoverLift, ParallaxLayer, Reveal, StaggerGroup, StaggerItem } from "@/components/animations";
+import { cn } from "@/lib/utils";
 
 const LIVE_SITES = [
   {
-    name: "Aperix Studio",
-    href: "https://aperix.com.au",
+    name: "The Hidden Chapter",
+    href: "https://thehiddenchapter.com.au/",
+    location: "Victoria, Australia",
+    status: "Live now",
+    label: "E-commerce / brand experience",
+    summary:
+      "A blind date with a book storefront built around mood, mystery, and gifting. The site leads with a strong brand concept, clear shopping flow, and a polished experience that feels thoughtful from the first scroll.",
+    highlights: ["Story-led homepage", "Giftable product positioning", "Warm branded shopping flow"],
+  },
+  {
+    name: "Rhino's Walk",
+    href: "https://admirable-axolotl-39bf5e.netlify.app/",
     location: "Melbourne, VIC",
     status: "Live now",
-    label: "Agency website",
+    label: "Fundraiser / community campaign",
     summary:
-      "Our own live site — built as the agency shell, with demo pathways, pricing, service detail, and contact conversion flows.",
-    highlights: ["Homepage + service architecture", "Lead-focused contact flow", "Reusable demo showcase system"],
+      "A campaign site for a 24-hour community walk supporting the Good Friday Appeal. It is designed to explain the cause quickly, highlight impact, and make it easy for supporters to donate or join the walk.",
+    highlights: ["Donation-first CTA flow", "Impact-driven storytelling", "Community event structure"],
   },
   {
-    name: "Next Client Launch",
-    href: "",
-    location: "Reserved",
-    status: "Launching soon",
-    label: "Client slot",
+    name: "POV Sync",
+    href: "https://pov-sync.onrender.com/",
+    location: "Web app",
+    status: "Live now",
+    label: "SaaS / streaming product",
     summary:
-      "This space is ready for the next public launch once a client site is approved to be showcased.",
-    highlights: ["Live domain", "Project summary", "Before/after scope"],
+      "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
+    highlights: ["Product-led landing page", "Fast setup onboarding", "Multi-stream UX messaging"],
+  },
+] as const;
+
+const SITE_STYLES = [
+  {
+    badge: "border-agency-accent/25 bg-agency-accent/12 text-agency-accent",
+    panel: "from-agency-accent/14 via-agency-surface to-agency-bg",
+    highlight: "border-agency-accent/20 bg-agency-accent/10",
   },
   {
-    name: "Next Client Launch",
-    href: "",
-    location: "Reserved",
-    status: "Launching soon",
-    label: "Client slot",
-    summary:
-      "As more websites go live, we’ll add them here with direct links and a quick breakdown of what was delivered.",
-    highlights: ["Industry", "Key pages delivered", "Outcome or conversion goal"],
+    badge: "border-agency-accent2/25 bg-agency-accent2/12 text-agency-accent2",
+    panel: "from-agency-accent2/14 via-agency-surface to-agency-bg",
+    highlight: "border-agency-accent2/20 bg-agency-accent2/10",
+  },
+  {
+    badge: "border-agency-accent3/25 bg-agency-accent3/12 text-agency-accent3",
+    panel: "from-agency-accent3/14 via-agency-surface to-agency-bg",
+    highlight: "border-agency-accent3/20 bg-agency-accent3/10",
   },
 ] as const;
 
@@ -42,7 +62,7 @@ export default function LiveSitesSection() {
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div className="max-w-3xl">
+          <Reveal className="max-w-3xl">
             <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
               Recent Launches
             </p>
@@ -50,24 +70,27 @@ export default function LiveSitesSection() {
               id="live-sites-heading"
               className="font-display text-3xl font-bold leading-tight text-agency-ink sm:text-4xl lg:text-5xl"
             >
-              Live websites we can point you to — with more launches ready to join the list.
+              A few live builds, with more on the way.
             </h2>
-          </div>
+          </Reveal>
 
-          <Link
-            href="/contact"
-            className="inline-flex items-center justify-center rounded-full border border-agency-border-dark px-5 py-3 text-sm font-semibold text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
-          >
-            Get in Contact
-          </Link>
+          <Reveal>
+            <Link
+              href="/contact"
+              className="agency-button-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-colors"
+            >
+              Get in Contact
+            </Link>
+          </Reveal>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <StaggerGroup className="mt-10 grid gap-6 lg:grid-cols-3" staggerChildren={0.08}>
           {LIVE_SITES.map((site, index) => {
             const isLive = Boolean(site.href);
+            const styles = SITE_STYLES[index % SITE_STYLES.length];
 
             return (
-              <article
+              <StaggerItem
                 key={`${site.name}-${index}`}
                 className={
                   index === 0
@@ -75,9 +98,11 @@ export default function LiveSitesSection() {
                     : "overflow-hidden rounded-4xl border border-agency-border bg-agency-surface"
                 }
               >
-                <div className="border-b border-agency-border bg-linear-to-br from-agency-surface2 via-agency-surface to-agency-bg px-6 py-8 sm:px-8">
+                <HoverLift scale={index === 0 ? 1.012 : 1.008}>
+                <article className="overflow-hidden rounded-4xl border border-agency-border bg-agency-surface">
+                <div className={cn("border-b border-agency-border bg-linear-to-br px-6 py-8 sm:px-8", styles.panel)}>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border border-agency-border bg-white/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-agency-ink">
+                    <span className={cn("rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]", styles.badge)}>
                       {site.status}
                     </span>
                     <span className="text-xs font-medium uppercase tracking-[0.15em] text-agency-muted">
@@ -85,7 +110,7 @@ export default function LiveSitesSection() {
                     </span>
                   </div>
 
-                  <div className="mt-6 flex min-h-48 flex-col justify-between rounded-[1.75rem] border border-agency-border/70 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+                  <ParallaxLayer className="mt-6 flex min-h-48 flex-col justify-between rounded-[1.75rem] border border-agency-border/70 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" offset={index === 0 ? 18 : 10}>
                     <div>
                       <p className="text-xs font-medium uppercase tracking-[0.16em] text-agency-muted">
                         {site.label}
@@ -103,7 +128,7 @@ export default function LiveSitesSection() {
                         {isLive ? "Visit live site" : "Coming soon"}
                       </span>
                     </div>
-                  </div>
+                  </ParallaxLayer>
                 </div>
 
                 <div className="space-y-5 px-6 py-6 sm:px-8">
@@ -115,7 +140,7 @@ export default function LiveSitesSection() {
                     {site.highlights.map((item) => (
                       <div
                         key={item}
-                        className="rounded-2xl border border-agency-border bg-agency-bg px-4 py-4 text-sm text-agency-text"
+                        className={cn("rounded-2xl border px-4 py-4 text-sm text-agency-text", styles.highlight)}
                       >
                         {item}
                       </div>
@@ -134,30 +159,31 @@ export default function LiveSitesSection() {
                     </Link>
                   ) : (
                     <p className="text-sm font-medium text-agency-muted">
-                      This card will switch to a live link once the next project is public.
+                      This will change to a live link once the next approved project is public.
                     </p>
                   )}
                 </div>
-              </article>
+                </article>
+                </HoverLift>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerGroup>
 
-        <div className="mt-10 rounded-4xl border border-agency-border bg-agency-surface px-6 py-6 sm:px-8">
+        <Reveal className="mt-10 rounded-4xl border border-agency-border bg-agency-surface px-6 py-6 sm:px-8">
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
             <p className="max-w-3xl text-sm leading-relaxed text-agency-muted sm:text-base">
-              Inspired by the stronger “latest projects” storytelling on Clean Vibes, this
-              section is now set up to grow into a proper live portfolio — with direct links,
-              location or industry tags, and quick notes on what each build included.
+              We’ll keep adding approved client work here over time, with live links,
+              short project notes, and enough context to show what each build involved.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full bg-agency-ink px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="agency-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
             >
-              Start your website
+              Talk to us about your project
             </Link>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
