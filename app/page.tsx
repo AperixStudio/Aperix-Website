@@ -9,8 +9,17 @@ import Footer from "@/components/agency/Footer";
 import HeroV2 from "@/components/agency/HeroV2";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import CursorFollower from "@/components/animations/CursorFollower";
+import { Shimmer } from "@/components/animations/Shimmer";
 
 export default function Home() {
+  const demoShimmerDuration = 1
+  const previewCards = [
+    { name: "Essential", price: "$499", features: 5 },
+    { name: "Starter", price: "$1,290", features: 6 },
+    { name: "Business", price: "$3,290", features: 8, popular: true },
+    { name: "Premium", price: "$5,999+", features: 8 },
+  ];
+
   return (
     <>
       <CursorFollower />
