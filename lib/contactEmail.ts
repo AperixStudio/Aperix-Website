@@ -77,10 +77,11 @@ function toHtml(submission: ContactSubmission) {
 export async function sendContactEmail(submission: ContactSubmission) {
   const { apiKey, fromEmail, toEmail } = getContactEmailConfig();
   const resend = new Resend(apiKey);
+  const recipients = toEmail.split(",").map((e) => e.trim()).filter(Boolean);
 
   const response = await resend.emails.send({
     from: fromEmail,
-    to: [toEmail],
+    to: recipients,
     replyTo: submission.email,
     subject: `New Aperix enquiry — ${submission.businessName}`,
     text: toPlainText(submission),
