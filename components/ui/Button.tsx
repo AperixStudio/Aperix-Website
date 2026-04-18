@@ -50,6 +50,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type={type}
+        data-cursor-pill
         className={cn(
           // Base styles
           "inline-flex items-center justify-center font-medium rounded-lg",

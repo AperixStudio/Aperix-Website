@@ -10,17 +10,37 @@ type PillRect = {
   y: number;
   width: number;
   height: number;
+  borderRadius?: string;
 };
+
+const CURSOR_PILL_SELECTOR = [
+  "[data-cursor-pill]",
+  "button",
+  "input[type='button']",
+  "input[type='submit']",
+  "input[type='reset']",
+  "a[href][role='button']",
+  "a[href][class*='agency-button']",
+  "a[href][class*='inline-flex'][class*='rounded']",
+].join(", ");
+
+function hasVisibleFrame(el: HTMLElement) {
+  const styles = window.getComputedStyle(el);
+  const borderWidth =
+    parseFloat(styles.borderTopWidth) +
+    parseFloat(styles.borderRightWidth) +
+    parseFloat(styles.borderBottomWidth) +
+    parseFloat(styles.borderLeftWidth);
+
+  const hasBorder = styles.borderStyle !== "none" && borderWidth > 0;
+  const hasBackground = styles.backgroundColor !== "rgba(0, 0, 0, 0)" && styles.backgroundColor !== "transparent";
+
+  return hasBorder || hasBackground;
+}
 
 export default function CursorFollower() {
   const prefersReduced = useReducedMotion();
-  const [isFinePointer, setIsFinePointer] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return !window.matchMedia("(pointer: coarse)").matches;
-  });
+  const [isFinePointer, setIsFinePointer] = useState(false);
   const [visible, setVisible] = useState(false);
   const [pillRect, setPillRect] = useState<PillRect | null>(null);
   const hoveredPillRef = useRef<HTMLElement | null>(null);
@@ -38,6 +58,9 @@ export default function CursorFollower() {
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse)");
+    const initId = window.setTimeout(() => {
+      setIsFinePointer(!mq.matches);
+    }, 0);
     const onChange = (event: MediaQueryListEvent) => {
       setIsFinePointer(!event.matches);
     };
@@ -45,6 +68,7 @@ export default function CursorFollower() {
     mq.addEventListener("change", onChange);
 
     return () => {
+      window.clearTimeout(initId);
       mq.removeEventListener("change", onChange);
     };
   }, []);
@@ -63,11 +87,16 @@ export default function CursorFollower() {
       }
 
       const rect = pill.getBoundingClientRect();
+      const styles = window.getComputedStyle(pill);
+      const framed = hasVisibleFrame(pill);
+      const padX = framed ? 0 : 20;
+      const padY = framed ? 0 : 10;
       const nextRect = {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
-        width: rect.width + 20,
-        height: rect.height + 10,
+        width: rect.width + padX,
+        height: rect.height + padY,
+        borderRadius: framed ? styles.borderRadius : undefined,
       };
 
       setPillRect(nextRect);
@@ -81,7 +110,7 @@ export default function CursorFollower() {
       setVisible(true);
 
       const target = event.target instanceof Element ? event.target : null;
-      const pill = target?.closest("[data-cursor-pill]") as HTMLElement | null;
+      const pill = target?.closest(CURSOR_PILL_SELECTOR) as HTMLElement | null;
 
       if (pill !== hoveredPillRef.current) {
         setFromPill(pill);
@@ -139,7 +168,11 @@ export default function CursorFollower() {
         className="absolute h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-agency-ink/40"
       />
       <motion.div
-        style={{ x: pillRect ? mainXSoft : x, y: pillRect ? mainYSoft : y }}
+        style={{
+          x: pillRect ? mainXSoft : x,
+          y: pillRect ? mainYSoft : y,
+          borderRadius: pillRect?.borderRadius,
+        }}
         animate={{
           opacity: visible ? 1 : 0,
           width: pillRect ? pillRect.width : 10,
@@ -147,10 +180,13 @@ export default function CursorFollower() {
         }}
         transition={{ type: "spring", stiffness: 360, damping: 28, mass: 0.45 }}
         className={cn(
-          "absolute -translate-x-1/2 -translate-y-1/2 rounded-full",
+          "absolute -translate-x-1/2 -translate-y-1/2",
           pillRect
-            ? "border border-agency-ink/45 bg-transparent"
-            : "bg-agency-ink",
+            ? cn(
+              "border border-agency-ink/45 bg-transparent",
+              !pillRect.borderRadius && "rounded-full",
+            )
+            : "rounded-full bg-agency-ink",
         )}
       />
     </div>
