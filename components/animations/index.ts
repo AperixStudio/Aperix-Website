@@ -5,4 +5,5 @@ export * from "./motionPresets";
 export * from "./ParallaxLayer";
 export * from "./PresenceFade";
 export * from "./Reveal";
+export * from "./Shimmer";
 export * from "./Stagger";

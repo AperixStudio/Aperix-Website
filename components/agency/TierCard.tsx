@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Badge, type BadgeProps } from "@/components/ui/Badge";
+import { type BadgeProps } from "@/components/ui/Badge";
 
 /* ────────────────────────────────────────────────────────────
    TierCard — PRD §4.2.5
@@ -24,52 +24,9 @@ interface TierCardProps {
   demoHref: string;
   /** Show the "Most Popular" highlighted treatment */
   popular?: boolean;
+  /** Optional className for layout sizing from parent */
+  className?: string;
 }
-
-/* ── Checkmark icon ─────────────────────────────────────────── */
-function Check({ className }: { className?: string }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-      className={cn("shrink-0", className)}
-    >
-      <path
-        d="M3.5 8.5L6.5 11.5L12.5 4.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-/* ── Border-colour map (resolves to CSS vars the card uses) ── */
-const borderColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "border-agency-accent/45",
-  amber: "border-agency-accent2/45",
-  violet: "border-agency-accent3/45",
-  muted: "border-agency-border",
-};
-
-const checkColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "text-agency-accent",
-  amber: "text-agency-accent2",
-  violet: "text-agency-accent3",
-  muted: "text-agency-muted",
-};
-
-/* CTA variant per colour so the button matches the tier */
-const ctaBgMap: Record<NonNullable<BadgeProps["color"]>, string> = {
-  cyan: "border-agency-accent/50 bg-agency-accent text-white hover:bg-agency-accent/90",
-  amber: "border-agency-accent2/50 bg-agency-accent2 text-agency-ink hover:bg-agency-accent2/90",
-  violet: "border-agency-accent3/50 bg-agency-accent3 text-white hover:bg-agency-accent3/90",
-  muted: "border-agency-border-dark bg-agency-ink text-agency-bg hover:opacity-85",
-};
 
 export default function TierCard({
   name,
@@ -80,30 +37,29 @@ export default function TierCard({
   retainer,
   demoHref,
   popular = false,
+  className,
 }: TierCardProps) {
   return (
     <div
+      data-tier-color={color}
       className={cn(
         "relative flex flex-col rounded-2xl border bg-agency-surface p-8 text-agency-text shadow-[0_18px_50px_rgba(67,92,122,0.08)]",
         "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(67,92,122,0.14)]",
-        popular
-          ? cn(borderColorMap[color], "border-2")
-          : "border-agency-border",
+        "border-agency-border",
+        className,
       )}
     >
       {/* ── "Most Popular" pill ──────────────────────────────── */}
       {popular && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-          <Badge color={color} variant="solid" size="sm">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full border border-agency-border bg-agency-surface2 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] uppercase text-agency-muted">
             Most Popular
-          </Badge>
         </span>
       )}
 
       {/* ── Tier badge ──────────────────────────────────────── */}
-      <Badge color={color} variant="subtle" size="md">
+      <p className="mb-5 text-xs font-semibold tracking-[0.16em] uppercase text-agency-muted">
         {name}
-      </Badge>
+      </p>
 
       {/* ── Price ───────────────────────────────────────────── */}
       <p className="mt-5 font-display text-3xl font-bold tracking-tight text-agency-ink">
@@ -122,8 +78,7 @@ export default function TierCard({
       {/* ── Feature list ────────────────────────────────────── */}
       <ul className="flex flex-1 flex-col gap-3" role="list">
         {features.map((feat) => (
-          <li key={feat} className="flex items-start gap-2.5 text-sm text-agency-text">
-            <Check className={checkColorMap[color]} />
+          <li key={feat} className="text-sm text-agency-text">
             <span>{feat}</span>
           </li>
         ))}
@@ -136,10 +91,10 @@ export default function TierCard({
       <Link
         href={demoHref}
         className={cn(
-          "mt-6 inline-flex items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-medium",
+          "mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-agency-border bg-agency-surface2 px-6 py-3 text-sm font-medium text-agency-text",
           "transition-all duration-150 active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-agency-surface",
-          ctaBgMap[color],
+          "hover:border-agency-border-dark hover:bg-agency-surface",
         )}
       >
         View Live Demo
