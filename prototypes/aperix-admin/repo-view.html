@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aperix Admin — Repo View</title>
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <p class="kicker">Aperix Internal</p>
+        <h1>Repo View</h1>
+        <p>
+          Visualise the GitHub org structure, how repos should be separated, and how the admin app connects to them.
+        </p>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Main Views</p>
+        <div class="nav-list">
+          <a class="nav-item" href="dashboard.html">Dashboard</a>
+          <a class="nav-item" href="client-detail.html?id=rhinos">Client Detail</a>
+          <a class="nav-item active" href="repo-view.html">Repo View</a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Repo Groups</p>
+        <div class="nav-list">
+          <a class="nav-item" href="#agency">Agency</a>
+          <a class="nav-item" href="#starter">Starter / Template</a>
+          <a class="nav-item" href="#client">Client Production</a>
+          <a class="nav-item" href="#internal">Internal Ops</a>
+        </div>
+      </div>
+
+      <div class="sidebar-note">
+        <strong>Recommended rule</strong>
+        <span>
+          Demo work lives in `Aperix-Website`. Real paid client work gets its own repo immediately.
+        </span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2>Repo & Org Structure</h2>
+          <p>
+            This view shows how `AperixStudio` should be organised so your agency site, internal admin, templates, and client sites stay cleanly separated.
+          </p>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="dashboard.html">Back to Dashboard</a>
+          <a class="btn" href="client-detail.html?id=rhinos">Open Client Detail</a>
+        </div>
+      </div>
+
+      <section class="grid-2">
+        <div class="stack">
+          <div class="panel section" id="agency">
+            <h3>Recommended GitHub Org Layout</h3>
+            <div class="code-panel">
+              <h4>`AperixStudio`</h4>
+              <div class="code-tree">AperixStudio/
+├─ Aperix-Website
+│  ├─ public agency website
+│  ├─ demos / portfolio pieces
+│  └─ lead capture / enquiry flow
+│
+├─ aperix-admin
+│  ├─ internal dashboard
+│  ├─ client records
+│  ├─ health checks
+│  └─ hosting / repo / access links
+│
+├─ aperix-site-starter
+│  ├─ reusable Next.js starter
+│  ├─ shared blocks and patterns
+│  └─ launch baseline for new clients
+│
+├─ client-rhinos-walk-site
+├─ client-future-cafe-site
+├─ client-future-tradie-site
+│
+└─ aperix-internal
+   ├─ SOPs
+   ├─ docs
+   └─ small scripts / operations</div>
+            </div>
+          </div>
+
+          <div class="panel section" id="starter">
+            <h3>What each repo is for</h3>
+            <div class="grid-3">
+              <div class="info">
+                <h4>`Aperix-Website`</h4>
+                <div class="small">Public marketing site, live demos, portfolio, pricing, and contact funnel.</div>
+              </div>
+              <div class="info">
+                <h4>`aperix-admin`</h4>
+                <div class="small">Private command center for both of you to manage operational reality.</div>
+              </div>
+              <div class="info">
+                <h4>`aperix-site-starter`</h4>
+                <div class="small">Starter base for new builds so you stop rebuilding everything from zero.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel section" id="client">
+            <h3>Client repo pattern</h3>
+            <div class="code-panel">
+              <h4>Example: `client-rhinos-walk-site`</h4>
+              <div class="code-tree">client-rhinos-walk-site/
+├─ app/
+├─ components/
+├─ lib/
+├─ public/
+├─ docs/
+│  ├─ content-notes
+│  ├─ launch-checklist
+│  └─ handoff-notes
+├─ .env.example
+├─ netlify.toml
+└─ README (optional internal use)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel section" id="internal">
+            <h3>How work flows</h3>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Lead enters through `Aperix-Website`</strong>
+                  <span>Contact form captures the enquiry and later feeds a client/project record into the admin app.</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Project is accepted</strong>
+                  <span>Create a new client repo from `aperix-site-starter` and assign lead/support owners.</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Site gets hosted</strong>
+                  <span>Connect GitHub → Netlify → Cloudflare → domain registrar and document links in admin.</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Admin app becomes the control layer</strong>
+                  <span>It does not replace the repos — it sits above them and gives you one operational view.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel section">
+            <h3>Why this view matters</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Repo View Fix</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Client work mixed into agency site</td>
+                  <td>Separate repos per real client</td>
+                </tr>
+                <tr>
+                  <td>Hard to know where hosting lives</td>
+                  <td>Admin links each project to its stack</td>
+                </tr>
+                <tr>
+                  <td>Ownership gets fuzzy</td>
+                  <td>Lead and support roles are explicit</td>
+                </tr>
+                <tr>
+                  <td>Repeating setup work</td>
+                  <td>Starter repo standardises launches</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel section">
+            <h3>Live examples from the prototype</h3>
+            <div class="links" id="repoExamples"></div>
+          </div>
+
+          <div class="panel section">
+            <h3>Design takeaway</h3>
+            <div class="callout">
+              This page is less about code browsing and more about architecture clarity: what repos exist, what they are for, and how they connect to domains, hosts, and ownership.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById("repoExamples").innerHTML = PROJECTS.map((project) => `
+      <a class="link-card" href="client-detail.html?id=${project.id}">
+        <strong>${project.repo}</strong>
+        <span>${project.name} · ${project.hosting} · ${project.domain}</span>
+      </a>
+    `).join("");
+  </script>
+</body>
+</html>

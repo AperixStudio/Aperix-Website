@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aperix Admin — Client Detail</title>
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <p class="kicker">Aperix Internal</p>
+        <h1>Client Detail</h1>
+        <p>
+          Full project-level view with owners, stack, links, launch state, and operational notes.
+        </p>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Main Views</p>
+        <div class="nav-list">
+          <a class="nav-item" href="dashboard.html">Dashboard</a>
+          <a class="nav-item active" href="client-detail.html?id=rhinos">Client Detail</a>
+          <a class="nav-item" href="repo-view.html">Repo View</a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Quick Links</p>
+        <div class="nav-list" id="projectSwitches"></div>
+      </div>
+
+      <div class="sidebar-note">
+        <strong>Best practice</strong>
+        <span>
+          Show links to credential locations here, not actual passwords or raw API keys.
+        </span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="projectName">Client Project</h2>
+          <p id="projectSummary">
+            Production client page showing the exact information both partners need without hunting across GitHub, Netlify, Cloudflare, registrar panels, docs, and messages.
+          </p>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="dashboard.html">Back to Dashboard</a>
+          <a class="btn primary" href="repo-view.html">View Repo Structure</a>
+        </div>
+      </div>
+
+      <section class="grid-2">
+        <div class="stack">
+          <div class="panel section">
+            <h3>Project Snapshot</h3>
+            <div class="info">
+              <div class="kv"><div class="kv-label">Status</div><div class="kv-value" id="snapshotStatus"></div></div>
+              <div class="kv"><div class="kv-label">Lead Owner</div><div class="kv-value" id="snapshotLead"></div></div>
+              <div class="kv"><div class="kv-label">Support Owner</div><div class="kv-value" id="snapshotSupport"></div></div>
+              <div class="kv"><div class="kv-label">Tier</div><div class="kv-value" id="snapshotTier"></div></div>
+              <div class="kv"><div class="kv-label">Domain</div><div class="kv-value" id="snapshotDomain"></div></div>
+              <div class="kv"><div class="kv-label">Last Deploy</div><div class="kv-value" id="snapshotDeploy"></div></div>
+            </div>
+          </div>
+
+          <div class="panel section">
+            <h3>Platform & Hosting</h3>
+            <div class="info">
+              <div class="kv"><div class="kv-label">Repo</div><div class="kv-value" id="platformRepo"></div></div>
+              <div class="kv"><div class="kv-label">GitHub Org</div><div class="kv-value">AperixStudio</div></div>
+              <div class="kv"><div class="kv-label">Hosting</div><div class="kv-value" id="platformHosting"></div></div>
+              <div class="kv"><div class="kv-label">Registrar</div><div class="kv-value" id="platformRegistrar"></div></div>
+              <div class="kv"><div class="kv-label">DNS</div><div class="kv-value" id="platformDns"></div></div>
+              <div class="kv"><div class="kv-label">Repo Access</div><div class="kv-value" id="platformRepoStatus"></div></div>
+            </div>
+          </div>
+
+          <div class="panel section">
+            <h3>Quick Access Tiles</h3>
+            <div class="links" id="projectLinks"></div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel section">
+            <h3>Health & Checks</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Check</th>
+                  <th>Result</th>
+                  <th>Last Run</th>
+                </tr>
+              </thead>
+              <tbody id="checksBody"></tbody>
+            </table>
+          </div>
+
+          <div class="panel section">
+            <h3>Current Priorities</h3>
+            <div class="timeline" id="priorities"></div>
+          </div>
+
+          <div class="panel section">
+            <h3>Internal Notes</h3>
+            <div class="callout" id="projectNotes"></div>
+          </div>
+
+          <div class="panel section">
+            <h3>Future Enhancements</h3>
+            <p class="section-copy">
+              In the real app, this page could automatically show GitHub branches, recent Netlify deploys, domain renewal dates, SSL expiry, form test status, and “last worked on by” activity.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const project = getProjectById(params.get("id"));
+
+    document.title = `Aperix Admin — ${project.name}`;
+    document.getElementById("projectName").textContent = project.name;
+    document.getElementById("projectSummary").textContent = project.summary;
+    document.getElementById("snapshotStatus").textContent = project.health;
+    document.getElementById("snapshotLead").textContent = project.lead;
+    document.getElementById("snapshotSupport").textContent = project.support;
+    document.getElementById("snapshotTier").textContent = project.tier;
+    document.getElementById("snapshotDomain").textContent = project.domain;
+    document.getElementById("snapshotDeploy").textContent = project.deploy;
+    document.getElementById("platformRepo").textContent = project.repo;
+    document.getElementById("platformHosting").textContent = project.hosting;
+    document.getElementById("platformRegistrar").textContent = project.registrar;
+    document.getElementById("platformDns").textContent = project.dns;
+    document.getElementById("platformRepoStatus").textContent = project.repoStatus;
+    document.getElementById("projectNotes").textContent = project.notes;
+
+    document.getElementById("projectLinks").innerHTML = project.links.map((link) => `
+      <div class="link-card">
+        <strong>${link[0]}</strong>
+        <span>${link[1]}</span>
+      </div>
+    `).join("");
+
+    document.getElementById("checksBody").innerHTML = project.checks.map((check) => `
+      <tr>
+        <td>${check[0]}</td>
+        <td><span class="badge"><span class="dot ${getHealthDotClass(check[2])}"></span>${check[1]}</span></td>
+        <td>${check[3]}</td>
+      </tr>
+    `).join("");
+
+    document.getElementById("priorities").innerHTML = project.priorities.map((item) => `
+      <div class="timeline-item">
+        <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+        <div>
+          <strong>${item[0]}</strong>
+          <span>${item[1]}</span>
+        </div>
+      </div>
+    `).join("");
+
+    document.getElementById("projectSwitches").innerHTML = PROJECTS.map((entry) => `
+      <a class="nav-item ${entry.id === project.id ? "active" : ""}" href="client-detail.html?id=${entry.id}">${entry.name}</a>
+    `).join("");
+  </script>
+</body>
+</html>

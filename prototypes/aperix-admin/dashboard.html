@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aperix Admin — Dashboard</title>
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <p class="kicker">Aperix Internal</p>
+        <h1>Command Center</h1>
+        <p>
+          Private internal dashboard for client sites, hosting, repos, owners, deploys, and status.
+        </p>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Main Views</p>
+        <div class="nav-list">
+          <a class="nav-item active" href="dashboard.html">Dashboard</a>
+          <a class="nav-item" href="client-detail.html?id=rhinos">Client Detail</a>
+          <a class="nav-item" href="repo-view.html">Repo View</a>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <p class="nav-label">Sections</p>
+        <div class="nav-list">
+          <a class="nav-item" href="#">Health Monitor</a>
+          <a class="nav-item" href="#">Domains & Hosting</a>
+          <a class="nav-item" href="#">Lead Intake</a>
+          <a class="nav-item" href="#">Owners & Workload</a>
+          <a class="nav-item" href="#">Credentials Links</a>
+        </div>
+      </div>
+
+      <div class="sidebar-note">
+        <strong>How this fits Aperix</strong>
+        <span>
+          Keep `Aperix-Website` public. Build this later as `aperix-admin` and sync it with GitHub, Netlify, Cloudflare, and your contact pipeline.
+        </span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2>Agency Dashboard</h2>
+          <p>
+            One high-level place to see every client website, who owns it, whether it is healthy, where it is hosted, and what needs attention next.
+          </p>
+        </div>
+
+        <div class="actions">
+          <a class="btn primary" href="client-detail.html?id=rhinos">Open Client View</a>
+          <a class="btn" href="repo-view.html">Open Repo View</a>
+          <button class="btn" type="button">Run Health Check</button>
+        </div>
+      </div>
+
+      <section class="stats">
+        <div class="panel stat">
+          <div class="stat-label">Total Websites</div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-sub">Live clients, internal demos, active builds, and maintenance sites.</div>
+        </div>
+
+        <div class="panel stat">
+          <div class="stat-label">Healthy / Live</div>
+          <div class="stat-value" id="statHealthy">0</div>
+          <div class="stat-sub">Passed recent checks for uptime, SSL, deploy freshness, and domain routing.</div>
+        </div>
+
+        <div class="panel stat">
+          <div class="stat-label">Needs Attention</div>
+          <div class="stat-value" id="statAttention">0</div>
+          <div class="stat-sub">Hosting, content, or approval tasks waiting on action this week.</div>
+        </div>
+
+        <div class="panel stat">
+          <div class="stat-label">Owner Split</div>
+          <div class="stat-value" id="statOwners">0 / 0</div>
+          <div class="stat-sub">Lead ownership balance across the current portfolio.</div>
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="panel section">
+          <h3>Website Portfolio Board</h3>
+          <p class="section-copy">
+            This is the main dashboard board. Each site shows lead owner, status, stack, and last deploy freshness at a glance.
+          </p>
+
+          <div class="filters">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="Harrison">Harrison</button>
+            <button class="chip" data-filter="Thomas">Thomas</button>
+            <button class="chip" data-filter="Live">Live</button>
+            <button class="chip" data-filter="Build">Build</button>
+            <button class="chip" data-filter="attention">Needs Attention</button>
+          </div>
+
+          <div class="card-list" id="siteList"></div>
+        </div>
+
+        <div class="stack">
+          <div class="panel section">
+            <h3>What this page does</h3>
+            <p class="section-copy">
+              Fast daily triage. You open this first and immediately know what is healthy, who owns what, and where to click next.
+            </p>
+
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Morning scan</strong>
+                  <span>Check alerts, recent deploys, and any site marked as needing attention.</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>Ownership clarity</strong>
+                  <span>Every project shows lead owner and support owner so both of you know who is driving it.</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-node-wrap"><div class="timeline-node"></div></div>
+                <div>
+                  <strong>One-click drilldown</strong>
+                  <span>Open the client detail page for hosting, repo, DNS, launch tasks, and linked dashboards.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel section">
+            <h3>Recent alerts</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Site</th>
+                  <th>Issue</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lumina</td>
+                  <td>Waiting on client approval</td>
+                  <td>Thomas</td>
+                </tr>
+                <tr>
+                  <td>Aperix</td>
+                  <td>Form/env audit reminder</td>
+                  <td>Harrison</td>
+                </tr>
+                <tr>
+                  <td>Rhino’s Walk</td>
+                  <td>Monthly backup due</td>
+                  <td>Harrison</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel section">
+            <h3>Design idea</h3>
+            <p class="section-copy">
+              Aperix-like editorial glass UI, but more operational and dense. Calm layout, high-signal cards, and no clutter.
+            </p>
+            <div class="callout">
+              In the real app, these cards would be hydrated from your internal client records and later enhanced with GitHub, Netlify, and Cloudflare API data.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    const chips = document.querySelectorAll(".chip");
+    const siteList = document.getElementById("siteList");
+    let currentFilter = "all";
+
+    function matchesFilter(project) {
+      if (currentFilter === "all") return true;
+      if (currentFilter === "Harrison" || currentFilter === "Thomas") return project.lead === currentFilter;
+      if (currentFilter === "Live" || currentFilter === "Build") return project.stage === currentFilter;
+      if (currentFilter === "attention") return project.healthState === "attention";
+      return true;
+    }
+
+    function renderStats() {
+      const stats = getDashboardStats();
+      document.getElementById("statTotal").textContent = stats.total;
+      document.getElementById("statHealthy").textContent = stats.healthy;
+      document.getElementById("statAttention").textContent = stats.attention;
+      document.getElementById("statOwners").textContent = `${stats.harrison} / ${stats.thomas}`;
+    }
+
+    function renderProjects() {
+      const visibleProjects = PROJECTS.filter(matchesFilter);
+      siteList.innerHTML = visibleProjects.map((project) => `
+        <a class="site-card" href="client-detail.html?id=${project.id}">
+          <div class="card-head">
+            <div>
+              <h4 class="card-title">${project.name}</h4>
+              <p class="card-sub">${project.domain}</p>
+            </div>
+            <div class="badges">
+              <span class="badge"><span class="dot ${getHealthDotClass(project.healthState)}"></span>${project.health}</span>
+            </div>
+          </div>
+
+          <div class="badges">
+            <span class="badge">Lead · ${project.lead}</span>
+            <span class="badge">Support · ${project.support}</span>
+            <span class="badge">Tier · ${project.tier}</span>
+          </div>
+
+          <div class="meta-row">
+            <div class="meta-box">
+              <div class="meta-label">Hosting</div>
+              <div class="meta-value">${project.hosting}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">DNS</div>
+              <div class="meta-value">${project.dns}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Repo</div>
+              <div class="meta-value">${project.repoStatus}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Deploy</div>
+              <div class="meta-value">${project.deploy}</div>
+            </div>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        chips.forEach((button) => button.classList.remove("active"));
+        chip.classList.add("active");
+        currentFilter = chip.dataset.filter;
+        renderProjects();
+      });
+    });
+
+    renderStats();
+    renderProjects();
+  </script>
+</body>
+</html>
