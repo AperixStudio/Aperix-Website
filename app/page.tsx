@@ -8,12 +8,12 @@ import FAQSection from "@/components/agency/FAQSection";
 import Footer from "@/components/agency/Footer";
 import HeroV2 from "@/components/agency/HeroV2";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
-import CursorFollower from "@/components/animations/CursorFollower";
+import LazyCursorFollower from "@/components/animations/LazyCursorFollower";
 
 export default function Home() {
   return (
     <>
-      <CursorFollower />
+      <LazyCursorFollower />
       <AgencyNavV2 />
       <HeroV2 />
       <SocialProofBar />

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type SVGMotionProps } from "motion/react";
+import { motion, type SVGMotionProps } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 interface DrawPathProps extends SVGMotionProps<SVGPathElement> {

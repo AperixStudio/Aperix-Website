@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, type HTMLMotionProps } from "motion/react";
+import { motion, type HTMLMotionProps } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { createSpringTransition } from "@/components/animations/motionPresets";
 
