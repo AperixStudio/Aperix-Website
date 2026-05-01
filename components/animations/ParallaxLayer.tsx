@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useScroll, useSpring, useTransform, type HTMLMotionProps } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, type HTMLMotionProps } from "motion/react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 interface ParallaxLayerProps extends Omit<HTMLMotionProps<"div">, "children"> {

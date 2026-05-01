@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import TypeWriter from "@/components/animations/TypeWriter";
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Hero â€” Editorial word-stack style (Lineads-inspired)
@@ -13,6 +15,9 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 const HEADLINE_WORDS = ["Websites and" , "Software Solutions", "built for", "Melbourne businesses."];
 const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
 
+const SECONDARY_HEADLINE_WORDS = ["Hand coded websites,", "Fast turnaround,", "Tailored solutions."];
+const SECONDARY_HEADLINE_TEXT = SECONDARY_HEADLINE_WORDS.join("\n");
+
 const TRUST_PILLS = [
   "Custom code, no templates",
   "Melbourne-based",
@@ -22,6 +27,40 @@ const TRUST_PILLS = [
 
 export default function HeroV2() {
   const prefersReduced = useReducedMotion();
+  const headlineRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = headlineRef.current;
+    if (!el) return;
+
+    if (prefersReduced) {
+      el.textContent = HEADLINE_TEXT;
+      return;
+    }
+
+    el.textContent = "";
+    const writer = new TypeWriter(el, {
+      loop: true,
+      typingSpeed: 65,
+      deletingSpeed: 32,
+    });
+
+    writer
+    //if you want to add more text use below functions and create text array at top of file under headline_text
+      .typeString(HEADLINE_TEXT)
+      .pauseFor(1400)
+      .deleteAll()
+      .pauseFor(450)
+
+      .typeString(SECONDARY_HEADLINE_TEXT)
+      .pauseFor(1400)
+      .deleteAll()
+      .pauseFor(450);
+
+
+
+    return () => writer.stop();
+  }, [prefersReduced]);
 
   return (
     <section
@@ -43,9 +82,17 @@ export default function HeroV2() {
         {/* â”€â”€ Headline â€” word-stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <h1 className="font-display font-bold leading-[0.95] tracking-tight" aria-label={HEADLINE_WORDS.join(" ")}>
           <div className="h-[20lh] overflow-hidden">
-            <span className="block whitespace-pre-line text-[clamp(2rem,7vw,5rem)] text-agency-ink">
-              {HEADLINE_TEXT}
-            </span>
+            <motion.span
+              initial={prefersReduced ? false : { opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                delay: prefersReduced ? 0 : 0.05,
+              }}
+              className="block whitespace-pre-line text-[clamp(2rem,7vw,5rem)] text-agency-ink"
+              ref={headlineRef}
+            />
           </div>
         </h1>
 

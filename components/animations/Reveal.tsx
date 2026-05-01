@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, type HTMLMotionProps, type Variants, type ViewportOptions } from "framer-motion";
+import { motion, type HTMLMotionProps, type Variants, type ViewportOptions } from "motion/react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { createFadeUp, defaultViewport } from "@/components/animations/motionPresets";
 
