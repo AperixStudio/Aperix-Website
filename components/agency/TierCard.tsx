@@ -1,34 +1,20 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Badge, type BadgeProps } from "@/components/ui/Badge";
-
-/* ────────────────────────────────────────────────────────────
-   TierCard — PRD §4.2.5
-   Single tier pricing card. Rendered inside TierShowcase.
-   ──────────────────────────────────────────────────────────── */
+import { type BadgeProps } from "@/components/ui/Badge";
 
 interface TierCardProps {
-  /** Tier display name */
   name: string;
-  /** Badge colour key */
   color: NonNullable<BadgeProps["color"]>;
-  /** Price range string, e.g. "$1,500 – $3,000" */
   price: string;
-  /** One-line value proposition */
   valueProp: string;
-  /** Included features (checkmark list) */
   features: string[];
-  /** Recurring cost line */
   retainer: string;
-  /** Route the CTA links to */
   demoHref: string;
-  /** Route to start a conversation about this tier */
   contactHref?: string;
-  /** Show the "Most Popular" highlighted treatment */
   popular?: boolean;
+  className?: string;
 }
 
-/* ── Checkmark icon ─────────────────────────────────────────── */
 function Check({ className }: { className?: string }) {
   return (
     <svg
@@ -50,7 +36,6 @@ function Check({ className }: { className?: string }) {
   );
 }
 
-/* ── Border-colour map (resolves to CSS vars the card uses) ── */
 const borderColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
   cyan: "border-agency-accent/45",
   amber: "border-agency-accent2/45",
@@ -65,7 +50,6 @@ const checkColorMap: Record<NonNullable<BadgeProps["color"]>, string> = {
   muted: "text-agency-muted",
 };
 
-/* CTA variant per colour so the button matches the tier */
 const ctaBgMap: Record<NonNullable<BadgeProps["color"]>, string> = {
   cyan: "border-agency-accent/50 bg-agency-accent text-white hover:bg-agency-accent/90",
   amber: "border-agency-accent2/50 bg-agency-accent2 text-agency-ink hover:bg-agency-accent2/90",
@@ -90,60 +74,51 @@ export default function TierCard({
   demoHref,
   contactHref = "/contact",
   popular = false,
+  className,
 }: TierCardProps) {
   return (
     <div
+      data-tier-color={color}
       className={cn(
         "relative flex h-full min-h-108 w-full flex-col rounded-2xl border p-5 text-agency-text shadow-[0_18px_50px_rgba(67,92,122,0.08)] sm:p-6",
         "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(67,92,122,0.14)]",
         cardToneMap[color],
-        popular
-          ? cn(borderColorMap[color], "border-2")
-          : "border-agency-border",
+        popular ? cn(borderColorMap[color], "border-2") : "border-agency-border",
+        className,
       )}
     >
-      {/* ── "Most Popular" pill ──────────────────────────────── */}
       {popular && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-          <Badge color={color} variant="solid" size="sm">
-            Most Popular
-          </Badge>
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full border border-agency-border bg-agency-surface2 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] uppercase text-agency-muted">
+          Most Popular
         </span>
       )}
 
-      {/* ── Tier badge ──────────────────────────────────────── */}
-      <Badge color={color} variant="subtle" size="md">
+      <p className="mb-5 text-xs font-semibold tracking-[0.16em] uppercase text-agency-muted">
         {name}
-      </Badge>
+      </p>
 
-      {/* ── Price ───────────────────────────────────────────── */}
       <p className="mt-4 font-display text-3xl font-bold tracking-tight text-agency-ink">
         {price}
       </p>
       <p className="mt-1 text-xs text-agency-muted">AUD, excl. GST</p>
 
-      {/* ── Value prop ──────────────────────────────────────── */}
       <p className="mt-3 text-sm leading-relaxed text-agency-muted">
         {valueProp}
       </p>
 
-      {/* ── Divider ─────────────────────────────────────────── */}
       <hr className="my-5 border-agency-border" />
 
-      {/* ── Feature list ────────────────────────────────────── */}
       <ul className="flex flex-1 flex-col gap-2.5" role="list">
-        {features.map((feat) => (
-          <li key={feat} className="flex items-start gap-2.5 text-sm text-agency-text">
+        {features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2.5 text-sm text-agency-text">
             <Check className={checkColorMap[color]} />
-            <span>{feat}</span>
+            <span>{feature}</span>
           </li>
         ))}
       </ul>
 
-      {/* ── Retainer line ───────────────────────────────────── */}
       <p className="mt-5 text-xs text-agency-muted">{retainer}</p>
 
-      {/* ── CTA ─────────────────────────────────────────────── */}
       <div className="mt-5 grid gap-2">
         <Link
           href={`${contactHref}?tier=${encodeURIComponent(name)}`}
@@ -159,9 +134,10 @@ export default function TierCard({
         </Link>
         <Link
           href={demoHref}
-          className="inline-flex items-center justify-center rounded-lg border border-agency-border bg-agency-surface/70 px-5 py-2.5 text-sm font-medium text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-agency-border bg-agency-surface/70 px-5 py-2.5 text-sm font-medium text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
         >
           View demo
+          <span aria-hidden="true">&rarr;</span>
         </Link>
       </div>
     </div>
