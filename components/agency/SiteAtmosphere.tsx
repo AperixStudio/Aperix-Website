@@ -17,8 +17,17 @@ function InteractiveGrid() {
     }
 
     let frame = 0;
+    let lastX = -1;
+    let lastY = -1;
+    const THRESHOLD = 4; // px — skip update if pointer barely moved
 
     const onPointerMove = (event: PointerEvent) => {
+      const dx = event.clientX - lastX;
+      const dy = event.clientY - lastY;
+      if (Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return;
+      lastX = event.clientX;
+      lastY = event.clientY;
+
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => {
         const x = `${Math.round((event.clientX / window.innerWidth) * 100)}%`;
