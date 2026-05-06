@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /* ────────────────────────────────────────────────────────────
    Badge Component
-   PRD §4.2.5 — Tier badges (Starter / Business / Premium)
+  PRD §4.2.5 — Tier badges (Basic / Growth / Pro / Enterprise)
    and trust‑row stat badges in the hero (§4.2.2).
    ──────────────────────────────────────────────────────────── */
 

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 /* ── types ─────────────────────────────────────────────── */
 export interface TierDetailData {
   name: string;
-  badge: "cyan" | "amber" | "violet";
+  badge: "muted" | "cyan" | "amber" | "violet";
   price: string;
   valueProp: string;
   features: string[];
@@ -45,38 +45,26 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
-/* ── x icon ────────────────────────────────────────────── */
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
-
 /* ── badge colour map ──────────────────────────────────── */
 const badgeColorMap: Record<string, string> = {
+  muted: "text-agency-muted",
   cyan: "text-agency-accent",
   amber: "text-amber-400",
   violet: "text-violet-400",
 };
 
 const borderColorMap: Record<string, string> = {
+  muted: "border-agency-border-dark/60",
   cyan: "border-agency-accent/40",
   amber: "border-amber-400/60",
   violet: "border-violet-400/40",
+};
+
+const cardToneMap: Record<TierDetailData["badge"], string> = {
+  muted: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-muted)_13%,var(--agency-surface)_87%),var(--agency-surface))]",
+  cyan: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent)_10%,var(--agency-surface)_90%),var(--agency-surface))]",
+  amber: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent2)_14%,var(--agency-surface)_86%),var(--agency-surface))]",
+  violet: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent3)_14%,var(--agency-surface)_86%),var(--agency-surface))]",
 };
 
 /* ── component ─────────────────────────────────────────── */
@@ -87,7 +75,8 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
     <motion.div
       variants={fadeUp}
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-agency-surface p-8",
+        "relative flex h-full min-h-120 flex-col rounded-2xl border p-5 sm:p-6",
+        cardToneMap[tier.badge],
         tier.popular
           ? `${borderColorMap[tier.badge]} ring-1 ring-amber-400/30`
           : "border-agency-border"
@@ -101,7 +90,7 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
       )}
 
       {/* header */}
-      <div className="mb-6">
+      <div className="mb-5">
         <Badge color={tier.badge} variant="subtle" size="sm">
           {tier.name}
         </Badge>
@@ -119,10 +108,10 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
       </div>
 
       {/* divider */}
-      <div className="mb-6 h-px bg-agency-border" />
+      <div className="mb-5 h-px bg-agency-border" />
 
       {/* included features */}
-      <div className="mb-6">
+      <div className="mb-5">
         <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-agency-text">
           What&apos;s included
         </h4>
@@ -138,28 +127,10 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
         </ul>
       </div>
 
-      {/* not included */}
-      <div className="mb-6">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-agency-text">
-          Not included
-        </h4>
-        <ul className="space-y-2.5">
-          {tier.notIncluded.map((item) => (
-            <li key={item} className="flex items-start gap-2.5">
-              <XIcon className="mt-0.5 shrink-0 text-red-400/70" />
-              <span className="text-sm leading-relaxed text-agency-muted/70">
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* divider */}
-      <div className="mb-6 h-px bg-agency-border" />
+      <div className="mb-5 h-px bg-agency-border" />
 
       {/* timeline & ideal for */}
-      <div className="mb-6 space-y-3">
+      <div className="mb-5 space-y-3">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-agency-text">
             Typical timeline
@@ -175,21 +146,29 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
       </div>
 
       {/* retainer */}
-      <p className="mb-6 text-xs text-agency-muted/60">{tier.retainer}</p>
+      <p className="mb-5 text-xs text-agency-muted/60">{tier.retainer}</p>
 
       {/* spacer + CTA */}
       <div className="mt-auto">
-        <Link
-          href={tier.demoLink}
-          className={cn(
-            "inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors",
-            tier.popular
-              ? "bg-amber-400 text-zinc-900 hover:bg-amber-300"
-              : "border border-agency-border bg-agency-surface text-agency-text hover:border-agency-accent hover:text-agency-accent"
-          )}
-        >
-          View the demo site →
-        </Link>
+        <div className="grid gap-2">
+          <Link
+            href={`/contact?tier=${encodeURIComponent(tier.name)}`}
+            className={cn(
+              "inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors",
+              tier.popular
+                ? "bg-amber-400 text-zinc-900 hover:bg-amber-300"
+                : "bg-agency-ink text-agency-bg hover:opacity-85"
+            )}
+          >
+            Ask about {tier.name} →
+          </Link>
+          <Link
+            href={tier.demoLink}
+            className="inline-flex w-full items-center justify-center rounded-xl border border-agency-border bg-agency-surface/70 px-6 py-2.5 text-sm font-semibold text-agency-text transition-colors hover:border-agency-accent hover:text-agency-accent"
+          >
+            View the demo
+          </Link>
+        </div>
       </div>
     </motion.div>
   );

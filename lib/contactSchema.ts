@@ -17,9 +17,36 @@ export const needsOptions = [
   "Not Sure Yet",
 ] as const;
 
+export const tierInterestOptions = [
+  "Basic",
+  "Growth",
+  "Pro",
+  "Enterprise",
+  "Not Sure Yet",
+] as const;
+
+export const budgetRangeOptions = [
+  "Under $1,000",
+  "$1,000 – $3,000",
+  "$3,000 – $6,000",
+  "$6,000+",
+  "Not Sure Yet",
+] as const;
+
+export const timelineOptions = [
+  "ASAP",
+  "Within 1 month",
+  "1–3 months",
+  "3+ months",
+  "Just exploring",
+] as const;
+
 export const contactMethodOptions = ["phone", "email"] as const;
 
 const allowedNeeds = new Set<string>(needsOptions);
+const allowedTierInterests = new Set<string>(tierInterestOptions);
+const allowedBudgetRanges = new Set<string>(budgetRangeOptions);
+const allowedTimelines = new Set<string>(timelineOptions);
 const phonePattern = /^[0-9+()\s-]{6,25}$/;
 
 export const contactSchema = z
@@ -55,6 +82,36 @@ export const contactSchema = z
       .refine((values) => values.every((value) => allowedNeeds.has(value)), {
         message: "One of the selected services is invalid.",
       }),
+    tierInterest: z
+      .string()
+      .trim()
+      .optional()
+      .default("")
+      .refine((value) => value.length === 0 || allowedTierInterests.has(value), {
+        message: "Please select a valid package option.",
+      }),
+    budgetRange: z
+      .string()
+      .trim()
+      .optional()
+      .default("")
+      .refine((value) => value.length === 0 || allowedBudgetRanges.has(value), {
+        message: "Please select a valid budget range.",
+      }),
+    timeline: z
+      .string()
+      .trim()
+      .optional()
+      .default("")
+      .refine((value) => value.length === 0 || allowedTimelines.has(value), {
+        message: "Please select a valid timeline.",
+      }),
+    currentWebsite: z
+      .string()
+      .trim()
+      .max(300, "Website URL is too long.")
+      .optional()
+      .default(""),
     description: z
       .string()
       .trim()

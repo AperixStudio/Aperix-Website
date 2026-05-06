@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
@@ -93,18 +94,18 @@ export default function HearthstoneHero() {
           variants={fadeUp}
           className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          <a
-            href="#menu"
+          <Link
+            href="/demo/starter/menu"
             className="inline-flex items-center justify-center rounded-lg bg-white px-7 py-3 font-(family-name:--font-hs-body) text-sm font-semibold text-[#1c1612] transition-colors hover:bg-white/90"
           >
             View Our Menu
-          </a>
-          <a
-            href="#location"
+          </Link>
+          <Link
+            href="/demo/starter/contact"
             className="inline-flex items-center justify-center rounded-lg border border-white/40 px-7 py-3 font-(family-name:--font-hs-body) text-sm font-semibold text-white transition-colors hover:border-white/70 hover:bg-white/10"
           >
             Get Directions
-          </a>
+          </Link>
         </motion.div>
       </motion.div>
 

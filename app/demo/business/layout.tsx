@@ -19,7 +19,7 @@ const inter = Inter({
 export const metadata = {
   title: "Apex Electrical — Richmond | Aperix Demo",
   description:
-    "A demo Business-tier website for Apex Electrical, a licenced electrical contractor in Richmond, Melbourne. Built by Aperix Studio.",
+    "A demo Pro-tier website for Apex Electrical, a licenced electrical contractor in Richmond, Melbourne. Built by Aperix Studio.",
 };
 
 export default function BusinessDemoLayout({
@@ -37,8 +37,8 @@ export default function BusinessDemoLayout({
       }
     >
       <DemoBanner
-        tierName="Business"
-        description="This is a demo showcasing our Business tier ($3,290). Multi-page with form validation, stat counters, and service filtering."
+        tierName="Pro"
+        description="This is a demo showcasing our Pro tier ($3,290). Multi-page with form validation, stat counters, and service filtering."
       />
       {/* offset for fixed banner */}
       <div className="pt-15">

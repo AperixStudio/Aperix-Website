@@ -5,11 +5,12 @@ import TierDetails from "@/components/agency/services/TierDetails";
 import AddOnTable from "@/components/agency/services/AddOnTable";
 import ProjectTimeline from "@/components/agency/services/ProjectTimeline";
 import Guarantee from "@/components/agency/services/Guarantee";
+import FinalCTA from "@/components/agency/FinalCTA";
 
 export const metadata = {
   title: "Services & Pricing | Aperix Studio",
   description:
-    "Custom web development packages for Melbourne businesses. Transparent pricing from $499 to $5,999+, with lower-cost starter options and more complete custom tiers.",
+    "Custom web development packages for Melbourne businesses. Compare Basic, Growth, Pro, and Enterprise tiers from $499 to $5,999+.",
 };
 
 export default function ServicesPage() {
@@ -22,6 +23,7 @@ export default function ServicesPage() {
         <AddOnTable />
         <ProjectTimeline />
         <Guarantee />
+        <FinalCTA />
       </main>
       <Footer />
     </>

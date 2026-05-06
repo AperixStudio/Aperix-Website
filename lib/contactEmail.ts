@@ -43,6 +43,10 @@ function toPlainText(submission: ContactSubmission) {
     `Phone: ${submission.phone || "Not provided"}`,
     `Business: ${submission.businessName}`,
     `Business type: ${submission.businessType}`,
+    `Package interest: ${submission.tierInterest || "Not provided"}`,
+    `Budget range: ${submission.budgetRange || "Not provided"}`,
+    `Timeline: ${submission.timeline || "Not provided"}`,
+    `Current website: ${submission.currentWebsite || "Not provided"}`,
     `Preferred contact: ${submission.contactMethod}`,
     `Services: ${submission.needs.join(", ")}`,
     "",
@@ -62,6 +66,10 @@ function toHtml(submission: ContactSubmission) {
           <tr><td style="padding:8px 0;font-weight:600">Phone</td><td style="padding:8px 0">${escapeHtml(submission.phone || "Not provided")}</td></tr>
           <tr><td style="padding:8px 0;font-weight:600">Business</td><td style="padding:8px 0">${escapeHtml(submission.businessName)}</td></tr>
           <tr><td style="padding:8px 0;font-weight:600">Business type</td><td style="padding:8px 0">${escapeHtml(submission.businessType)}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:600">Package interest</td><td style="padding:8px 0">${escapeHtml(submission.tierInterest || "Not provided")}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:600">Budget range</td><td style="padding:8px 0">${escapeHtml(submission.budgetRange || "Not provided")}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:600">Timeline</td><td style="padding:8px 0">${escapeHtml(submission.timeline || "Not provided")}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:600">Current website</td><td style="padding:8px 0">${escapeHtml(submission.currentWebsite || "Not provided")}</td></tr>
           <tr><td style="padding:8px 0;font-weight:600">Preferred contact</td><td style="padding:8px 0">${escapeHtml(submission.contactMethod)}</td></tr>
           <tr><td style="padding:8px 0;font-weight:600;vertical-align:top">Services</td><td style="padding:8px 0"><ul style="margin:0;padding-left:18px">${toHtmlList(submission.needs)}</ul></td></tr>
         </tbody>

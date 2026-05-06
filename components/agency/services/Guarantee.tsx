@@ -22,7 +22,7 @@ export default function Guarantee() {
       };
 
   return (
-    <section className="bg-agency-bg py-20 lg:py-28">
+    <section className="py-20 lg:py-28">
       <div className="mx-auto max-w-4xl px-6">
         <motion.div
           className="relative overflow-hidden rounded-2xl border border-agency-accent/30 bg-agency-surface p-8 md:p-12"

@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Apex Electrical Richmond — Demo | Aperix Studio",
-  description: "Demo Business-tier site for Apex Electrical, a licensed electrician in Richmond, Melbourne.",
+  description: "Demo Pro-tier multi-page site for Apex Electrical, a licensed electrician in Richmond, Melbourne.",
 };
 
 import ApexHero from "@/components/demos/business/ApexHero";
@@ -16,7 +16,7 @@ import ApexCTA from "@/components/demos/business/ApexCTA";
 
 /* ────────────────────────────────────────────────────────────
    /demo/business — PRD §8.3.2
-  Apex Electrical — Business tier ($3,290). Multi-page home.
+  Apex Electrical — Pro tier ($3,290). Multi-page home.
    ──────────────────────────────────────────────────────────── */
 
 export default function BusinessHomePage() {

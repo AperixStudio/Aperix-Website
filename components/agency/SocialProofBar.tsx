@@ -9,14 +9,12 @@ import { cn } from "@/lib/utils";
    ──────────────────────────────────────────────────────────── */
 
 const PHRASES = [
-  "Fitzroy · Hospitality",
-  "Richmond · Trades",
-  "South Yarra · Med Spa",
-  "Collingwood · Retail",
-  "Hawthorn · Professional Services",
-  "Brunswick · Creative",
-  "Prahran · Health & Beauty",
-  "CBD · Corporate",
+  "Live launches across e-commerce, community, and SaaS",
+  "Melbourne-built and maintained",
+  "Performance-focused from day one",
+  "Custom code, no template lock-in",
+  "Clear handover and ongoing care",
+  "Local SEO foundations included",
 ];
 
 const PHRASE_STYLES = [
@@ -31,8 +29,9 @@ export default function SocialProofBar() {
   const items = [...PHRASES, ...PHRASES];
 
   return (
-    <section aria-label="Areas we serve" className="px-6 py-6 lg:px-12">
-      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-full border border-agency-border/80 bg-linear-to-r from-agency-surface2/70 via-agency-surface to-agency-surface2/70 px-4 py-4 shadow-[0_18px_45px_rgba(67,92,122,0.06)]">
+    <section aria-label="Aperix proof points" className="px-6 py-6 lg:px-12">
+      <div className="mx-auto max-w-7xl rounded-[2rem] border border-agency-border/80 bg-agency-surface/70 p-3 shadow-[0_18px_45px_rgba(67,92,122,0.06)] backdrop-blur-sm">
+        <div className="relative overflow-hidden rounded-full border border-agency-border/70 bg-agency-bg/45 px-4 py-3">
         {/* Edge fades */}
         <div
           aria-hidden="true"
@@ -56,6 +55,7 @@ export default function SocialProofBar() {
               {phrase}
             </span>
           ))}
+        </div>
         </div>
       </div>
     </section>

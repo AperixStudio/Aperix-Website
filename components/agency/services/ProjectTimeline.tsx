@@ -137,7 +137,7 @@ export default function ProjectTimeline() {
       };
 
   return (
-    <section className="bg-agency-bg py-20 lg:py-28">
+    <section className="py-20 lg:py-28">
       <motion.div
         className="mx-auto max-w-5xl px-6"
         variants={stagger}
@@ -177,7 +177,7 @@ export default function ProjectTimeline() {
                 {/* dot */}
                 <div
                   aria-hidden="true"
-                  className="absolute left-5 top-6 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-agency-accent bg-agency-bg md:left-1/2"
+                  className="absolute left-5 top-6 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-agency-accent bg-agency-surface md:left-1/2"
                 />
 
                 {/* card — alternating sides on desktop */}

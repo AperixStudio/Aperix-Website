@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Syne, JetBrains_Mono } from "next/font/google";
+import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
+import CursorFollower from "@/components/animations/CursorFollower";
 import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -73,6 +75,8 @@ export default function RootLayout({
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <SiteAtmosphere />
+        <CursorFollower />
         {children}
       </body>
     </html>

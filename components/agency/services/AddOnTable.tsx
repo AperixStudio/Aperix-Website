@@ -75,7 +75,7 @@ export default function AddOnTable() {
       };
 
   return (
-    <section className="bg-agency-bg py-20 lg:py-28">
+    <section className="py-20 lg:py-28">
       <motion.div
         className="mx-auto max-w-5xl px-6"
         variants={stagger}

@@ -11,10 +11,10 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
    ──────────────────────────────────────────────────────────── */
 
 const links = [
-  { label: "Menu", href: "#menu" },
-  { label: "About", href: "#about" },
-  { label: "Find Us", href: "#location" },
-  { label: "Careers", href: "#" },
+  { label: "Home", href: "/demo/starter" },
+  { label: "Menu", href: "/demo/starter/menu" },
+  { label: "About", href: "/demo/starter/about" },
+  { label: "Visit", href: "/demo/starter/contact" },
 ];
 
 const fadeUp = {
@@ -66,12 +66,12 @@ export default function HearthstoneFooter() {
             <ul className="space-y-2">
               {links.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="font-(family-name:--font-hs-body) text-sm text-white/60 transition-colors hover:text-white"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

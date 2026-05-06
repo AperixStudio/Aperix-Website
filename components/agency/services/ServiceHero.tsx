@@ -25,7 +25,7 @@ export default function ServiceHero() {
       };
 
   return (
-    <section className="relative overflow-hidden bg-agency-bg pt-32 pb-20 lg:pt-40 lg:pb-28">
+    <section className="relative overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-28">
       {/* subtle radial glow */}
       <div
         aria-hidden="true"
@@ -55,7 +55,7 @@ export default function ServiceHero() {
           variants={fadeUp}
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-agency-muted"
         >
-          All prices in AUD, exclusive of GST. GST of 10&percnt; applies to all
+          All prices in AUD, exclusive of GST. GST of 10% applies to all
           invoices.
         </motion.p>
       </motion.div>

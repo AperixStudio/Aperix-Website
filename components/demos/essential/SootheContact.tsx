@@ -5,7 +5,7 @@ import { useState, type FormEvent } from "react";
 /* ────────────────────────────────────────────────────────────
    SootheContact — PRD §6.3.7
    HTML5 form with `required` only — NO Zod.
-   DOM show/hide success — NO animation (Essential tier).
+  DOM show/hide success — NO animation (Basic tier).
    ──────────────────────────────────────────────────────────── */
 
 const services = [

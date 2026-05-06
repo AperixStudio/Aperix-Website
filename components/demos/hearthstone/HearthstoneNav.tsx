@@ -2,41 +2,37 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 /* ────────────────────────────────────────────────────────────
    HearthstoneNav — PRD §6.3.1
-   "HEARTHSTONE" wordmark, anchor links, Order Online toast,
+  "HEARTHSTONE" wordmark, route links,
    mobile hamburger with clean dropdown.
    ──────────────────────────────────────────────────────────── */
 
 const navLinks = [
-  { label: "Menu", href: "#menu" },
-  { label: "About", href: "#about" },
-  { label: "Find Us", href: "#location" },
+  { label: "Home", href: "/demo/starter" },
+  { label: "Menu", href: "/demo/starter/menu" },
+  { label: "About", href: "/demo/starter/about" },
+  { label: "Visit", href: "/demo/starter/contact" },
 ];
 
 export default function HearthstoneNav() {
   const prefersReduced = useReducedMotion();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
 
   const toggleMobile = useCallback(() => setMobileOpen((o) => !o), []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
-
-  const handleOrderOnline = useCallback(() => {
-    setToastVisible(true);
-    setMobileOpen(false);
-    setTimeout(() => setToastVisible(false), 4000);
-  }, []);
 
   return (
     <>
       <nav className="sticky top-(--demo-banner-h) z-40 border-b border-[#e8e0d5] bg-[#faf7f2]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           {/* wordmark */}
-          <Link href="#" className="flex flex-col leading-none">
+          <Link href="/demo/starter" className="flex flex-col leading-none" onClick={closeMobile}>
             <span className="font-(family-name:--font-hs-display) text-lg font-bold tracking-widest text-[#1c1612]">
               HEARTHSTONE
             </span>
@@ -47,21 +43,30 @@ export default function HearthstoneNav() {
 
           {/* desktop links */}
           <div className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="font-(family-name:--font-hs-body) text-sm font-medium text-[#2d2520] transition-colors hover:text-[#8b5e3c]"
-              >
-                {link.label}
-              </a>
-            ))}
-            <button
-              onClick={handleOrderOnline}
+            {navLinks.map((link) => {
+              const isActive = link.href === "/demo/starter"
+                ? pathname === "/demo/starter"
+                : pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  data-cursor-pill
+                  className={`font-(family-name:--font-hs-body) text-sm font-medium transition-colors hover:text-[#8b5e3c] ${
+                    isActive ? "text-[#8b5e3c]" : "text-[#2d2520]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            <Link
+              href="/demo/starter/contact"
+              data-cursor-pill
               className="rounded-lg bg-[#8b5e3c] px-5 py-2 font-(family-name:--font-hs-body) text-sm font-semibold text-white transition-colors hover:bg-[#6e4a2f]"
             >
-              Order Online
-            </button>
+              Visit Us
+            </Link>
           </div>
 
           {/* mobile hamburger */}
@@ -104,43 +109,29 @@ export default function HearthstoneNav() {
             >
               <div className="flex flex-col gap-1 px-5 py-4">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMobile}
+                    data-cursor-pill
                     className="rounded-lg px-3 py-2.5 font-(family-name:--font-hs-body) text-sm font-medium text-[#2d2520] transition-colors hover:bg-[#e8e0d5]"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
-                <button
-                  onClick={handleOrderOnline}
+                <Link
+                  href="/demo/starter/contact"
+                  onClick={closeMobile}
+                  data-cursor-pill
                   className="mt-2 rounded-lg bg-[#8b5e3c] px-5 py-2.5 font-(family-name:--font-hs-body) text-sm font-semibold text-white transition-colors hover:bg-[#6e4a2f]"
                 >
-                  Order Online
-                </button>
+                  Visit Us
+                </Link>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
-
-      {/* toast notification */}
-      <AnimatePresence>
-        {toastVisible && (
-          <motion.div
-            initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-            animate={prefersReduced ? undefined : { opacity: 1, y: 0 }}
-            exit={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-6 right-6 z-60 max-w-sm rounded-xl border border-[#e8e0d5] bg-white px-5 py-4 shadow-lg"
-          >
-            <p className="font-(family-name:--font-hs-body) text-sm leading-relaxed text-[#2d2520]">
-              Integrates with Square in the real build.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

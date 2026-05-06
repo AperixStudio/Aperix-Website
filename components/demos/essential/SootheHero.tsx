@@ -2,7 +2,7 @@
    SootheHero — PRD §6.3.2
    Full-viewport centred hero with CSS blob backgrounds
    (sage bottom-right, gold top-left), trust line.
-   NO Framer Motion — Essential tier constraint.
+  NO Framer Motion — Basic tier constraint.
    ──────────────────────────────────────────────────────────── */
 
 export default function SootheHero() {

@@ -19,8 +19,8 @@ export default function ContactPage() {
     <>
       <AgencyNav />
 
-      <main role="main" className="min-h-screen bg-agency-bg pt-16">
-        <div className="mx-auto grid max-w-6xl min-h-[80vh] lg:grid-cols-[40%_60%]">
+      <main role="main" className="min-h-screen px-6 pt-28 pb-12 lg:pt-36">
+        <div className="mx-auto grid max-w-6xl min-h-[80vh] overflow-hidden rounded-4xl border border-agency-border lg:grid-cols-[40%_60%]">
           {/* ── Left panel ─────────────────────────── */}
           <div className="flex flex-col justify-center bg-agency-surface px-8 py-16 lg:px-12 lg:py-20">
             <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent">
@@ -30,10 +30,23 @@ export default function ContactPage() {
               Let&apos;s talk about your business.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-agency-muted">
-              Get in contact and tell me what you need. If email is easier,
-              that works. If you&apos;d rather chat by phone or meet in person,
-              we can do that too.
+              Tell me what you need, where the business is at, and what kind of
+              timeline or budget you have in mind. I&apos;ll help you work out the
+              right tier without pushing you into more than you need.
             </p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {[
+                ["No pressure", "Honest next steps, even if the answer is to wait."],
+                ["Clear scope", "You’ll know what is included before anything starts."],
+                ["Built properly", "Custom code, fast foundations, and ongoing care available."],
+              ].map(([title, text]) => (
+                <div key={title} className="rounded-2xl border border-agency-border bg-agency-bg/55 px-4 py-4">
+                  <p className="text-sm font-semibold text-agency-ink">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-agency-muted">{text}</p>
+                </div>
+              ))}
+            </div>
 
             {/* Contact details */}
             <div className="mt-8 space-y-3">
@@ -59,9 +72,9 @@ export default function ContactPage() {
               </p>
               <ol className="space-y-3">
                 {[
-                  "I review your current online presence after your enquiry",
+                  "I review your current online presence and selected tier",
                   "We talk through your goals in whatever format suits you best",
-                  "I follow up with a proposal within 48 hours",
+                  "I follow up with a clear recommendation within 48 hours",
                 ].map((step, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-agency-muted">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-agency-accent/10 text-xs font-bold text-agency-accent">
@@ -81,7 +94,7 @@ export default function ContactPage() {
           </div>
 
           {/* ── Right panel — form ──────────────────── */}
-          <div className="bg-agency-bg">
+          <div className="bg-agency-bg/65 backdrop-blur-sm">
             <ContactForm />
           </div>
         </div>

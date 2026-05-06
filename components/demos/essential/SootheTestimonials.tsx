@@ -1,7 +1,7 @@
 /* ────────────────────────────────────────────────────────────
    SootheTestimonials — PRD §6.3.6
    3 STATIC review cards in a grid. NO carousel, NO JS.
-   Essential tier constraint.
+  Basic tier constraint.
    ──────────────────────────────────────────────────────────── */
 
 const reviews = [

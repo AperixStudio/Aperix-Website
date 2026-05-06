@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import TypeWriter from "@/components/animations/TypeWriter";
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Hero â€” Editorial word-stack style (Lineads-inspired)
@@ -17,6 +16,7 @@ const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
 
 const SECONDARY_HEADLINE_WORDS = ["Hand coded websites,", "Fast turnaround,", "Tailored solutions."];
 const SECONDARY_HEADLINE_TEXT = SECONDARY_HEADLINE_WORDS.join("\n");
+const HEADLINE_SEQUENCE = [HEADLINE_TEXT, SECONDARY_HEADLINE_TEXT];
 
 const TRUST_PILLS = [
   "Custom code, no templates",
@@ -27,47 +27,71 @@ const TRUST_PILLS = [
 
 export default function HeroV2() {
   const prefersReduced = useReducedMotion();
-  const headlineRef = useRef<HTMLSpanElement>(null);
+  const [headlineText, setHeadlineText] = useState(HEADLINE_TEXT);
 
   useEffect(() => {
-    const el = headlineRef.current;
-    if (!el) return;
-
     if (prefersReduced) {
-      el.textContent = HEADLINE_TEXT;
+      setHeadlineText(HEADLINE_TEXT);
       return;
     }
 
-    el.textContent = "";
-    const writer = new TypeWriter(el, {
-      loop: true,
-      typingSpeed: 65,
-      deletingSpeed: 32,
-    });
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    let cancelled = false;
 
-    writer
-    //if you want to add more text use below functions and create text array at top of file under headline_text
-      .typeString(HEADLINE_TEXT)
-      .pauseFor(1400)
-      .deleteAll()
-      .pauseFor(450)
+    const tick = () => {
+      if (cancelled) {
+        return;
+      }
 
-      .typeString(SECONDARY_HEADLINE_TEXT)
-      .pauseFor(1400)
-      .deleteAll()
-      .pauseFor(450);
+      const currentPhrase = HEADLINE_SEQUENCE[phraseIndex] ?? HEADLINE_TEXT;
 
+      if (!deleting) {
+        charIndex += 1;
+        setHeadlineText(currentPhrase.slice(0, charIndex));
 
+        if (charIndex >= currentPhrase.length) {
+          deleting = true;
+          timeoutId = setTimeout(tick, 1400);
+          return;
+        }
 
-    return () => writer.stop();
+        timeoutId = setTimeout(tick, 65);
+        return;
+      }
+
+      charIndex -= 1;
+      setHeadlineText(currentPhrase.slice(0, Math.max(charIndex, 0)));
+
+      if (charIndex <= 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % HEADLINE_SEQUENCE.length;
+        timeoutId = setTimeout(tick, 450);
+        return;
+      }
+
+      timeoutId = setTimeout(tick, 32);
+    };
+
+    setHeadlineText("");
+    timeoutId = setTimeout(tick, 150);
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [prefersReduced]);
 
   return (
     <section
-      className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 lg:px-12"
+      className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
       aria-label="Hero"
     >
-      <div className="relative z-10 mx-auto w-full max-w-7xl">
+      <div className="relative z-10 mx-auto w-full max-w-450">
         {/* â”€â”€ Overline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <motion.p
           initial={prefersReduced ? false : { opacity: 0, y: 12 }}
@@ -91,8 +115,10 @@ export default function HeroV2() {
                 delay: prefersReduced ? 0 : 0.05,
               }}
               className="block whitespace-pre-line text-[clamp(2rem,7vw,5rem)] text-agency-ink"
-              ref={headlineRef}
-            />
+            >
+              {headlineText}
+              {!prefersReduced ? <span aria-hidden="true" className="agency-type-caret" /> : null}
+            </motion.span>
           </div>
         </h1>
 
@@ -115,13 +141,13 @@ export default function HeroV2() {
               href="/contact"
               className="agency-button-primary inline-flex items-center justify-center rounded-lg px-7 py-3.5 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98]"
             >
-              Get in contact
+              Start your project
             </Link>
             <Link
               href="/our-work"
               className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-7 py-3.5 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98]"
             >
-              See our work
+              See proof of work
             </Link>
           </div>
         </motion.div>

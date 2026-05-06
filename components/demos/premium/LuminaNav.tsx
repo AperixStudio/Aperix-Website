@@ -109,6 +109,7 @@ export default function LuminaNav() {
                 <Link
                   key={link.label}
                   href={link.href}
+                  data-cursor-pill
                   className={cn(
                     "relative font-(family-name:--font-lm-body) text-sm tracking-wide text-white/80 transition-colors hover:text-white",
                     pathname === link.href && "text-white"
@@ -123,6 +124,7 @@ export default function LuminaNav() {
                 <button
                   key={link.label}
                   onClick={showToast}
+                  data-cursor-pill
                   className="font-(family-name:--font-lm-body) text-sm tracking-wide text-white/80 transition-colors hover:text-white"
                 >
                   {link.label}
@@ -135,6 +137,7 @@ export default function LuminaNav() {
           <div className="hidden lg:block">
             <Link
               href="/demo/premium/book"
+              data-cursor-pill
               className={cn(
                 "rounded-full px-5 py-2 font-(family-name:--font-lm-body) text-sm font-medium transition-all",
                 scrolled || !isHome
@@ -218,6 +221,7 @@ export default function LuminaNav() {
                     <Link
                       href={link.href}
                       onClick={closeMobile}
+                      data-cursor-pill
                       className="block font-(family-name:--font-lm-display) text-4xl font-light text-white hover:text-[#c9a96e]"
                     >
                       {link.label}
@@ -225,6 +229,7 @@ export default function LuminaNav() {
                   ) : (
                     <button
                       onClick={() => { closeMobile(); showToast(); }}
+                      data-cursor-pill
                       className="block font-(family-name:--font-lm-display) text-4xl font-light text-white hover:text-[#c9a96e]"
                     >
                       {link.label}
@@ -241,6 +246,7 @@ export default function LuminaNav() {
                 <Link
                   href="/demo/premium/book"
                   onClick={closeMobile}
+                  data-cursor-pill
                   className="mt-4 inline-block rounded-full border border-[#c9a96e] px-6 py-3 font-(family-name:--font-lm-body) text-sm text-[#c9a96e] hover:bg-[#c9a96e]/10"
                 >
                   Book a Consultation

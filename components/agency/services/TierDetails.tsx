@@ -9,11 +9,11 @@ import TierDetailCard, {
 /* ── tier data ─────────────────────────────────────────── */
 const tiers: TierDetailData[] = [
   {
-    name: "Essential",
-    badge: "cyan",
+    name: "Basic",
+    badge: "muted",
     price: "$499",
     valueProp:
-      "Get online fast. A single-page site that puts your business on the map — literally.",
+      "Get online fast with a single-page site that gives your business a clear, credible presence.",
     features: [
       "Single page — hero, services, contact, Google Maps",
       "Mobile-first, fully responsive",
@@ -30,16 +30,16 @@ const tiers: TierDetailData[] = [
     ],
     timeline: "3–7 business days once content is ready",
     idealFor:
-      "Sole traders, tradespeople, or new businesses that need a professional presence fast without a large upfront investment.",
+      "Sole traders, tradespeople, or new businesses that need a professional presence fast.",
     retainer: "From $99/month Basic Care",
     demoLink: "/demo/essential",
   },
   {
-    name: "Starter",
+    name: "Growth",
     badge: "cyan",
     price: "$1,290",
     valueProp:
-      "A clean, fast, professional web presence for businesses that need more than a single page but still want to keep the budget sensible.",
+      "A clean multi-page website for businesses that need room to explain their services and build trust.",
     features: [
       "4–5 custom-coded pages",
       "Mobile-first, fully responsive design",
@@ -57,16 +57,16 @@ const tiers: TierDetailData[] = [
     ],
     timeline: "2–3 weeks from approved direction",
     idealFor:
-      "Cafés, salons, local services, and small businesses that need a polished multi-page site and local SEO presence.",
+      "Cafés, salons, local services, and small businesses that need a polished multi-page site.",
     retainer: "From $99/month Basic Care",
     demoLink: "/demo/starter",
   },
   {
-    name: "Business",
+    name: "Pro",
     badge: "amber",
     price: "$3,290",
     valueProp:
-      "A more developed custom site for businesses that need a stronger brand presence, better structure, and content they can manage properly.",
+      "A stronger custom site for businesses that need better structure, content control, and enquiry flow.",
     features: [
       "6–10 custom-coded pages",
       "Custom design system built for your brand",
@@ -86,17 +86,17 @@ const tiers: TierDetailData[] = [
     ],
     timeline: "4–6 weeks from approved direction",
     idealFor:
-      "Established businesses, multi-location services, or professional teams that need a site with more depth and a clearer sales flow.",
+      "Established businesses, multi-location services, or professional teams with a clearer sales flow.",
     retainer: "From $249/month Standard Care",
     demoLink: "/demo/business",
     popular: true,
   },
   {
-    name: "Premium",
+    name: "Enterprise",
     badge: "violet",
     price: "$5,999+",
     valueProp:
-      "A bespoke build for businesses that need a more considered brand experience, deeper functionality, and more hands-on project work.",
+      "A bespoke build for businesses that need a more considered brand experience and deeper functionality.",
     features: [
       "Unlimited pages, full custom architecture",
       "Brand identity consultation included",
@@ -115,7 +115,7 @@ const tiers: TierDetailData[] = [
     ],
     timeline: "6–10 weeks, scoped individually",
     idealFor:
-      "Premium service providers, clinics, architects, and brands that need a more tailored build with room for custom functionality.",
+      "Premium service providers, clinics, architects, and brands with custom functionality needs.",
     retainer: "From $449/month Growth Care",
     demoLink: "/demo/premium",
   },
@@ -140,13 +140,25 @@ export default function TierDetails() {
       };
 
   return (
-    <section className="bg-agency-bg py-20 lg:py-28">
+    <section className="flex min-h-screen items-center py-14 lg:py-20">
       <motion.div
-        className="mx-auto max-w-7xl px-6"
+        className="mx-auto w-full max-w-450 px-6 lg:px-10 2xl:px-16"
         variants={stagger}
         {...motionProps}
       >
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-10 max-w-3xl">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+            All Four Tiers
+          </p>
+          <h2 className="font-display text-3xl font-bold text-agency-ink sm:text-4xl">
+            Basic, Growth, Pro, and Enterprise at a glance.
+          </h2>
+          <p className="mt-3 text-base leading-relaxed text-agency-muted">
+            Each option is compact enough to compare on one screen, with the deeper detail handled during quoting.
+          </p>
+        </div>
+
+        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-4">
           {tiers.map((tier) => (
             <TierDetailCard key={tier.name} tier={tier} />
           ))}

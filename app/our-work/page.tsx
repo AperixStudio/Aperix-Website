@@ -37,12 +37,11 @@ export default function OurWorkPage() {
                 Our Work
               </p>
               <h1 className="font-display text-4xl font-bold leading-tight text-agency-ink sm:text-5xl lg:text-6xl">
-                Websites we’ve launched, with room for what’s next.
+                Case studies for websites we’ve launched.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
-                This page gives you a clearer look at the sites we&apos;ve launched,
-                the kinds of businesses we build for, and how we present approved
-                projects once they are live.
+                See the problem each project needed to solve, how Aperix approached
+                the build, and what the live result now helps the business communicate.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 {WORK_TYPES.map((type) => (

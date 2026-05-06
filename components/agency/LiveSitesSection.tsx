@@ -11,6 +11,10 @@ const LIVE_SITES = [
     label: "E-commerce / brand experience",
     summary:
       "A blind date with a book storefront built around mood, mystery, and gifting. The site leads with a strong brand concept, clear shopping flow, and a polished experience that feels thoughtful from the first scroll.",
+    problem: "Needed a storefront that made an unusual book-buying concept feel clear, giftable, and trustworthy.",
+    solution: "Built a story-led shopping flow with warm brand direction, clear product framing, and a polished path to purchase.",
+    outcome: "A live brand experience that explains the offer quickly and gives customers confidence to buy.",
+    scope: ["E-commerce", "Brand storytelling", "Responsive UX"],
     highlights: ["Story-led homepage", "Giftable product positioning", "Warm branded shopping flow"],
   },
   {
@@ -21,6 +25,10 @@ const LIVE_SITES = [
     label: "Fundraiser / community campaign",
     summary:
       "A campaign site for a 24-hour community walk supporting the Good Friday Appeal. It is designed to explain the cause quickly, highlight impact, and make it easy for supporters to donate or join the walk.",
+    problem: "Needed to turn a community fundraiser into a clear digital campaign with an obvious support path.",
+    solution: "Structured the page around cause, impact, event details, and donation-first calls to action.",
+    outcome: "A focused campaign site that helps supporters understand the mission and take action faster.",
+    scope: ["Campaign site", "Donation CTA", "Community storytelling"],
     highlights: ["Donation-first CTA flow", "Impact-driven storytelling", "Community event structure"],
   },
   {
@@ -31,6 +39,10 @@ const LIVE_SITES = [
     label: "SaaS / streaming product",
     summary:
       "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
+    problem: "Needed to explain a technical streaming product without overwhelming new users.",
+    solution: "Created product-led messaging, fast onboarding cues, and a simple route into the host setup flow.",
+    outcome: "A live product entry point that makes the concept easier to understand and try.",
+    scope: ["SaaS landing", "Product messaging", "Onboarding UX"],
     highlights: ["Product-led landing page", "Fast setup onboarding", "Multi-stream UX messaging"],
   },
 ] as const;
@@ -70,8 +82,12 @@ export default function LiveSitesSection() {
               id="live-sites-heading"
               className="font-display text-3xl font-bold leading-tight text-agency-ink sm:text-4xl lg:text-5xl"
             >
-              A few live builds, with more on the way.
+              Real launches, shown as mini case studies.
             </h2>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
+              Each project is shown with the business problem, the Aperix solution,
+              and the practical outcome — not just a screenshot.
+            </p>
           </Reveal>
 
           <Reveal>
@@ -136,14 +152,27 @@ export default function LiveSitesSection() {
                     {site.summary}
                   </p>
 
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {site.highlights.map((item) => (
-                      <div
+                  <div className="grid gap-3 lg:grid-cols-3">
+                    {[
+                      ["Problem", site.problem],
+                      ["Solution", site.solution],
+                      ["Outcome", site.outcome],
+                    ].map(([label, text]) => (
+                      <div key={label} className="rounded-2xl border border-agency-border bg-agency-bg/55 px-4 py-4">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-agency-muted">{label}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-agency-text">{text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {[...site.scope, ...site.highlights].map((item) => (
+                      <span
                         key={item}
-                        className={cn("rounded-2xl border px-4 py-4 text-sm text-agency-text", styles.highlight)}
+                        className={cn("rounded-full border px-3 py-1.5 text-xs font-medium text-agency-text", styles.highlight)}
                       >
                         {item}
-                      </div>
+                      </span>
                     ))}
                   </div>
 
@@ -154,7 +183,7 @@ export default function LiveSitesSection() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-agency-ink transition-colors hover:text-agency-accent"
                     >
-                      Open {new URL(site.href).hostname}
+                      Open live site
                       <span aria-hidden="true">↗</span>
                     </Link>
                   ) : (
@@ -174,7 +203,7 @@ export default function LiveSitesSection() {
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
             <p className="max-w-3xl text-sm leading-relaxed text-agency-muted sm:text-base">
               We’ll keep adding approved client work here over time, with live links,
-              short project notes, and enough context to show what each build involved.
+              short case studies, and enough context to show what each build involved.
             </p>
             <Link
               href="/contact"

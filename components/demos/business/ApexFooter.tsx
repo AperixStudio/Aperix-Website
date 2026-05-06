@@ -13,6 +13,8 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 const quickLinks = [
   { label: "Home", href: "/demo/business" },
   { label: "Services", href: "/demo/business/services" },
+  { label: "Projects", href: "/demo/business/projects" },
+  { label: "Emergency", href: "/demo/business/emergency" },
   { label: "About", href: "/demo/business/about" },
   { label: "Request a Quote", href: "/demo/business/contact" },
 ];

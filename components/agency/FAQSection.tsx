@@ -29,7 +29,7 @@ const FAQS: FAQ[] = [
   {
     question: "How long does a build take?",
     answer:
-      "Essential sites are usually the quickest. Starter sites typically take 2–3 weeks, Business tier sites usually land around 4–6 weeks, and Premium builds are scoped individually but often run 6–10 weeks depending on complexity.",
+      "Basic sites are usually the quickest at around 3–7 business days once content is ready. Growth sites typically take 2–3 weeks, Pro sites usually land around 4–6 weeks, and Enterprise builds are scoped individually but often run 6–10 weeks depending on complexity.",
   },
   {
     question: "What do I need to provide?",
@@ -39,7 +39,7 @@ const FAQS: FAQ[] = [
   {
     question: "What’s included in the monthly retainer?",
     answer:
-      "The care plans cover hosting, security updates, uptime monitoring, SSL management, and general maintenance. The higher tiers can also include content changes, reporting, faster support, and more hands-on help, depending on what the business needs.",
+      "The care plans cover hosting, security updates, uptime monitoring, SSL management, and general maintenance. Basic and Growth usually suit lighter support needs, while Pro and Enterprise can include content changes, reporting, faster support, and more hands-on help.",
   },
   {
     question: "Do you do WordPress?",

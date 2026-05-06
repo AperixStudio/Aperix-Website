@@ -18,6 +18,8 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 const navLinks = [
   { label: "Home", href: "/demo/business" },
   { label: "Services", href: "/demo/business/services" },
+  { label: "Projects", href: "/demo/business/projects" },
+  { label: "Emergency", href: "/demo/business/emergency" },
   { label: "About", href: "/demo/business/about" },
   { label: "Contact", href: "/demo/business/contact" },
 ];
@@ -88,7 +90,7 @@ export default function ApexNav() {
           </Link>
 
           {/* desktop links */}
-          <div className="hidden items-center gap-7 md:flex">
+          <div className="hidden items-center gap-5 md:flex">
             {navLinks.map((link) => {
               const isActive =
                 link.href === "/demo/business"
@@ -98,6 +100,7 @@ export default function ApexNav() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  data-cursor-pill
                   className={`font-(family-name:--font-apex-body) text-sm font-medium transition-colors hover:text-[#1d4ed8] ${
                     isActive ? "text-[#1d4ed8]" : "text-[#1e293b]"
                   }`}
@@ -108,6 +111,7 @@ export default function ApexNav() {
             })}
             <Link
               href="/demo/business/contact"
+              data-cursor-pill
               className="rounded-lg bg-[#f59e0b] px-5 py-2.5 font-(family-name:--font-apex-body) text-sm font-semibold text-[#0f172a] transition-all hover:scale-105 hover:bg-[#d97706]"
             >
               Request a Quote
@@ -160,6 +164,7 @@ export default function ApexNav() {
                     key={link.href}
                     href={link.href}
                     onClick={closeMobile}
+                    data-cursor-pill
                     className="rounded-lg px-3 py-2.5 font-(family-name:--font-apex-body) text-sm font-medium text-[#1e293b] transition-colors hover:bg-[#f8f9fa]"
                   >
                     {link.label}
@@ -168,6 +173,7 @@ export default function ApexNav() {
                 <Link
                   href="/demo/business/contact"
                   onClick={closeMobile}
+                  data-cursor-pill
                   className="mt-2 rounded-lg bg-[#f59e0b] px-5 py-2.5 text-center font-(family-name:--font-apex-body) text-sm font-semibold text-[#0f172a] transition-colors hover:bg-[#d97706]"
                 >
                   Request a Quote

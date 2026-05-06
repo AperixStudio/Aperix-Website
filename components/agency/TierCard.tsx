@@ -22,6 +22,8 @@ interface TierCardProps {
   retainer: string;
   /** Route the CTA links to */
   demoHref: string;
+  /** Route to start a conversation about this tier */
+  contactHref?: string;
   /** Show the "Most Popular" highlighted treatment */
   popular?: boolean;
 }
@@ -71,6 +73,13 @@ const ctaBgMap: Record<NonNullable<BadgeProps["color"]>, string> = {
   muted: "border-agency-border-dark bg-agency-ink text-agency-bg hover:opacity-85",
 };
 
+const cardToneMap: Record<NonNullable<BadgeProps["color"]>, string> = {
+  cyan: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent)_10%,var(--agency-surface)_90%),var(--agency-surface))]",
+  amber: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent2)_14%,var(--agency-surface)_86%),var(--agency-surface))]",
+  violet: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-accent3)_14%,var(--agency-surface)_86%),var(--agency-surface))]",
+  muted: "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--agency-muted)_13%,var(--agency-surface)_87%),var(--agency-surface))]",
+};
+
 export default function TierCard({
   name,
   color,
@@ -79,13 +88,15 @@ export default function TierCard({
   features,
   retainer,
   demoHref,
+  contactHref = "/contact",
   popular = false,
 }: TierCardProps) {
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-agency-surface p-8 text-agency-text shadow-[0_18px_50px_rgba(67,92,122,0.08)]",
+        "relative flex h-full min-h-108 w-full flex-col rounded-2xl border p-5 text-agency-text shadow-[0_18px_50px_rgba(67,92,122,0.08)] sm:p-6",
         "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(67,92,122,0.14)]",
+        cardToneMap[color],
         popular
           ? cn(borderColorMap[color], "border-2")
           : "border-agency-border",
@@ -106,21 +117,21 @@ export default function TierCard({
       </Badge>
 
       {/* ── Price ───────────────────────────────────────────── */}
-      <p className="mt-5 font-display text-3xl font-bold tracking-tight text-agency-ink">
+      <p className="mt-4 font-display text-3xl font-bold tracking-tight text-agency-ink">
         {price}
       </p>
       <p className="mt-1 text-xs text-agency-muted">AUD, excl. GST</p>
 
       {/* ── Value prop ──────────────────────────────────────── */}
-      <p className="mt-4 text-sm leading-relaxed text-agency-muted">
+      <p className="mt-3 text-sm leading-relaxed text-agency-muted">
         {valueProp}
       </p>
 
       {/* ── Divider ─────────────────────────────────────────── */}
-      <hr className="my-6 border-agency-border" />
+      <hr className="my-5 border-agency-border" />
 
       {/* ── Feature list ────────────────────────────────────── */}
-      <ul className="flex flex-1 flex-col gap-3" role="list">
+      <ul className="flex flex-1 flex-col gap-2.5" role="list">
         {features.map((feat) => (
           <li key={feat} className="flex items-start gap-2.5 text-sm text-agency-text">
             <Check className={checkColorMap[color]} />
@@ -130,21 +141,29 @@ export default function TierCard({
       </ul>
 
       {/* ── Retainer line ───────────────────────────────────── */}
-      <p className="mt-6 text-xs text-agency-muted">{retainer}</p>
+      <p className="mt-5 text-xs text-agency-muted">{retainer}</p>
 
       {/* ── CTA ─────────────────────────────────────────────── */}
-      <Link
-        href={demoHref}
-        className={cn(
-          "mt-6 inline-flex items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-medium",
-          "transition-all duration-150 active:scale-[0.98]",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-agency-surface",
-          ctaBgMap[color],
-        )}
-      >
-        View Live Demo
-        <span aria-hidden="true">&rarr;</span>
-      </Link>
+      <div className="mt-5 grid gap-2">
+        <Link
+          href={`${contactHref}?tier=${encodeURIComponent(name)}`}
+          className={cn(
+            "inline-flex items-center justify-center gap-2 rounded-lg border px-5 py-3 text-sm font-medium",
+            "transition-all duration-150 active:scale-[0.98]",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-agency-surface",
+            ctaBgMap[color],
+          )}
+        >
+          Ask about {name}
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
+        <Link
+          href={demoHref}
+          className="inline-flex items-center justify-center rounded-lg border border-agency-border bg-agency-surface/70 px-5 py-2.5 text-sm font-medium text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
+        >
+          View demo
+        </Link>
+      </div>
     </div>
   );
 }

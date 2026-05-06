@@ -174,6 +174,7 @@ export default function LuminaTreatmentsPage() {
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(f.key)}
+                data-cursor-pill
                 className={cn(
                   "relative rounded-full px-5 py-2 font-(family-name:--font-lm-body) text-sm transition-colors",
                   activeFilter === f.key

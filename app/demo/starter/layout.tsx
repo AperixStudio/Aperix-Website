@@ -4,6 +4,8 @@ import {
   DM_Mono,
 } from "next/font/google";
 import DemoBanner from "@/components/demos/DemoBanner";
+import HearthstoneNav from "@/components/demos/hearthstone/HearthstoneNav";
+import HearthstoneFooter from "@/components/demos/hearthstone/HearthstoneFooter";
 
 /* ── Hearthstone fonts (PRD §6.2) ───────────────────────── */
 const playfairDisplay = Playfair_Display({
@@ -29,7 +31,7 @@ const dmMono = DM_Mono({
 export const metadata = {
   title: "Hearthstone Café — Fitzroy | Aperix Demo",
   description:
-    "A demo Starter-tier website for Hearthstone Café, an independent café in Fitzroy, Melbourne. Built by Aperix Studio.",
+    "A demo Growth-tier website for Hearthstone Café, an independent café in Fitzroy, Melbourne. Built by Aperix Studio.",
 };
 
 export default function StarterDemoLayout({
@@ -48,11 +50,15 @@ export default function StarterDemoLayout({
       }
     >
       <DemoBanner
-        tierName="Starter"
-        description="This is a demo showcasing our Starter tier ($1,290). Multi-section site with animations, menu grid, reviews, and location."
+        tierName="Growth"
+        description="This is a demo showcasing our Growth tier ($1,290). A polished multi-page small-business site with menu, about, reviews, and contact pages."
       />
       {/* offset for fixed banner */}
-      <div className="pt-15">{children}</div>
+      <div className="bg-[#faf7f2] pt-15 text-[#2d2520]">
+        <HearthstoneNav />
+        {children}
+        <HearthstoneFooter />
+      </div>
     </div>
   );
 }

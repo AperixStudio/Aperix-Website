@@ -3,7 +3,7 @@ import Link from "next/link";
 /* ────────────────────────────────────────────────────────────
    SootheHeader — PRD §6.3.1
    Sticky white header. Logo left, phone CTA right.
-   NO nav links (Essential tier constraint).
+  NO nav links (Basic tier constraint).
    ──────────────────────────────────────────────────────────── */
 
 export default function SootheHeader() {

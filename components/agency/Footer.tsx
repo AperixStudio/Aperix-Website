@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +23,22 @@ const quickLinks = [
   { label: "Demo Sites", href: "/#tiers" },
   { label: "Contact", href: "/contact" },
 ];
+
+function WiggleText({ label }: { label: string }) {
+  return (
+    <span className="agency-wiggle-word" aria-hidden="true">
+      {Array.from(label).map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          className="agency-wiggle-letter"
+          style={{ "--wiggle-index": index } as CSSProperties}
+        >
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 /* ── privacy modal ─────────────────────────────────────── */
 function PrivacyModal({ onClose }: { onClose: () => void }) {
@@ -194,18 +210,18 @@ export default function Footer() {
       };
 
   return (
-    <footer role="contentinfo" className="border-t border-agency-border bg-agency-surface">
+    <footer role="contentinfo" className="agency-glass-pill rounded-none border-x-0">
       {/* ── main grid ─────────────────────────────────── */}
-      <motion.div
-        className="mx-auto max-w-7xl px-6 py-16 lg:py-20"
-        variants={stagger}
-        {...motionProps}
-      >
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          className="mx-auto max-w-7xl px-6 py-16 lg:py-20"
+          variants={stagger}
+          {...motionProps}
+        >
+          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           {/* ── col 1: brand ──────────────────────────── */}
           <motion.div variants={fadeUp} className="space-y-4">
             {/* wordmark */}
-            <Link href="/" className="inline-flex items-center gap-2 group">
+            <Link href="/" className="inline-flex items-center gap-2 group" aria-label="Aperix home">
               <span className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
                 <Image
                   src="/aperix-logo.svg"
@@ -217,7 +233,7 @@ export default function Footer() {
                 />
               </span>
               <span className="font-display text-xl font-bold tracking-tight text-agency-text transition-colors group-hover:text-agency-accent">
-                Aperix
+                <WiggleText label="Aperix" />
               </span>
             </Link>
 
@@ -286,9 +302,10 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-agency-muted transition-colors hover:text-agency-accent"
+                    aria-label={link.label}
+                    className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
                   >
-                    {link.label}
+                    <WiggleText label={link.label} />
                   </Link>
                 </li>
               ))}
@@ -320,9 +337,10 @@ export default function Footer() {
                 </svg>
                 <a
                   href="mailto:hello@aperix.com.au"
-                  className="text-sm text-agency-muted transition-colors hover:text-agency-accent"
+                  aria-label="Email hello@aperix.com.au"
+                  className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
                 >
-                  hello@aperix.com.au
+                  <WiggleText label="hello@aperix.com.au" />
                 </a>
               </li>
 
@@ -364,42 +382,45 @@ export default function Footer() {
                   href="https://linkedin.com/company/aperixstudio"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-agency-muted transition-colors hover:text-agency-accent"
+                  aria-label="Aperix Studio on LinkedIn"
+                  className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
                 >
-                  LinkedIn
+                  <WiggleText label="LinkedIn" />
                 </a>
               </li>
             </ul>
           </motion.div>
-        </div>
-      </motion.div>
+          </div>
+        </motion.div>
 
-      {/* ── bottom bar ────────────────────────────────── */}
-      <div className="border-t border-agency-border">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 sm:flex-row">
-          <p className="text-xs text-agency-muted/60">
-            © 2025 Aperix Studio. All rights reserved.
-          </p>
+        {/* ── bottom bar ────────────────────────────────── */}
+        <div className="border-t border-agency-border/60">
+          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 sm:flex-row">
+            <p className="text-xs text-agency-muted/60">
+              © 2025 Aperix Studio. All rights reserved.
+            </p>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={openPrivacy}
-              className="text-xs text-agency-muted/60 underline underline-offset-2 transition-colors hover:text-agency-accent"
-            >
-              Privacy Policy
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={openPrivacy}
+                className="group inline-flex text-xs text-agency-muted/60 underline underline-offset-2 transition-colors hover:text-agency-accent"
+              >
+                <WiggleText label="Privacy Policy" />
+              </button>
 
-            <a
-              href="https://aperix.com.au"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-agency-muted/60 transition-colors hover:text-agency-accent"
-            >
-              Website by Aperix →
-            </a>
+              <a
+                href="https://aperix.com.au"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Website by Aperix"
+                className="group inline-flex text-xs text-agency-muted/60 transition-colors hover:text-agency-accent"
+              >
+                <WiggleText label="Website by Aperix →" />
+              </a>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* ── privacy policy modal ──────────────────────── */}
       <AnimatePresence>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
@@ -25,6 +25,22 @@ const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Contact", href: "/contact" },
 ];
 
+function WiggleText({ label }: { label: string }) {
+  return (
+    <span className="agency-wiggle-word" aria-hidden="true">
+      {Array.from(label).map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          className="agency-wiggle-letter"
+          style={{ "--wiggle-index": index } as CSSProperties}
+        >
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function AgencyNav() {
   const prefersReduced = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
@@ -32,7 +48,8 @@ export default function AgencyNav() {
 
   /* ── scroll listener ──────────────────────────────────── */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -51,17 +68,18 @@ export default function AgencyNav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 px-4 pt-4 sm:px-6 lg:px-8">
+      <header className={cn("agency-header fixed top-0 left-0 right-0 z-40 px-4 pt-4 sm:px-6 lg:px-8", scrolled && "agency-header--scrolled")}>
+        <div aria-hidden="true" className="agency-header-underlay" />
         {/* Glass pill backplate — tighter and more distinct */}
         <div
           aria-hidden="true"
           className={cn(
-            "agency-glass-pill pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full supports-backdrop-filter:backdrop-blur-2xl sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
+            "agency-glass-pill pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full supports-backdrop-filter:backdrop-blur-none sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
             scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
           )}
         />
         <nav
-          className="relative mx-auto flex h-18 max-w-6xl items-center justify-between rounded-full px-6 py-0 lg:px-8"
+          className="relative z-10 mx-auto flex h-18 max-w-6xl items-center justify-between rounded-full px-6 py-0 lg:px-8"
           aria-label="Main navigation"
         >
           {/* ── Logo ────────────────────────────────────── */}
@@ -92,7 +110,7 @@ export default function AgencyNav() {
           
             {/* Wordmark */}
             <span className="font-display text-lg font-bold tracking-tight text-agency-ink">
-              Aperix
+              <WiggleText label="Aperix" />
             </span>
           </Link>
 
@@ -103,14 +121,15 @@ export default function AgencyNav() {
                 key={link.label}
                 href={link.href}
                 data-cursor-pill
-                className="group relative text-sm font-medium"
+                aria-label={link.label}
+                className="agency-nav-link group relative text-sm font-medium"
               >
                 <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
-                  <span className="text-agency-muted">{link.label}</span>
+                  <span className="text-agency-muted"><WiggleText label={link.label} /></span>
                 </span>
                 {/* ink layer — fades in on hover */}
                 <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  <span className="text-agency-ink">{link.label}</span>
+                  <span className="text-agency-ink"><WiggleText label={link.label} /></span>
                 </span>
               </Link>
             ))}
@@ -119,6 +138,7 @@ export default function AgencyNav() {
 
             <Link
               href="/contact"
+              data-cursor-pill
               className={cn(
                 "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold",
                 "agency-button-primary",
@@ -198,15 +218,17 @@ export default function AgencyNav() {
                   <Link
                     href={link.href}
                     onClick={closeMobile}
-                    className="group relative font-display text-3xl font-bold"
+                    data-cursor-pill
+                    aria-label={link.label}
+                    className="agency-nav-link group relative font-display text-3xl font-bold"
                   >
                     {/* base layer */}
                     <span className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
-                      {link.label}
+                      <WiggleText label={link.label} />
                     </span>
                     {/* muted layer — fades in on hover */}
                     <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      <span className="text-agency-muted">{link.label}</span>
+                      <span className="text-agency-muted"><WiggleText label={link.label} /></span>
                     </span>
                   </Link>
                 </motion.div>
@@ -227,6 +249,7 @@ export default function AgencyNav() {
                 <Link
                   href="/contact"
                   onClick={closeMobile}
+                  data-cursor-pill
                   className={cn(
                     "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
                     "agency-button-primary",

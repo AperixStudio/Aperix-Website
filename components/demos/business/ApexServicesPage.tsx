@@ -165,6 +165,7 @@ export default function ApexServicesPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
+                data-cursor-pill
                 className={`rounded-lg px-5 py-2.5 font-(family-name:--font-apex-body) text-sm font-semibold transition-all hover:scale-105 ${
                   activeTab === tab
                     ? "bg-[#1d4ed8] text-white"

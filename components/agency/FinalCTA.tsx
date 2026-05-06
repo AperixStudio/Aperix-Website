@@ -11,22 +11,22 @@ export default function FinalCTA() {
       aria-labelledby="final-cta-heading"
     >
       <StaggerGroup
-        className="agency-panel-dark-wrap mx-auto max-w-5xl px-6 py-20 text-center sm:px-8 lg:px-12 lg:py-24"
+        className="agency-panel-wrap mx-auto max-w-5xl px-6 py-20 text-center sm:px-8 lg:px-12 lg:py-24"
       >
         {/* H2 */}
         <StaggerItem
           id="final-cta-heading"
-          className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+          className="font-display text-3xl font-bold text-agency-ink sm:text-4xl lg:text-5xl"
         >
-          If the website no longer feels right, let&rsquo;s sort it out.
+          Ready to build a website that actually brings enquiries?
         </StaggerItem>
 
         {/* Subtext */}
         <StaggerItem
-          className="mt-5 text-base leading-relaxed text-white/70 sm:text-lg"
+          className="mt-5 text-base leading-relaxed text-agency-muted sm:text-lg"
         >
-          Send us a message, tell us what&rsquo;s going on, and we&rsquo;ll come back to you
-          with honest advice on the next step. Email is absolutely fine.
+          Tell us what you need and we&rsquo;ll recommend the right tier, timeline,
+          and next step — no pressure, no template lock-in.
         </StaggerItem>
 
         {/* CTA button */}
@@ -35,20 +35,20 @@ export default function FinalCTA() {
             href="/contact"
             className={cn(
               "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
-              "bg-white text-agency-ink",
+              "agency-button-primary",
               "transition-opacity duration-150 hover:opacity-85 active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-agency-ink",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-agency-accent focus-visible:ring-offset-2 focus-visible:ring-offset-agency-surface",
             )}
           >
-            Get in Contact
+            Start your project
           </Link>
         </StaggerItem>
 
         {/* Location line */}
         <StaggerItem
-          className="mt-6 text-sm text-white/50"
+          className="mt-6 text-sm text-agency-muted"
         >
-          Based in Melbourne · Serving all of Victoria
+          Melbourne-built · Custom-coded · Reply within 24 hours
         </StaggerItem>
       </StaggerGroup>
     </section>

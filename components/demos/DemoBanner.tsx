@@ -9,7 +9,7 @@ import Link from "next/link";
    ──────────────────────────────────────────────────────────── */
 
 interface DemoBannerProps {
-  /** e.g. "Starter" */
+  /** e.g. "Growth" */
   tierName: string;
   /** e.g. "a Melbourne café" — used for fallback text when description is omitted */
   businessType?: string;
