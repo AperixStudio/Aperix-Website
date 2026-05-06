@@ -154,10 +154,11 @@ html[data-theme="dark"] {
 
 body {
   background-color: var(--agency-bg);
-  /* Static radial top glow only — pointer glows live on .agency-pointer-overlay */
   background-image:
+    linear-gradient(var(--agency-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--agency-grid) 1px, transparent 1px),
     radial-gradient(circle at top, var(--agency-radial), transparent 42%);
-  background-size: 100% 100%;
+  background-size: 72px 72px, 72px 72px, 100% 100%;
   background-attachment: scroll;
   color: var(--agency-text);
   font-family: var(--font-sans), system-ui, sans-serif;
@@ -165,59 +166,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animated grid lives on a GPU-composited fixed layer */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  will-change: transform;
-  background-image:
-    linear-gradient(var(--agency-grid) 1.35px, transparent 1.35px),
-    linear-gradient(90deg, var(--agency-grid) 1.35px, transparent 1.35px),
-    repeating-linear-gradient(90deg, transparent 0 12rem, var(--agency-line-sweep) 12rem calc(12rem + 3px), transparent calc(12rem + 3px) 24rem),
-    repeating-linear-gradient(0deg, transparent 0 11rem, var(--agency-line-sweep) 11rem calc(11rem + 3px), transparent calc(11rem + 3px) 22rem),
-    repeating-linear-gradient(90deg, transparent 0 7rem, var(--agency-line-sweep-soft) 7rem calc(7rem + 2px), transparent calc(7rem + 2px) 14rem),
-    repeating-linear-gradient(0deg, transparent 0 8rem, var(--agency-line-sweep-soft) 8rem calc(8rem + 2px), transparent calc(8rem + 2px) 16rem);
-  background-size: 72px 72px, 72px 72px, 24rem 100%, 100% 22rem, 14rem 100%, 100% 16rem;
-  background-position: 0 0;
-  animation: agency-moving-lines 60s linear infinite;
-}
-
-/* Pointer-glow overlay: only this layer repaints on mouse move */
-.agency-interactive-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  will-change: background-image;
-  background-image:
-    radial-gradient(circle at var(--agency-pointer-x) var(--agency-pointer-y), var(--agency-pointer-glow), transparent 18rem),
-    radial-gradient(circle at calc(100% - var(--agency-pointer-x)) 78%, var(--agency-pointer-glow2), transparent 18rem);
-  background-size: 100% 100%, 100% 100%;
-  contain: strict;
-}
-
 @media (prefers-reduced-motion: reduce), (pointer: coarse) {
   :root {
     --agency-pointer-x: 50%;
     --agency-pointer-y: 18%;
   }
-
-  body,
-  body::before {
-    animation: none;
-  }
-
-  .agency-interactive-bg {
-    display: none;
-  }
-}
-
-@keyframes agency-moving-lines {
-  0%   { transform: translate(0, 0); }
-  100% { transform: translate(72px, 72px); }
 }
 
 /* Scoped theme-change transitions — avoid the expensive body * wildcard */
@@ -248,7 +201,7 @@ button,
     0 20px 60px rgba(67, 92, 122, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
     inset 0 -1px 0 rgba(142, 161, 182, 0.08);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }
 
 html[data-theme="dark"] .agency-panel-wrap {
@@ -276,8 +229,8 @@ html[data-theme="dark"] .agency-panel-wrap {
   border: 1px solid var(--agency-glass-border);
   background: var(--agency-glass-bg);
   box-shadow: var(--agency-glass-shadow);
-  backdrop-filter: blur(18px) saturate(1.5) brightness(1.02);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5) brightness(1.02);
+  backdrop-filter: blur(40px) saturate(1.8) brightness(1.04);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.04);
 }
 
 .agency-glass-pill--soft {
@@ -302,8 +255,8 @@ html[data-theme="dark"] .agency-panel-wrap {
     color-mix(in oklab, var(--agency-bg) 72%, transparent 28%) 48%,
     transparent 100%
   );
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
   mask-image: linear-gradient(180deg, black 0%, black 66%, transparent 100%);
   -webkit-mask-image: linear-gradient(180deg, black 0%, black 66%, transparent 100%);
   transition: opacity 220ms ease, backdrop-filter 220ms ease;
@@ -311,8 +264,8 @@ html[data-theme="dark"] .agency-panel-wrap {
 
 .agency-header--scrolled .agency-header-underlay {
   opacity: 1;
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(44px) saturate(1.8);
+  -webkit-backdrop-filter: blur(44px) saturate(1.8);
 }
 
 .agency-wiggle-word {
