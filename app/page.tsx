@@ -2,8 +2,6 @@ import SocialProofBar from "@/components/agency/SocialProofBar";
 import HowItWorks from "@/components/agency/HowItWorks";
 import TierShowcase from "@/components/agency/TierShowcase";
 import LiveSitesSection from "@/components/agency/LiveSitesSection";
-import TechnicalEdge from "@/components/agency/TechnicalEdge";
-import FAQSection from "@/components/agency/FAQSection";
 import FinalCTA from "@/components/agency/FinalCTA";
 import Footer from "@/components/agency/Footer";
 import HeroV2 from "@/components/agency/HeroV2";
@@ -26,12 +24,6 @@ export default function Home() {
         </div>
         <div className="winding-section winding-section-right">
           <LiveSitesSection />
-        </div>
-        <div className="winding-section winding-section-left">
-          <TechnicalEdge />
-        </div>
-        <div className="winding-section winding-section-right">
-          <FAQSection />
         </div>
         <div className="winding-section winding-section-left">
           <FinalCTA />

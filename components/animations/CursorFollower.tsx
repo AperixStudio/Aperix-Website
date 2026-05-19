@@ -14,13 +14,9 @@ type PillRect = {
 
 export default function CursorFollower() {
   const prefersReduced = useReducedMotion();
-  const [isFinePointer, setIsFinePointer] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return !window.matchMedia("(pointer: coarse)").matches;
-  });
+  // Always start false so server and initial client HTML match (no hydration mismatch).
+  // useEffect resolves the real pointer type after mount.
+  const [isFinePointer, setIsFinePointer] = useState(false);
   const [visible, setVisible] = useState(false);
   const [pillRect, setPillRect] = useState<PillRect | null>(null);
   const hoveredPillRef = useRef<HTMLElement | null>(null);
@@ -38,6 +34,9 @@ export default function CursorFollower() {
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse)");
+    // Set the real value now that we're in the browser
+    setIsFinePointer(!mq.matches);
+
     const onChange = (event: MediaQueryListEvent) => {
       setIsFinePointer(!event.matches);
     };
@@ -133,7 +132,7 @@ export default function CursorFollower() {
   if (!enabled) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-45">
+    <div className="pointer-events-none fixed inset-0 z-45" suppressHydrationWarning>
       <motion.div
         style={{ x: xTrail, y: yTrail }}
         animate={{ opacity: visible && !pillRect ? 0.35 : 0 }}

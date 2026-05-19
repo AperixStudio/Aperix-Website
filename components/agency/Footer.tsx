@@ -1,46 +1,17 @@
 "use client";
 
-import { useState, useCallback, type CSSProperties } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
-/* ── animation helpers ─────────────────────────────────── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-/* ── quick‑link data ───────────────────────────────────── */
-const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Demo Sites", href: "/#tiers" },
-  { label: "Contact", href: "/contact" },
+/* ── legal links ───────────────────────────────────────── */
+const legalLinks = [
+  { label: "Privacy Policy", id: "privacy" },
+  { label: "Terms & Conditions", id: "terms" },
+  { label: "Accessibility Statement", id: "accessibility" },
 ];
-
-function WiggleText({ label }: { label: string }) {
-  return (
-    <span className="agency-wiggle-word" aria-hidden="true">
-      {Array.from(label).map((char, index) => (
-        <span
-          key={`${char}-${index}`}
-          className="agency-wiggle-letter"
-          style={{ "--wiggle-index": index } as CSSProperties}
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-/* ── privacy modal ─────────────────────────────────────── */
 function PrivacyModal({ onClose }: { onClose: () => void }) {
   return (
     <motion.div
@@ -194,238 +165,172 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
 
 /* ── footer component ──────────────────────────────────── */
 export default function Footer() {
-  const prefersReduced = useReducedMotion();
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [legalsOpen, setLegalsOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const legalsRef = useRef<HTMLDivElement>(null);
 
-  const openPrivacy = useCallback(() => setPrivacyOpen(true), []);
   const closePrivacy = useCallback(() => setPrivacyOpen(false), []);
 
-  const motionProps = prefersReduced
-    ? {}
-    : {
-        initial: "hidden" as const,
-        whileInView: "visible" as const,
-        viewport: { once: true, amount: 0.15 },
-        transition: { duration: 0.4, ease: [0, 0, 0.58, 1] as const },
-      };
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (legalsRef.current && !legalsRef.current.contains(e.target as Node)) {
+        setLegalsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function openLegal(id: string) {
+    setLegalsOpen(false);
+    if (id === "privacy") {
+      setPrivacyOpen(true);
+    } else {
+      setActiveModal(id);
+    }
+  }
 
   return (
     <footer role="contentinfo" className="agency-glass-pill rounded-none border-x-0">
-      {/* ── main grid ─────────────────────────────────── */}
-        <motion.div
-          className="mx-auto max-w-7xl px-6 py-16 lg:py-20"
-          variants={stagger}
-          {...motionProps}
-        >
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {/* ── col 1: brand ──────────────────────────── */}
-          <motion.div variants={fadeUp} className="space-y-4">
-            {/* wordmark */}
-            <Link href="/" className="inline-flex items-center gap-2 group" aria-label="Aperix home">
-              <span className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
-                <Image
-                  src="/aperix-logo.svg"
-                  alt=""
-                  width={40}
-                  height={44}
-                  aria-hidden="true"
-                  className="h-10 w-auto"
-                />
-              </span>
-              <span className="font-display text-xl font-bold tracking-tight text-agency-text transition-colors group-hover:text-agency-accent">
-                <WiggleText label="Aperix" />
-              </span>
-            </Link>
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
 
-            <p className="max-w-xs text-sm leading-relaxed text-agency-muted">
-              Custom web development &amp; social media management for Melbourne
-              businesses.
-            </p>
+        {/* Left — logo */}
+        <Link href="/" aria-label="Aperix home">
+          <Image
+            src="/aperix-logo.svg"
+            alt="Aperix"
+            width={32}
+            height={36}
+            className="h-8 w-auto opacity-70 transition hover:opacity-100"
+          />
+        </Link>
 
-            <p className="text-xs text-agency-muted/60">ABN: 22 720 293 315</p>
+        {/* Centre — copyright */}
+        <p className="absolute left-1/2 -translate-x-1/2 text-xs text-agency-muted/50">
+          © {new Date().getFullYear()} Aperix Studio. All rights reserved.
+        </p>
 
-            {/* socials */}
-            <div className="flex items-center gap-3 pt-2">
-              {/* LinkedIn */}
-              <a
-                href="https://linkedin.com/company/aperixstudio"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-agency-border text-agency-muted transition-colors hover:border-agency-accent hover:text-agency-accent"
+        {/* Right — legals dropdown */}
+        <div className="relative" ref={legalsRef}>
+          <button
+            onClick={() => setLegalsOpen((v) => !v)}
+            aria-expanded={legalsOpen}
+            aria-haspopup="menu"
+            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.18em] text-agency-muted/50 transition hover:text-agency-muted"
+          >
+            <span className="text-agency-muted/25">(</span>
+            Legals
+            <span className="text-agency-muted/25">)</span>
+          </button>
+
+          <AnimatePresence>
+            {legalsOpen && (
+              <motion.div
+                role="menu"
+                initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="absolute bottom-full right-0 mb-3 min-w-52 overflow-hidden rounded-2xl border border-agency-border bg-agency-surface shadow-2xl"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-              </a>
-
-              {/* Instagram */}
-              <a
-                href="https://instagram.com/aperixstudio"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-agency-border text-agency-muted transition-colors hover:border-agency-accent hover:text-agency-accent"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </svg>
-              </a>
-            </div>
-          </motion.div>
-
-          {/* ── col 2: quick links ────────────────────── */}
-          <motion.div variants={fadeUp}>
-            <h3 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-agency-text">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    aria-label={link.label}
-                    className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
+                {legalLinks.map((link) => (
+                  <button
+                    key={link.id}
+                    role="menuitem"
+                    onClick={() => openLegal(link.id)}
+                    className="block w-full px-5 py-3 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-agency-muted/60 transition hover:bg-agency-border/40 hover:text-agency-text"
                   >
-                    <WiggleText label={link.label} />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* ── col 3: contact details ────────────────── */}
-          <motion.div variants={fadeUp}>
-            <h3 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-agency-text">
-              Contact
-            </h3>
-            <ul className="space-y-3">
-              {/* email */}
-              <li className="flex items-start gap-2.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mt-0.5 shrink-0 text-agency-accent"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                </svg>
-                <a
-                  href="mailto:hello@aperix.com.au"
-                  aria-label="Email hello@aperix.com.au"
-                  className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
-                >
-                  <WiggleText label="hello@aperix.com.au" />
-                </a>
-              </li>
-
-              {/* location */}
-              <li className="flex items-start gap-2.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mt-0.5 shrink-0 text-agency-accent"
-                >
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span className="text-sm text-agency-muted">
-                  Melbourne, VIC
-                </span>
-              </li>
-
-              {/* LinkedIn */}
-              <li className="flex items-start gap-2.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="mt-0.5 shrink-0 text-agency-accent"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-                <a
-                  href="https://linkedin.com/company/aperixstudio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Aperix Studio on LinkedIn"
-                  className="group inline-flex text-sm text-agency-muted transition-colors hover:text-agency-accent"
-                >
-                  <WiggleText label="LinkedIn" />
-                </a>
-              </li>
-            </ul>
-          </motion.div>
-          </div>
-        </motion.div>
-
-        {/* ── bottom bar ────────────────────────────────── */}
-        <div className="border-t border-agency-border/60">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 sm:flex-row">
-            <p className="text-xs text-agency-muted/60">
-              © 2025 Aperix Studio. All rights reserved.
-            </p>
-
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={openPrivacy}
-                className="group inline-flex text-xs text-agency-muted/60 underline underline-offset-2 transition-colors hover:text-agency-accent"
-              >
-                <WiggleText label="Privacy Policy" />
-              </button>
-
-              <a
-                href="https://aperix.com.au"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Website by Aperix"
-                className="group inline-flex text-xs text-agency-muted/60 transition-colors hover:text-agency-accent"
-              >
-                <WiggleText label="Website by Aperix →" />
-              </a>
-            </div>
-          </div>
+                    {link.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+      </div>
 
       {/* ── privacy policy modal ──────────────────────── */}
       <AnimatePresence>
         {privacyOpen && <PrivacyModal onClose={closePrivacy} />}
       </AnimatePresence>
+
+      {/* ── terms modal ───────────────────────────────── */}
+      <AnimatePresence>
+        {activeModal === "terms" && (
+          <motion.div
+            className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setActiveModal(null)}
+            role="dialog" aria-modal="true" aria-label="Terms & Conditions"
+          >
+            <motion.div
+              className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border border-agency-border bg-agency-surface p-8 shadow-2xl"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setActiveModal(null)} aria-label="Close" className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-agency-muted transition-colors hover:bg-agency-border hover:text-agency-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+              <h2 className="mb-6 font-display text-2xl font-bold text-agency-text">Terms &amp; Conditions</h2>
+              <div className="space-y-4 text-sm leading-relaxed text-agency-muted">
+                <p><strong className="text-agency-text">Aperix Studio</strong> (ABN 22 720 293 315). By engaging our services you agree to the following terms.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">1. Services</h3>
+                <p>Aperix Studio provides web development, design, and digital marketing services as agreed in a written proposal or invoice. All deliverables are subject to the scope outlined at the time of engagement.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">2. Payment</h3>
+                <p>A deposit is required before work commences. Final payment is due upon project completion prior to site launch. Overdue invoices may incur a late fee of 1.5% per month.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">3. Intellectual Property</h3>
+                <p>All custom work produced by Aperix Studio transfers to the client upon receipt of full payment. Third-party assets (fonts, stock images, plugins) remain subject to their respective licences.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">4. Revisions</h3>
+                <p>Projects include a reasonable number of revision rounds as specified in the proposal. Additional revisions beyond scope will be quoted separately.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">5. Limitation of Liability</h3>
+                <p>Aperix Studio&apos;s liability is limited to the amount paid for the specific service. We are not liable for indirect or consequential losses arising from use of delivered work.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">6. Governing Law</h3>
+                <p>These terms are governed by the laws of Victoria, Australia.</p>
+                <p className="pt-2 text-xs text-agency-muted/60">Last updated: January 2025</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── accessibility modal ───────────────────────── */}
+      <AnimatePresence>
+        {activeModal === "accessibility" && (
+          <motion.div
+            className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setActiveModal(null)}
+            role="dialog" aria-modal="true" aria-label="Accessibility Statement"
+          >
+            <motion.div
+              className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border border-agency-border bg-agency-surface p-8 shadow-2xl"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setActiveModal(null)} aria-label="Close" className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-agency-muted transition-colors hover:bg-agency-border hover:text-agency-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+              <h2 className="mb-6 font-display text-2xl font-bold text-agency-text">Accessibility Statement</h2>
+              <div className="space-y-4 text-sm leading-relaxed text-agency-muted">
+                <p><strong className="text-agency-text">Aperix Studio</strong> is committed to making our website accessible to everyone, including people with disabilities.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">Our Commitment</h3>
+                <p>We aim to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA. This includes providing keyboard navigation, sufficient colour contrast, descriptive alt text, and screen-reader-friendly markup.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">Known Limitations</h3>
+                <p>Some third-party content or older sections of the site may not yet fully meet accessibility standards. We are actively working to address these areas.</p>
+                <h3 className="pt-2 text-base font-semibold text-agency-text">Feedback</h3>
+                <p>If you experience any accessibility barriers on our site, please contact us at <a href="mailto:hello@aperix.com.au" className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80">hello@aperix.com.au</a> and we will do our best to assist you promptly.</p>
+                <p className="pt-2 text-xs text-agency-muted/60">Last updated: January 2025</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </footer>
   );
 }
+

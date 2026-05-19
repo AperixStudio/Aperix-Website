@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Syne, JetBrains_Mono } from "next/font/google";
 import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
 import CursorFollower from "@/components/animations/CursorFollower";
+import IntroScreen from "@/components/animations/IntroScreen";
+import PageReveal from "@/components/animations/PageReveal";
 import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -15,6 +17,24 @@ const themeInitScript = `
     } catch {
       document.documentElement.dataset.theme = "light";
     }
+  })();
+`;
+
+// Runs synchronously before React mounts — inserts a full-screen cover div
+// that is completely outside the React tree so React cannot touch or remove it.
+// IntroScreen's releaseIntroGate() removes it when the animation finishes.
+const introCoverScript = `
+  (function() {
+    var cover = document.createElement('div');
+    cover.id = 'aperix-intro-cover';
+    cover.style.cssText = [
+      'position:fixed',
+      'inset:0',
+      'z-index:9998',
+      'background:linear-gradient(135deg,#07070f 0%,#0a0a18 100%)',
+      'pointer-events:all',
+    ].join(';');
+    document.body.appendChild(cover);
   })();
 `;
 
@@ -74,10 +94,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        {/* 1. Theme — runs first, no flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* 2. Intro cover — physically inserts a full-screen div before React mounts.
+               Outside the React tree so React cannot remove it during hydration.
+               Removed by IntroScreen.releaseIntroGate() when the animation finishes. */}
+        <script dangerouslySetInnerHTML={{ __html: introCoverScript }} />
+        <IntroScreen />
         <SiteAtmosphere />
         <CursorFollower />
-        {children}
+        <PageReveal>{children}</PageReveal>
       </body>
     </html>
   );

@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import {
-  budgetRangeOptions,
   businessTypeOptions,
   contactSchema,
-  needsOptions,
-  tierInterestOptions,
-  timelineOptions,
   toFieldErrors,
   type ContactFieldErrors,
   type ContactSubmission,
@@ -24,10 +20,6 @@ const initialForm: FormState = {
   businessName: "",
   businessType: "",
   needs: [],
-  tierInterest: "",
-  budgetRange: "",
-  timeline: "",
-  currentWebsite: "",
   description: "",
   contactMethod: "email",
   website: "",
@@ -54,21 +46,6 @@ export default function AgencyContactForm() {
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tier = new URLSearchParams(window.location.search).get("tier");
-    if (!tier) {
-      return;
-    }
-
-    const match = tierInterestOptions.find(
-      (option) => option.toLowerCase() === tier.toLowerCase(),
-    );
-
-    if (match) {
-      setForm((prev) => ({ ...prev, tierInterest: match }));
-    }
-  }, []);
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -297,116 +274,7 @@ export default function AgencyContactForm() {
         <FieldError id="err-business-type" message={errors.businessType} />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="ac-tier" className="mb-1.5 block text-sm font-medium text-agency-text">
-            Package interest <span className="text-agency-muted">(optional)</span>
-          </label>
-          <select
-            id="ac-tier"
-            name="tierInterest"
-            value={form.tierInterest}
-            onChange={handleChange}
-            className={getFieldClass("tierInterest")}
-            aria-describedby={errors.tierInterest ? "err-tier-interest" : undefined}
-          >
-            <option value="">Select a package…</option>
-            {tierInterestOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <FieldError id="err-tier-interest" message={errors.tierInterest} />
-        </div>
-        <div>
-          <label htmlFor="ac-budget" className="mb-1.5 block text-sm font-medium text-agency-text">
-            Budget range <span className="text-agency-muted">(optional)</span>
-          </label>
-          <select
-            id="ac-budget"
-            name="budgetRange"
-            value={form.budgetRange}
-            onChange={handleChange}
-            className={getFieldClass("budgetRange")}
-            aria-describedby={errors.budgetRange ? "err-budget-range" : undefined}
-          >
-            <option value="">Select a range…</option>
-            {budgetRangeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <FieldError id="err-budget-range" message={errors.budgetRange} />
-        </div>
-      </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="ac-timeline" className="mb-1.5 block text-sm font-medium text-agency-text">
-            Timeline <span className="text-agency-muted">(optional)</span>
-          </label>
-          <select
-            id="ac-timeline"
-            name="timeline"
-            value={form.timeline}
-            onChange={handleChange}
-            className={getFieldClass("timeline")}
-            aria-describedby={errors.timeline ? "err-timeline" : undefined}
-          >
-            <option value="">Select timing…</option>
-            {timelineOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <FieldError id="err-timeline" message={errors.timeline} />
-        </div>
-        <div>
-          <label htmlFor="ac-current-site" className="mb-1.5 block text-sm font-medium text-agency-text">
-            Current website <span className="text-agency-muted">(optional)</span>
-          </label>
-          <input
-            id="ac-current-site"
-            name="currentWebsite"
-            type="url"
-            value={form.currentWebsite}
-            onChange={handleChange}
-            className={getFieldClass("currentWebsite")}
-            placeholder="https://example.com.au"
-            aria-describedby={errors.currentWebsite ? "err-current-website" : undefined}
-          />
-          <FieldError id="err-current-website" message={errors.currentWebsite} />
-        </div>
-      </div>
-
-      <fieldset>
-        <legend className="mb-2 text-sm font-medium text-agency-text">
-          What do you need?
-        </legend>
-        <FieldError id="err-needs" message={errors.needs} />
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {needsOptions.map((opt) => (
-            <label
-              key={opt}
-              className="flex cursor-pointer items-center gap-2 rounded-lg border border-agency-border px-3 py-2.5 text-sm text-agency-muted transition-colors hover:border-agency-accent/40 has-checked:border-agency-accent has-checked:text-agency-text"
-            >
-              <input
-                type="checkbox"
-                name="needs"
-                value={opt}
-                checked={form.needs.includes(opt)}
-                onChange={handleNeedsChange}
-                className="h-3.5 w-3.5 accent-[#22d3ee]"
-                aria-describedby={errors.needs ? "err-needs" : undefined}
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-      </fieldset>
 
       <div>
         <label htmlFor="ac-desc" className="mb-1.5 block text-sm font-medium text-agency-text">
@@ -480,9 +348,7 @@ export default function AgencyContactForm() {
         )}
       </button>
 
-      <p className="text-center text-xs text-agency-muted">
-        No pressure — submissions go directly to Aperix and help us recommend the right next step.
-      </p>
+
     </form>
   );
 }
