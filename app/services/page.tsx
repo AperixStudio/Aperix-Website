@@ -4,7 +4,6 @@ import ServiceHero from "@/components/agency/services/ServiceHero";
 import TierDetails from "@/components/agency/services/TierDetails";
 import AddOnTable from "@/components/agency/services/AddOnTable";
 import ProjectTimeline from "@/components/agency/services/ProjectTimeline";
-import Guarantee from "@/components/agency/services/Guarantee";
 import FinalCTA from "@/components/agency/FinalCTA";
 
 export const metadata = {
@@ -22,7 +21,6 @@ export default function ServicesPage() {
         <TierDetails />
         <AddOnTable />
         <ProjectTimeline />
-        <Guarantee />
         <FinalCTA />
       </main>
       <Footer />
