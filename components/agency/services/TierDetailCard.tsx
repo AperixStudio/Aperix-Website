@@ -139,17 +139,17 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
           <p className="text-sm font-medium text-agency-text">{tier.retainer}</p>
           <p className="mt-0.5 text-xs text-agency-muted">Hosting, updates & support</p>
         </div>
-          <Link
-            href={`/contact?tier=${encodeURIComponent(tier.name)}`}
-            className={cn(
-              "inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors",
-              tier.popular
-                ? "bg-amber-400 text-zinc-900 hover:bg-amber-300"
-                : "bg-agency-ink text-agency-bg hover:opacity-85"
-            )}
-          >
-            Ask about {tier.name} -&gt;
-          </Link>
+        <Link
+          href={`/contact?tier=${encodeURIComponent(tier.name)}`}
+          className={cn(
+            "inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-colors",
+            tier.popular
+              ? "bg-amber-400 text-zinc-900 hover:bg-amber-300"
+              : "bg-agency-ink text-agency-bg hover:opacity-85"
+          )}
+        >
+          Ask about {tier.name} -&gt;
+        </Link>
       </div>
     </motion.div>
   );

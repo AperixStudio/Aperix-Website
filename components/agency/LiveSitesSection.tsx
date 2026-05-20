@@ -151,7 +151,7 @@ function ProjectCard({
         opacity: absOffset > 2 ? 0 : 1,
         x: offset * 14,
       }}
-      transition={{ type: "spring", stiffness: 280, damping: 30 }}
+      transition={{ type: "spring", stiffness: 120, damping: 30, mass: 1.2 }}
       style={{
         zIndex,
         position: "absolute",
@@ -255,12 +255,13 @@ export default function LiveSitesSection() {
     setActive(((index % TOTAL) + TOTAL) % TOTAL);
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     dragStartX.current = e.clientX;
+    e.currentTarget.setPointerCapture(e.pointerId);
   }, []);
 
   const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
+    (e: React.PointerEvent<HTMLDivElement>) => {
       const delta = e.clientX - dragStartX.current;
       if (delta < -DRAG_THRESHOLD) goTo(active + 1);
       else if (delta > DRAG_THRESHOLD) goTo(active - 1);
@@ -271,7 +272,7 @@ export default function LiveSitesSection() {
   return (
     <section
       id="live-sites"
-      className="px-6 py-20 lg:px-12 lg:py-32"
+      className="overflow-x-hidden px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="live-sites-heading"
     >
       <div className="mx-auto max-w-7xl">
@@ -315,7 +316,7 @@ export default function LiveSitesSection() {
         <div className="mt-14 flex justify-center">
           <div
             className="relative select-none"
-            style={{ height: 520, width: "min(100%, 420px)" }}
+            style={{ height: 520, width: "min(100%, 420px)", touchAction: "none" }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
           >
