@@ -33,6 +33,7 @@ const LIVE_SITES = [
     location: "Web app",
     status: "Live now",
     label: "SaaS / streaming product",
+    preview: "/POVSyncPreview.png",
     summary:
       "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
     scope: ["SaaS landing", "Product messaging", "Onboarding UX", "Fast setup flow"],
@@ -63,31 +64,54 @@ type Site = (typeof LIVE_SITES)[number];
 
 const CARD_THEMES = [
   {
-    gradient: "from-[#1a6fd4] to-[#1558b0]",
+    // The Hidden Chapter — leaf green
+    gradient: "from-[#3a7d44] to-[#2d6235]",
     accentLight: "text-white/70",
-    accent: "text-agency-accent",
+    accent: "text-[#6dba7d]",
     badgeBg: "bg-white/20 text-white border-white/30",
-    tagBg: "border-agency-accent/20 bg-agency-accent/10 text-agency-ink",
-    btn: "bg-agency-accent text-white hover:bg-agency-accent-dark",
-    darkGradient: "from-[#0d1f35] to-[#0a1829]",
+    tagBg: "border-[#3a7d44]/20 bg-[#3a7d44]/10 text-agency-ink",
+    btn: "bg-[#3a7d44] text-white hover:bg-[#2d6235]",
+    darkGradient: "from-[#0d1f10] to-[#08140b]",
   },
   {
-    gradient: "from-[#d97706] to-[#b45309]",
+    // Rhino's Walk — light purple
+    gradient: "from-[#7e5bbd] to-[#6642a8]",
     accentLight: "text-white/70",
-    accent: "text-agency-accent2",
+    accent: "text-[#c4aef0]",
     badgeBg: "bg-white/20 text-white border-white/30",
-    tagBg: "border-agency-accent2/20 bg-agency-accent2/10 text-agency-ink",
-    btn: "bg-agency-accent2 text-white hover:opacity-90",
-    darkGradient: "from-[#1e1700] to-[#160e00]",
+    tagBg: "border-[#7e5bbd]/20 bg-[#7e5bbd]/10 text-agency-ink",
+    btn: "bg-[#7e5bbd] text-white hover:bg-[#6642a8]",
+    darkGradient: "from-[#1a1028] to-[#110a1e]",
   },
   {
-    gradient: "from-[#7c3aed] to-[#6d28d9]",
+    // POV Sync — Twitch purple
+    gradient: "from-[#9146ff] to-[#772ce8]",
     accentLight: "text-white/70",
-    accent: "text-agency-accent3",
+    accent: "text-[#c89bff]",
     badgeBg: "bg-white/20 text-white border-white/30",
-    tagBg: "border-agency-accent3/20 bg-agency-accent3/10 text-agency-ink",
-    btn: "bg-agency-accent3 text-white hover:opacity-90",
-    darkGradient: "from-[#150b2e] to-[#0e0620]",
+    tagBg: "border-[#9146ff]/20 bg-[#9146ff]/10 text-agency-ink",
+    btn: "bg-[#9146ff] text-white hover:bg-[#772ce8]",
+    darkGradient: "from-[#1a0d35] to-[#110826]",
+  },
+  {
+    // Complete Trade Solutions — CTS orange
+    gradient: "from-[#e85d04] to-[#c44d03]",
+    accentLight: "text-white/70",
+    accent: "text-[#ffaa6b]",
+    badgeBg: "bg-white/20 text-white border-white/30",
+    tagBg: "border-[#e85d04]/20 bg-[#e85d04]/10 text-agency-ink",
+    btn: "bg-[#e85d04] text-white hover:bg-[#c44d03]",
+    darkGradient: "from-[#1e0e00] to-[#160900]",
+  },
+  {
+    // National Roofing Solutions — storm blue
+    gradient: "from-[#2e5f8a] to-[#1e4a70]",
+    accentLight: "text-white/70",
+    accent: "text-[#7eb8e8]",
+    badgeBg: "bg-white/20 text-white border-white/30",
+    tagBg: "border-[#2e5f8a]/20 bg-[#2e5f8a]/10 text-agency-ink",
+    btn: "bg-[#2e5f8a] text-white hover:bg-[#1e4a70]",
+    darkGradient: "from-[#0a1826] to-[#06101a]",
   },
 ] as const;
 
@@ -177,19 +201,29 @@ function ProjectCard({
             {site.label}
           </p>
         </div>
-        {/* Live preview iframe */}
+        {/* Live preview */}
         <div className="relative h-44 w-full overflow-hidden border-t border-agency-border bg-agency-bg">
-          <iframe
-            src={site.href}
-            title={`Preview of ${site.name}`}
-            className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
-            style={{ transform: "scale(0.235)", transformOrigin: "top left" }}
-            loading="lazy"
-            tabIndex={-1}
-            aria-hidden="true"
-            sandbox="allow-scripts allow-same-origin"
-          />
-          {/* Overlay to block interaction with iframe */}
+          {"preview" in site && site.preview ? (
+            <img
+              src={site.preview}
+              alt={`Preview of ${site.name}`}
+              className="absolute inset-0 h-full w-full object-cover object-top"
+              loading="lazy"
+              aria-hidden="true"
+            />
+          ) : (
+            <iframe
+              src={site.href}
+              title={`Preview of ${site.name}`}
+              className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
+              style={{ transform: "scale(0.235)", transformOrigin: "top left" }}
+              loading="lazy"
+              tabIndex={-1}
+              aria-hidden="true"
+              sandbox="allow-scripts allow-same-origin"
+            />
+          )}
+          {/* Overlay to block interaction */}
           <div className="absolute inset-0" />
         </div>
 
