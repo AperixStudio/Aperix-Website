@@ -68,7 +68,7 @@ export default function AgencyNav() {
 
   return (
     <>
-      <header className={cn("agency-header fixed top-0 left-0 right-0 z-40 px-4 pt-4 sm:px-6 lg:px-8", scrolled && "agency-header--scrolled")}>
+      <header className={cn("agency-header fixed top-0 left-0 right-0 z-50 px-4 pt-4 sm:px-6 lg:px-8", scrolled && "agency-header--scrolled")}>
         <div aria-hidden="true" className="agency-header-underlay" />
         {/* Glass pill backplate — tighter and more distinct */}
         <div
