@@ -9,7 +9,6 @@ interface TierCardProps {
   valueProp: string;
   features: string[];
   retainer: string;
-  demoHref: string;
   contactHref?: string;
   popular?: boolean;
   className?: string;
@@ -71,7 +70,6 @@ export default function TierCard({
   valueProp,
   features,
   retainer,
-  demoHref,
   contactHref = "/contact",
   popular = false,
   className,
@@ -117,9 +115,13 @@ export default function TierCard({
         ))}
       </ul>
 
-      <p className="mt-5 text-xs text-agency-muted">{retainer}</p>
+      <div className="mt-5 rounded-lg border border-agency-border bg-agency-surface/60 px-4 py-3">
+        <p className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-agency-muted">Ongoing care</p>
+        <p className="text-sm font-medium text-agency-text">{retainer}</p>
+        <p className="mt-0.5 text-xs text-agency-muted">Hosting, updates & support</p>
+      </div>
 
-      <div className="mt-5 grid gap-2">
+      <div className="mt-4 grid gap-2">
         <Link
           href={`${contactHref}?tier=${encodeURIComponent(name)}`}
           className={cn(
@@ -132,13 +134,7 @@ export default function TierCard({
           Ask about {name}
           <span aria-hidden="true">&rarr;</span>
         </Link>
-        <Link
-          href={demoHref}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-agency-border bg-agency-surface/70 px-5 py-2.5 text-sm font-medium text-agency-ink transition-colors hover:border-agency-accent hover:text-agency-accent"
-        >
-          View demo
-          <span aria-hidden="true">&rarr;</span>
-        </Link>
+
       </div>
     </div>
   );

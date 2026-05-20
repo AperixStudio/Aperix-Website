@@ -12,11 +12,10 @@ export interface TierDetailData {
   price: string;
   valueProp: string;
   features: string[];
+  previousTier?: string;
   notIncluded: string[];
   timeline: string;
-  idealFor: string;
   retainer: string;
-  demoLink: string;
   popular?: boolean;
 }
 
@@ -111,7 +110,7 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
       <div className="mb-5 h-px bg-agency-border" />
 
       {/* included features */}
-      <div className="mb-5">
+      <div className="mb-5 flex-1">
         <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-agency-text">
           What&apos;s included
         </h4>
@@ -127,30 +126,19 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
         </ul>
       </div>
 
-      <div className="mb-5 h-px bg-agency-border" />
-
-      {/* timeline & ideal for */}
-      <div className="mb-5 space-y-3">
-        <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-agency-text">
-            Typical timeline
-          </span>
+      {/* care plan + CTA */}
+      <div className="mt-auto pt-5">        
+        <div className="mb-4 h-px bg-agency-border" />
+        <div className="mb-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-agency-text">Typical timeline</p>
           <p className="mt-1 text-sm text-agency-muted">{tier.timeline}</p>
         </div>
-        <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-agency-text">
-            Ideal for
-          </span>
-          <p className="mt-1 text-sm text-agency-muted">{tier.idealFor}</p>
+        <div className="mb-4 h-px bg-agency-border" />
+        <div className="mb-4 rounded-lg border border-agency-border bg-agency-surface/60 px-4 py-3">
+          <p className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-agency-text">Ongoing care</p>
+          <p className="text-sm font-medium text-agency-text">{tier.retainer}</p>
+          <p className="mt-0.5 text-xs text-agency-muted">Hosting, updates & support</p>
         </div>
-      </div>
-
-      {/* retainer */}
-      <p className="mb-5 text-xs text-agency-muted/60">{tier.retainer}</p>
-
-      {/* spacer + CTA */}
-      <div className="mt-auto">
-        <div className="grid gap-2">
           <Link
             href={`/contact?tier=${encodeURIComponent(tier.name)}`}
             className={cn(
@@ -160,15 +148,8 @@ export default function TierDetailCard({ tier }: { tier: TierDetailData }) {
                 : "bg-agency-ink text-agency-bg hover:opacity-85"
             )}
           >
-            Ask about {tier.name} →
+            Ask about {tier.name} -&gt;
           </Link>
-          <Link
-            href={tier.demoLink}
-            className="inline-flex w-full items-center justify-center rounded-xl border border-agency-border bg-agency-surface/70 px-6 py-2.5 text-sm font-semibold text-agency-text transition-colors hover:border-agency-accent hover:text-agency-accent"
-          >
-            View the demo
-          </Link>
-        </div>
       </div>
     </motion.div>
   );

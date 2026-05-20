@@ -159,7 +159,7 @@ body {
     linear-gradient(90deg, var(--agency-grid) 1px, transparent 1px),
     radial-gradient(circle at top, var(--agency-radial), transparent 42%);
   background-size: 72px 72px, 72px 72px, 100% 100%;
-  background-attachment: scroll;
+  background-attachment: fixed;
   color: var(--agency-text);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

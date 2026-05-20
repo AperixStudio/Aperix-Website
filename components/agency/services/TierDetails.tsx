@@ -15,11 +15,11 @@ const tiers: TierDetailData[] = [
     valueProp:
       "Get online fast with a single-page site that gives your business a clear, credible presence.",
     features: [
-      "Single page — hero, services, contact, Google Maps",
-      "Mobile-first, fully responsive",
-      "Google Business Profile setup",
+      "Single page - your choosing of what to present",
+      "Fully responsive and mobile friendly",
       "Contact form with email notification",
-      "Submitted to Google Search Console",
+      "Basic on-page SEO (meta tags, page titles, structured data)",
+      "Hosted by Aperix and their chosen providers - transferable to your own hosting any time",
     ],
     notIncluded: [
       "Multi-page navigation",
@@ -28,25 +28,20 @@ const tiers: TierDetailData[] = [
       "Booking or payment integrations",
       "SEO strategy or ongoing optimisation",
     ],
-    timeline: "3–7 business days once content is ready",
-    idealFor:
-      "Sole traders, tradespeople, or new businesses that need a professional presence fast.",
-    retainer: "From $99/month Basic Care",
-    demoLink: "/demo/essential",
+    timeline: "Typically 3-7 Business Days plus time for feedback and revisions",
+    retainer: "From $50/month Basic Care",
   },
   {
     name: "Growth",
     badge: "cyan",
     price: "$1,290",
+    previousTier: "Basic",
     valueProp:
       "A clean multi-page website for businesses that need room to explain their services and build trust.",
     features: [
-      "4–5 custom-coded pages",
-      "Mobile-first, fully responsive design",
+      "Everything in Basic, PLUS:",
+      "4-5 custom-coded pages with your choice of content",
       "Google Business Profile setup & optimisation",
-      "Contact form with email notification",
-      "Basic on-page SEO (meta tags, structured data)",
-      "Cloudflare hosting setup",
     ],
     notIncluded: [
       "CMS / content editing panel",
@@ -55,24 +50,20 @@ const tiers: TierDetailData[] = [
       "Brand identity or logo design",
       "Custom animations beyond standard transitions",
     ],
-    timeline: "2–3 weeks from approved direction",
-    idealFor:
-      "Cafés, salons, local services, and small businesses that need a polished multi-page site.",
-    retainer: "From $99/month Basic Care",
-    demoLink: "/demo/starter",
+    timeline: "Typically 2-3 weeks plus time for feedback and revisions",
+    retainer: "From $100/month Pro Care",
   },
   {
     name: "Pro",
     badge: "amber",
     price: "$3,290",
+    previousTier: "Growth",
     valueProp:
       "A stronger custom site for businesses that need better structure, content control, and enquiry flow.",
     features: [
-      "6–10 custom-coded pages",
-      "Custom design system built for your brand",
-      "CMS integration (Sanity) — edit your own content",
-      "Booking or enquiry flow integration",
-      "Full local SEO package",
+      "Everything in Growth, PLUS:",
+      "6-10 custom-coded pages",
+      "Content Management System integration - edit your own content",
       "Google Analytics + Search Console setup",
       "Performance-focused build with Core Web Vitals in mind",
       "2 rounds of revisions included",
@@ -84,23 +75,22 @@ const tiers: TierDetailData[] = [
       "Custom portals or login areas",
       "Ongoing SEO retainer (available as add-on)",
     ],
-    timeline: "4–6 weeks from approved direction",
-    idealFor:
-      "Established businesses, multi-location services, or professional teams with a clearer sales flow.",
-    retainer: "From $249/month Standard Care",
-    demoLink: "/demo/business",
+    timeline: "Typically 4-6 weeks plus time for feedback and revisions",
+    retainer: "From $100/month Pro Care",
     popular: true,
   },
   {
     name: "Enterprise",
     badge: "violet",
     price: "$5,999+",
+    previousTier: "Pro",
     valueProp:
       "A bespoke build for businesses that need a more considered brand experience and deeper functionality.",
     features: [
+      "Everything in Pro, PLUS:",
       "Unlimited pages, full custom architecture",
       "Brand identity consultation included",
-      "Advanced animations & interactions (Framer Motion)",
+      "Advanced animations & interactions",
       "Headless CMS with full content model",
       "Custom integrations (booking, payments, portals)",
       "Advanced SEO strategy + schema markup",
@@ -113,11 +103,8 @@ const tiers: TierDetailData[] = [
       "App development (iOS / Android)",
       "Print design or physical branding materials",
     ],
-    timeline: "6–10 weeks, scoped individually",
-    idealFor:
-      "Premium service providers, clinics, architects, and brands with custom functionality needs.",
-    retainer: "From $449/month Growth Care",
-    demoLink: "/demo/premium",
+    timeline: "Scoped individually, typically 6-10 weeks plus time for feedback and revisions ",
+    retainer: "From $200/month Enterprise Care",
   },
 ];
 

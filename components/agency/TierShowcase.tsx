@@ -130,19 +130,19 @@ export default function TierShowcase() {
           <StaggerItem className="flex">
             <HoverLift className="flex h-full w-full">
               <DeferredTierCard
-                name="Essential"
+                name="Basic"
                 color="muted"
                 price="$499"
                 className={TIER_CARD_HEIGHT_CLASS}
-                valueProp="A simple one-page site for businesses that need a clean, credible online presence without overcomplicating it."
+                valueProp="Get online fast with a single-page site that gives your business a clear, credible presence."
                 features={[
-                  "Single page — hero, services, contact, Google Maps",
-                  "Mobile-first, fully responsive",
-                  "Google Business Profile setup",
+                  "Single page - your choosing of what to present",
+                  "Fully responsive and mobile friendly",
                   "Contact form with email notification",
+                  "Basic on-page SEO (meta tags, page titles, structured data)",
+                  "Hosted by Aperix and their chosen providers - transferable to your own hosting any time",
                 ]}
-                retainer="From $99/month Basic Care"
-                demoHref="/demo/essential"
+                retainer="From $50/month Basic Care"
               />
             </HoverLift>
           </StaggerItem>
@@ -150,20 +150,17 @@ export default function TierShowcase() {
           <StaggerItem className="flex">
             <HoverLift className="flex h-full w-full">
               <DeferredTierCard
-                name="Starter"
+                name="Growth"
                 color="cyan"
                 price="$1,290"
                 className={TIER_CARD_HEIGHT_CLASS}
-                valueProp="A solid small-business website with the core pages in place and enough room to present the business properly."
+                valueProp="A clean multi-page website for businesses that need room to explain their services and build trust."
                 features={[
-                  "4–5 custom-coded pages",
-                  "Mobile-first, fully responsive design",
+                  "Everything in Basic, PLUS:",
+                  "4-5 custom-coded pages with your choice of content",
                   "Google Business Profile setup & optimisation",
-                  "Contact form with email notification",
-                  "Basic on-page SEO (meta tags, structured data)",
                 ]}
-                retainer="From $99/month Basic Care"
-                demoHref="/demo/starter"
+                retainer="From $100/month Pro Care"
               />
             </HoverLift>
           </StaggerItem>
@@ -171,20 +168,20 @@ export default function TierShowcase() {
           <StaggerItem className="flex">
             <HoverLift className="flex h-full w-full" scale={1.015}>
               <DeferredTierCard
-                name="Business"
+                name="Pro"
                 color="amber"
                 price="$3,290"
                 className={TIER_CARD_HEIGHT_CLASS}
-                valueProp="A more complete custom site for businesses that need stronger structure, better content control, and a clearer enquiry flow."
+                valueProp="A stronger custom site for businesses that need better structure, content control, and enquiry flow."
                 features={[
-                  "6–10 custom-coded pages",
-                  "Custom design system built for your brand",
-                  "CMS integration (Sanity) — edit your own content",
-                  "Booking or enquiry flow integration",
-                  "Full local SEO package",
+                  "Everything in Growth, PLUS:",
+                  "6-10 custom-coded pages",
+                  "Content Management System integration - edit your own content",
+                  "Google Analytics + Search Console setup",
+                  "Performance-focused build with Core Web Vitals in mind",
+                  "2 rounds of revisions included",
                 ]}
-                retainer="From $249/month Standard Care"
-                demoHref="/demo/business"
+                retainer="From $100/month Pro Care"
                 popular
               />
             </HoverLift>
@@ -193,20 +190,22 @@ export default function TierShowcase() {
           <StaggerItem className="flex">
             <HoverLift className="flex h-full w-full">
               <DeferredTierCard
-                name="Premium"
+                name="Enterprise"
                 color="violet"
                 price="$5,999+"
                 className={TIER_CARD_HEIGHT_CLASS}
-                valueProp="A deeper custom build for businesses that need more flexibility, stronger brand presentation, and more involved functionality."
+                valueProp="A bespoke build for businesses that need a more considered brand experience and deeper functionality."
                 features={[
+                  "Everything in Pro, PLUS:",
                   "Unlimited pages, full custom architecture",
                   "Brand identity consultation included",
-                  "Advanced animations & interactions (Framer Motion)",
+                  "Advanced animations & interactions",
                   "Headless CMS with full content model",
                   "Custom integrations (booking, payments, portals)",
+                  "Advanced SEO strategy + schema markup",
+                  "Priority support, 3 months included post-launch",
                 ]}
-                retainer="From $449/month Growth Care"
-                demoHref="/demo/premium"
+                retainer="From $200/month Enterprise Care"
               />
             </HoverLift>
           </StaggerItem>

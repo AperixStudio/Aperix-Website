@@ -6,32 +6,9 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 /* ── add-on data ───────────────────────────────────────── */
 const addOns = [
   {
-    name: "Social Media Starter",
-    description:
-      "2 posts/week, 1 platform (Instagram or Facebook), scheduling",
-    price: "$349/mo",
-  },
-  {
-    name: "Social Media Active",
-    description: "4 posts/week, 2 platforms, basic story content",
-    price: "$649/mo",
-  },
-  {
-    name: "Social Media Full",
-    description:
-      "Daily content, 2–3 platforms, stories + reels, engagement monitoring",
-    price: "$1,190/mo",
-  },
-  {
-    name: "Local SEO Package",
-    description:
-      "Google Business optimisation, citation building, reporting",
-    price: "$450–$900/mo",
-  },
-  {
-    name: "Google Ads Management",
-    description: "Campaign setup, management, reporting (ad spend separate)",
-    price: "$450–$900/mo",
+    name: "Extra Page",
+    description: "One additional custom-coded page added to your site post-launch",
+    price: "$199/page",
   },
   {
     name: "Extra Revision Round",
@@ -40,14 +17,23 @@ const addOns = [
   },
   {
     name: "Rush Delivery",
-    description: "Accelerated timeline (50% faster)",
+    description: "Accelerated timeline — approximately 50% faster turnaround",
     price: "+25% project fee",
   },
   {
+    name: "Google Business Setup",
+    description: "Full Google Business Profile setup, category optimisation, and Google Search Console submission so your site starts getting indexed faster",
+    price: "$150 flat",
+  },
+  {
     name: "Photography Co-ordination",
-    description:
-      "Connecting client with Melbourne photographer, creative direction",
+    description: "Connecting you with a Melbourne photographer and providing creative direction for the shoot",
     price: "$350 flat",
+  },
+  {
+    name: "Social Media Management",
+    description: "Regular content across Instagram or Facebook — post frequency and scope agreed upfront",
+    price: "From $349/mo",
   },
 ];
 
