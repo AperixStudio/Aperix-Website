@@ -130,12 +130,14 @@ function ProjectCard({
   theme,
   offset,
   isActive,
+  isDragging,
   onClick,
 }: {
   site: Site;
   theme: (typeof CARD_THEMES)[number];
   offset: number;
   isActive: boolean;
+  isDragging: boolean;
   onClick: () => void;
 }) {
   const rotate = offset * STEP_DEG;
@@ -161,7 +163,10 @@ function ProjectCard({
         transformOrigin: "50% 110%",
         cursor: isActive ? "default" : "pointer",
         width: 340,
-      }}
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
+      } as React.CSSProperties}
       aria-hidden={!isActive}
     >
       <div className="flex h-120 w-full flex-col overflow-hidden rounded-3xl border border-agency-border bg-agency-surface shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
@@ -223,8 +228,8 @@ function ProjectCard({
               sandbox="allow-scripts allow-same-origin"
             />
           )}
-          {/* Overlay to block interaction */}
-          <div className="absolute inset-0" />
+          {/* Overlay to block interaction and freeze iframe visually during drag */}
+          <div className={`absolute inset-0 transition-colors duration-150 ${isDragging && !isActive ? "bg-agency-bg" : ""}`} />
         </div>
 
         {/* Visit button */}
@@ -249,6 +254,7 @@ function ProjectCard({
 
 export default function LiveSitesSection() {
   const [active, setActive] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
 
   const goTo = useCallback((index: number) => {
@@ -258,16 +264,22 @@ export default function LiveSitesSection() {
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     dragStartX.current = e.clientX;
     e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
   }, []);
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      setIsDragging(false);
       const delta = e.clientX - dragStartX.current;
       if (delta < -DRAG_THRESHOLD) goTo(active + 1);
       else if (delta > DRAG_THRESHOLD) goTo(active - 1);
     },
     [active, goTo],
   );
+
+  const handlePointerCancel = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
   return (
     <section
@@ -319,6 +331,7 @@ export default function LiveSitesSection() {
             style={{ height: 520, width: "min(100%, 420px)", touchAction: "none" }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
           >
             {LIVE_SITES.map((site, i) => {
               const offset = getOffset(i, active);
@@ -329,6 +342,7 @@ export default function LiveSitesSection() {
                   theme={CARD_THEMES[i % CARD_THEMES.length]}
                   offset={offset}
                   isActive={i === active}
+                  isDragging={isDragging}
                   onClick={() => goTo(i)}
                 />
               );
