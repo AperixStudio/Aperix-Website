@@ -284,7 +284,7 @@ export default function LiveSitesSection() {
   return (
     <section
       id="live-sites"
-      className="overflow-x-hidden px-6 py-20 lg:px-12 lg:py-32"
+      className="overflow-hidden px-6 py-20 lg:px-12 lg:py-32"
       aria-labelledby="live-sites-heading"
     >
       <div className="mx-auto max-w-7xl">
@@ -325,7 +325,7 @@ export default function LiveSitesSection() {
           </Reveal>
         </div>
 
-        <div className="mt-14 flex justify-center">
+        <div className="mt-14 flex justify-center overflow-hidden">
           <div
             className="relative select-none"
             style={{ height: 520, width: "min(100%, 420px)", touchAction: "none" }}
