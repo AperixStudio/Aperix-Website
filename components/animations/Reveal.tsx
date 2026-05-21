@@ -28,6 +28,7 @@ export function Reveal({
       initial={prefersReduced ? false : (initial ?? "hidden")}
       whileInView={prefersReduced ? undefined : (whileInView ?? "visible")}
       viewport={viewport ?? defaultViewport}
+      style={{ willChange: "transform, opacity", backfaceVisibility: "hidden", ...props.style }}
       {...props}
     >
       {children}

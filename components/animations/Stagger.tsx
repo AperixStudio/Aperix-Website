@@ -57,6 +57,7 @@ export function StaggerGroup({
       initial={prefersReduced ? false : (initial ?? "hidden")}
       whileInView={prefersReduced ? undefined : (whileInView ?? "visible")}
       viewport={viewport ?? defaultViewport}
+      style={{ willChange: "transform, opacity", backfaceVisibility: "hidden", ...props.style }}
       {...props}
     >
       {children}
@@ -73,7 +74,10 @@ export function StaggerItem({
   const prefersReduced = useReducedMotion();
 
   return (
-    <motion.div variants={prefersReduced ? undefined : (variants ?? getPreset(preset))} {...props}>
+    <motion.div
+      variants={prefersReduced ? undefined : (variants ?? getPreset(preset))}
+      style={{ willChange: "transform, opacity", backfaceVisibility: "hidden", ...props.style }}
+      {...props}>
       {children}
     </motion.div>
   );

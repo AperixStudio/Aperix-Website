@@ -31,14 +31,17 @@ const LOGO_H = Math.round(LOGO_SIZE * (836 / 768));
 
 export default function IntroScreen() {
   const [scope, animate] = useAnimate();
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (introHasPlayed) {
-      setVisible(false);
       releaseIntroGate();
       return;
     }
+
+    // Show intro client-side only — avoids hydration mismatch with the
+    // script-injected cover div in layout.tsx which has different styles.
+    setVisible(true);
 
     const run = async () => {
       // Short hold so the bg colour is seen before anything moves
