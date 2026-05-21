@@ -39,10 +39,10 @@ export default function OurWorkPage() {
               <h1 className="font-display text-4xl font-bold leading-tight text-agency-ink sm:text-5xl lg:text-6xl">
                 Case studies for websites we’ve launched.
               </h1>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
+              {/*<p className="mt-5 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
                 See the problem each project needed to solve, how Aperix approached
                 the build, and what the live result now helps the business communicate.
-              </p>
+              </p>*/}
               <div className="mt-6 flex flex-wrap gap-3">
                 {WORK_TYPES.map((type) => (
                   <span

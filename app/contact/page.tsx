@@ -29,11 +29,6 @@ export default function ContactPage() {
             <h2 className="font-display text-3xl font-bold text-agency-text sm:text-4xl">
               Let&apos;s talk about your business.
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-agency-muted">
-              Tell me what you need, where the business is at, and what kind of
-              timeline or budget you have in mind. I&apos;ll help you work out the
-              right tier without pushing you into more than you need.
-            </p>
           </div>
 
           {/* ── Right panel — form ──────────────────── */}

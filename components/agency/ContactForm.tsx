@@ -154,7 +154,7 @@ export default function AgencyContactForm() {
           Thanks, {submittedName}!
         </h3>
         <p className="mt-2 text-base text-agency-muted">
-          I&apos;ll review your details and be in touch within 24 hours.
+          We will review your details and be in touch within 24 hours.
         </p>
         <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
       </motion.div>
@@ -282,7 +282,7 @@ export default function AgencyContactForm() {
 
       <div>
         <label htmlFor="ac-desc" className="mb-1.5 block text-sm font-medium text-agency-text">
-          Tell me about your business *
+          Tell us about your business *
         </label>
         <textarea
           id="ac-desc"
@@ -292,7 +292,7 @@ export default function AgencyContactForm() {
           value={form.description}
           onChange={handleChange}
           className={`${getFieldClass("description")} resize-none`}
-          placeholder="What does your business do, who are your customers, and what's your goal with a new website?"
+          placeholder="Things like what does your business do, who are your customers, what's your goal with a new website?"
           aria-describedby={errors.description ? "err-description" : undefined}
         />
         <FieldError id="err-description" message={errors.description} />
