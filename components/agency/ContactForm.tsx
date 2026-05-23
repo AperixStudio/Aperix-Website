@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   businessTypeOptions,
   contactSchema,
@@ -49,6 +49,7 @@ export default function AgencyContactForm() {
   const [submittedName, setSubmittedName] = useState("there");
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -111,17 +112,23 @@ export default function AgencyContactForm() {
       });
 
       if (!response.ok) {
-        setSubmitError("Your enquiry could not be sent. Please try again.");
+        const msg = "Your enquiry could not be sent. Please try again.";
+        setSubmitError(msg);
+        setToast({ type: "error", message: msg });
+        setTimeout(() => setToast(null), 6000);
         return;
       }
 
       setSubmittedName(parsed.data.name.split(" ")[0] || "there");
       setSubmitted(true);
       setForm(initialForm);
+      setToast({ type: "success", message: "Enquiry sent! We'll be in touch within 24 hours." });
+      setTimeout(() => setToast(null), 5000);
     } catch {
-      setSubmitError(
-        "The connection dropped before we could send your enquiry. Please try again or email hello@aperixstudio.com.",
-      );
+      const msg = "The connection dropped before we could send your enquiry. Please try again or email hello@aperixstudio.com.";
+      setSubmitError(msg);
+      setToast({ type: "error", message: msg });
+      setTimeout(() => setToast(null), 6000);
     } finally {
       setSubmitting(false);
     }
@@ -336,10 +343,12 @@ export default function AgencyContactForm() {
         </div>
       ) : null}
 
-      <button
+      <motion.button
         type="submit"
         disabled={submitting}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-agency-accent px-6 py-4 text-sm font-semibold text-agency-bg transition-colors hover:bg-agency-accent/85 disabled:opacity-60"
+        whileTap={prefersReduced ? undefined : { scale: 0.97 }}
+        whileHover={prefersReduced ? undefined : { opacity: 0.88 }}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-agency-accent px-6 py-4 text-sm font-semibold text-agency-bg transition-colors disabled:opacity-60"
       >
         {submitting ? (
           <>
@@ -352,9 +361,47 @@ export default function AgencyContactForm() {
         ) : (
           "Send Enquiry"
         )}
-      </button>
+      </motion.button>
 
-
+      {/* Toast notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key="toast"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.96 }}
+            transition={{ duration: 0.25 }}
+            className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-4 text-sm font-semibold shadow-xl ${
+              toast.type === "success"
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            {toast.type === "success" ? (
+              <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            )}
+            {toast.message}
+            <button
+              onClick={() => setToast(null)}
+              className="ml-2 opacity-70 hover:opacity-100"
+              aria-label="Dismiss"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </form>
   );
 }
