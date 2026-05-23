@@ -49,7 +49,6 @@ export default function AgencyContactForm() {
   const [submittedName, setSubmittedName] = useState("there");
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [requestId, setRequestId] = useState<string | null>(null);
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -88,27 +87,32 @@ export default function AgencyContactForm() {
     setSubmitting(true);
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(parsed.data),
+      // Honeypot check
+      if (parsed.data.website) {
+        setSubmittedName(parsed.data.name.split(" ")[0] || "there");
+        setSubmitted(true);
+        setForm(initialForm);
+        return;
+      }
+
+      const formData = new URLSearchParams();
+      formData.append("form-name", "contact");
+      Object.entries(parsed.data).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formData.append(key, value.join(", "));
+        } else {
+          formData.append(key, String(value ?? ""));
+        }
       });
 
-      const payload = (await response.json().catch(() => null)) as
-        | { error?: string; fieldErrors?: ContactFieldErrors; requestId?: string }
-        | null;
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      });
 
       if (!response.ok) {
-        if (payload?.fieldErrors) {
-          setErrors(payload.fieldErrors);
-        }
-
-        setRequestId(payload?.requestId ?? null);
-        setSubmitError(
-          payload?.error ?? "Your enquiry could not be sent. Please try again.",
-        );
+        setSubmitError("Your enquiry could not be sent. Please try again.");
         return;
       }
 
@@ -117,7 +121,7 @@ export default function AgencyContactForm() {
       setForm(initialForm);
     } catch {
       setSubmitError(
-        "The connection dropped before we could send your enquiry. Please try again or email hello@aperix.com.au.",
+        "The connection dropped before we could send your enquiry. Please try again or email hello@aperixstudio.com.",
       );
     } finally {
       setSubmitting(false);
