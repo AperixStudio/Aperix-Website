@@ -105,7 +105,7 @@ export default function AgencyContactForm() {
         }
       });
 
-      const response = await fetch("/", {
+      const response = await fetch("/__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
@@ -143,31 +143,65 @@ export default function AgencyContactForm() {
 
   if (submitted) {
     return (
-      <motion.div
-        initial={prefersReduced ? undefined : { opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center px-8 py-24 text-center"
-      >
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-agency-accent/10">
-          <svg
-            className="h-7 w-7 text-agency-accent"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 className="font-display text-2xl font-bold text-agency-text">
-          Thanks, {submittedName}!
-        </h3>
-        <p className="mt-2 text-base text-agency-muted">
-          We will review your details and be in touch within 24 hours.
-        </p>
-        <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
-      </motion.div>
+      <>
+        <motion.div
+          initial={prefersReduced ? undefined : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center px-8 py-24 text-center"
+        >
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-agency-accent/10">
+            <svg
+              className="h-7 w-7 text-agency-accent"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="font-display text-2xl font-bold text-agency-text">
+            Thanks, {submittedName}!
+          </h3>
+          <p className="mt-2 text-base text-agency-muted">
+            We will review your details and be in touch within 24 hours.
+          </p>
+          <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
+        </motion.div>
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              key="toast"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ duration: 0.25 }}
+              className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-4 text-sm font-semibold shadow-xl ${
+                toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+              }`}
+              role="status"
+              aria-live="polite"
+            >
+              {toast.type === "success" ? (
+                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+              {toast.message}
+              <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100" aria-label="Dismiss">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
     );
   }
 
