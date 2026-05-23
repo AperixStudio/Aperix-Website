@@ -41,6 +41,49 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
+function ContactToast({
+  toast,
+  onDismiss,
+}: {
+  toast: { type: "success" | "error"; message: string } | null;
+  onDismiss: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {toast && (
+        <motion.div
+          key="toast"
+          initial={{ opacity: 0, y: 24, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.96 }}
+          transition={{ duration: 0.25 }}
+          className={`fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-4 text-sm font-semibold shadow-xl ${
+            toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          {toast.type === "success" ? (
+            <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          )}
+          <span className="flex-1">{toast.message}</span>
+          <button onClick={onDismiss} className="opacity-70 hover:opacity-100" aria-label="Dismiss">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function AgencyContactForm() {
   const prefersReduced = useReducedMotion();
   const [form, setForm] = useState<FormState>(initialForm);
@@ -60,26 +103,19 @@ export default function AgencyContactForm() {
     setSubmitError(null);
   }
 
-  function handleNeedsChange(e: ChangeEvent<HTMLInputElement>) {
-    const { value, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      needs: checked
-        ? [...prev.needs, value]
-        : prev.needs.filter((n) => n !== value),
-    }));
-    setErrors((prev) => ({ ...prev, needs: undefined }));
-    setSubmitError(null);
-  }
-
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitError(null);
+    setToast(null);
 
     const parsed = contactSchema.safeParse(form);
 
     if (!parsed.success) {
       setErrors(toFieldErrors(parsed.error));
+      const msg = "Please review the highlighted fields and try again.";
+      setSubmitError(msg);
+      setToast({ type: "error", message: msg });
+      setTimeout(() => setToast(null), 6000);
       return;
     }
 
@@ -89,9 +125,12 @@ export default function AgencyContactForm() {
     try {
       // Honeypot check
       if (parsed.data.website) {
+        const msg = "Thanks — your enquiry has been received.";
         setSubmittedName(parsed.data.name.split(" ")[0] || "there");
         setSubmitted(true);
         setForm(initialForm);
+        setToast({ type: "success", message: msg });
+        setTimeout(() => setToast(null), 5000);
         return;
       }
 
@@ -122,7 +161,7 @@ export default function AgencyContactForm() {
       setSubmittedName(parsed.data.name.split(" ")[0] || "there");
       setSubmitted(true);
       setForm(initialForm);
-      setToast({ type: "success", message: "Enquiry sent! We'll be in touch within 24 hours." });
+      setToast({ type: "success", message: "Enquiry sent. We'll be in touch within 24 hours." });
       setTimeout(() => setToast(null), 5000);
     } catch {
       const msg = "The connection dropped before we could send your enquiry. Please try again or email hello@aperixstudio.com.";
@@ -169,49 +208,22 @@ export default function AgencyContactForm() {
           </p>
           <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
         </motion.div>
-        <AnimatePresence>
-          {toast && (
-            <motion.div
-              key="toast"
-              initial={{ opacity: 0, y: 24, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.96 }}
-              transition={{ duration: 0.25 }}
-              className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-4 text-sm font-semibold shadow-xl ${
-                toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
-              }`}
-              role="status"
-              aria-live="polite"
-            >
-              {toast.type === "success" ? (
-                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-              {toast.message}
-              <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100" aria-label="Dismiss">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <ContactToast toast={toast} onDismiss={() => setToast(null)} />
       </>
     );
   }
 
   return (
     <form
+      name="contact"
+      method="POST"
+      action="/__forms.html"
       onSubmit={handleSubmit}
       noValidate
       className="space-y-5 px-8 py-10"
       aria-label="Contact enquiry form"
     >
+      <input type="hidden" name="form-name" value="contact" />
       <div className="sr-only">
         <label htmlFor="ac-website">Website</label>
         <input
@@ -397,45 +409,7 @@ export default function AgencyContactForm() {
         )}
       </motion.button>
 
-      {/* Toast notification */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            key="toast"
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.96 }}
-            transition={{ duration: 0.25 }}
-            className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-4 text-sm font-semibold shadow-xl ${
-              toast.type === "success"
-                ? "bg-green-600 text-white"
-                : "bg-red-600 text-white"
-            }`}
-            role="status"
-            aria-live="polite"
-          >
-            {toast.type === "success" ? (
-              <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            )}
-            {toast.message}
-            <button
-              onClick={() => setToast(null)}
-              className="ml-2 opacity-70 hover:opacity-100"
-              aria-label="Dismiss"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ContactToast toast={toast} onDismiss={() => setToast(null)} />
     </form>
   );
 }

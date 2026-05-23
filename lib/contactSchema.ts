@@ -77,11 +77,12 @@ export const contactSchema = z
       }),
     needs: z
       .array(z.string())
-      .min(1, "Please choose at least one service.")
       .max(needsOptions.length, "Too many services selected.")
       .refine((values) => values.every((value) => allowedNeeds.has(value)), {
         message: "One of the selected services is invalid.",
-      }),
+      })
+      .optional()
+      .default([]),
     tierInterest: z
       .string()
       .trim()
