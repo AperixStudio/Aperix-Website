@@ -74,7 +74,6 @@ export default function AgencyContactForm() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitError(null);
-    setRequestId(null);
 
     const parsed = contactSchema.safeParse(form);
 
