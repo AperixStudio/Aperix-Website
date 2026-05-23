@@ -8,11 +8,6 @@ describe("contactSchema", () => {
     phone: "0412 345 678",
     businessName: "Aperix Studio",
     businessType: "Professional Services",
-    needs: ["New Website"],
-    tierInterest: "Pro",
-    budgetRange: "$3,000 – $6,000",
-    timeline: "Within 1 month",
-    currentWebsite: "https://aperix.com.au",
     description: "We need a fast custom website that converts more local enquiries.",
     contactMethod: "email" as const,
     website: "",
@@ -40,15 +35,6 @@ describe("contactSchema", () => {
     const result = contactSchema.safeParse({
       ...validPayload,
       website: "https://spam.example",
-    });
-
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects invalid package options", () => {
-    const result = contactSchema.safeParse({
-      ...validPayload,
-      tierInterest: "Premium",
     });
 
     expect(result.success).toBe(false);

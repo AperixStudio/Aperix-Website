@@ -19,15 +19,32 @@ const initialForm: FormState = {
   phone: "",
   businessName: "",
   businessType: "",
-  needs: [],
-  tierInterest: "",
-  budgetRange: "",
-  timeline: "",
-  currentWebsite: "",
   description: "",
   contactMethod: "email",
   website: "",
 };
+
+function buildNetlifyFormData(data: ContactSubmission) {
+  const formData = new URLSearchParams();
+  const appendIfPresent = (label: string, value?: string) => {
+    const trimmed = value?.trim();
+    if (trimmed) {
+      formData.append(label, trimmed);
+    }
+  };
+
+  formData.append("form-name", "contact");
+  appendIfPresent("website", data.website);
+  formData.append("Name", data.name);
+  formData.append("Email", data.email);
+  appendIfPresent("Phone", data.phone);
+  formData.append("Business Name", data.businessName);
+  formData.append("Business Type", data.businessType);
+  formData.append("Preferred Contact", data.contactMethod);
+  formData.append("Project Details", data.description);
+
+  return formData;
+}
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {
@@ -134,15 +151,7 @@ export default function AgencyContactForm() {
         return;
       }
 
-      const formData = new URLSearchParams();
-      formData.append("form-name", "contact");
-      Object.entries(parsed.data).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formData.append(key, value.join(", "));
-        } else {
-          formData.append(key, String(value ?? ""));
-        }
-      });
+      const formData = buildNetlifyFormData(parsed.data);
 
       const response = await fetch("/__forms.html", {
         method: "POST",
