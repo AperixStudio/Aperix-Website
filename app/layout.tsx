@@ -103,23 +103,6 @@ export default function RootLayout({
         <IntroScreen />
         <SiteAtmosphere />
         <CursorFollower />
-        {/* Netlify Forms: static form for build-time detection */}
-        <form name="contact" data-netlify="true" netlify-honeypot="website" hidden>
-          <input type="hidden" name="form-name" value="contact" />
-          <input name="website" />
-          <input name="name" />
-          <input name="email" />
-          <input name="phone" />
-          <input name="businessName" />
-          <input name="businessType" />
-          <input name="needs" />
-          <input name="tierInterest" />
-          <input name="budgetRange" />
-          <input name="timeline" />
-          <input name="currentWebsite" />
-          <input name="contactMethod" />
-          <textarea name="description"></textarea>
-        </form>
         <PageReveal>{children}</PageReveal>
       </body>
     </html>
