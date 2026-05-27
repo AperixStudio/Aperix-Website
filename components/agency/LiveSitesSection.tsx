@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect, type CSSProperties } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/animations";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,23 @@ const LIVE_SITES = [
     summary:
       "A blind date with a book storefront built around mood, mystery, and gifting. The site leads with a strong brand concept, clear shopping flow, and a polished experience that feels thoughtful from the first scroll.",
     scope: ["E-commerce", "Brand storytelling", "Responsive UX", "Story-led homepage", "Warm branded shopping flow"],
+    client: "The Hidden Chapter",
+    problem:
+      "The business needed an online store that felt like a curated gift experience instead of a generic product catalogue.",
+    solution:
+      "We built a mood-led storefront with stronger visual hierarchy, clearer product pathways, and brand storytelling that supports discovery on desktop and mobile.",
+    result:
+      "The finished site gives the brand a more premium feel and makes it easier for visitors to move from curiosity to browsing and purchase.",
+    beforeAfter:
+      "Before: the concept risked feeling like a standard shop. After: the experience feels curated, giftable, and more memorable.",
+    relatedService: "Growth / Pro-level ecommerce and brand storytelling",
+    impact:
+      "Business impact: stronger first impression, simpler shopping flow, and a clearer reason to buy without needing extra explanation.",
+    proofLibrary: [
+      { label: "Launch note", text: "Built to make the first scroll carry the brand mood immediately." },
+      { label: "Process note", text: "The product flow was kept short so mobile visitors could browse quickly." },
+      { label: "Visual proof", text: "Strong hero imagery and calmer product presentation create the premium feel." },
+    ],
   },
   {
     name: "Rhino's Walk",
@@ -26,6 +43,23 @@ const LIVE_SITES = [
     summary:
       "A campaign site for a 24-hour community walk supporting the Good Friday Appeal. Designed to explain the cause quickly, highlight impact, and make it easy for supporters to donate or join the walk.",
     scope: ["Campaign site", "Donation CTA", "Community storytelling", "Impact-driven design"],
+    client: "Rhino's Walk",
+    problem:
+      "The campaign needed a page that could communicate the cause fast and turn that attention into donations and participation.",
+    solution:
+      "We shaped the page around the fundraiser story, clear support actions, and a layout that keeps the donation path obvious on small screens.",
+    result:
+      "Visitors can understand the cause quickly and move directly into donating or joining the walk without digging through extra content.",
+    beforeAfter:
+      "Before: the campaign would have needed more explanation to build momentum. After: the page presents the cause, impact, and next step in one flow.",
+    relatedService: "Growth package for campaign-style websites",
+    impact:
+      "Business impact: stronger event clarity, faster decision-making, and a cleaner route to donations and sign-ups.",
+    proofLibrary: [
+      { label: "Launch note", text: "Built to explain the fundraiser in a single pass." },
+      { label: "Process note", text: "The CTA path was kept direct so supporters could act immediately." },
+      { label: "Proof point", text: "Community-first copy and impact framing support trust fast." },
+    ],
   },
   {
     name: "POV Sync",
@@ -37,6 +71,23 @@ const LIVE_SITES = [
     summary:
       "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
     scope: ["SaaS landing", "Product messaging", "Onboarding UX", "Fast setup flow"],
+    client: "POV Sync",
+    problem:
+      "The product needed to explain a fairly technical workflow without losing people before they reached the setup stage.",
+    solution:
+      "We focused the page on fast onboarding, clear feature explanation, and a clean route into the host setup flow.",
+    result:
+      "The landing experience makes the product easier to understand quickly, which supports sign-up intent and reduces confusion for new users.",
+    beforeAfter:
+      "Before: the value proposition could have felt complex. After: the product story is clearer and the setup path is easier to follow.",
+    relatedService: "Pro-level SaaS landing page and onboarding UX",
+    impact:
+      "Business impact: simpler explanation of the product, less friction in the setup journey, and stronger clarity around the core feature set.",
+    proofLibrary: [
+      { label: "Launch note", text: "Preview of the synced feed workflow is used to sell the idea quickly." },
+      { label: "Process note", text: "The content hierarchy is built to answer 'what is this?' before 'how do I use it?'" },
+      { label: "Visual proof", text: "The preview image shows the product in context, not just as a feature list." },
+    ],
   },
   {
     name: "Complete Trade Solutions",
@@ -47,6 +98,23 @@ const LIVE_SITES = [
     summary:
       "A full-service trades business covering kitchen renovations, roof restoration, painting, plumbing, electrical, cabinetry, and flooring. The site leads with a cinematic intro animation, clear service breakdown, and a direct quote enquiry flow.",
     scope: ["Multi-service trades", "Intro animation", "Service showcase", "Quote CTA", "Mobile-first"],
+    client: "Complete Trade Solutions",
+    problem:
+      "The business needed one site that could handle multiple services without feeling crowded or hard to scan.",
+    solution:
+      "We used a cinematic intro, service grouping, and a quote-first structure so visitors can quickly find the service they need.",
+    result:
+      "The site presents the business as broader and more organised, with a clearer path into enquiries across multiple trades.",
+    beforeAfter:
+      "Before: a multi-service business could easily feel scattered. After: the site reads as one capable team with a clean quote path.",
+    relatedService: "Pro package for multi-service trades businesses",
+    impact:
+      "Business impact: better service clarity, stronger quote intent, and a homepage that supports more than one line of work.",
+    proofLibrary: [
+      { label: "Launch note", text: "The intro animation sets up the business before the service list starts." },
+      { label: "Process note", text: "Services are grouped so the page stays scannable even with broad offerings." },
+      { label: "Proof point", text: "The quote CTA is always visible enough to keep the enquiry path obvious." },
+    ],
   },
   {
     name: "National Roofing Solutions",
@@ -57,6 +125,23 @@ const LIVE_SITES = [
     summary:
       "A roofing contractor site for a Sunbury-based business servicing Melbourne's north-west. Built around a bold hero with a typewriter service loop, trust signals, and a focused contact flow for roof repairs, restorations, and replacements.",
     scope: ["Local trades", "Typewriter hero", "Service pages", "Trust signals", "Local SEO foundations"],
+    client: "National Roofing Solutions",
+    problem:
+      "The site needed to make local roofing services feel trustworthy and easy to contact from the first screen.",
+    solution:
+      "We used a bold hero, strong trust signals, and a local-service structure that keeps repairs, restorations, and replacements easy to understand.",
+    result:
+      "The business now has a focused local presence that makes the core services clearer and the contact path more direct.",
+    beforeAfter:
+      "Before: the roofing offer could have felt broad and hard to scan. After: the site leads with trust, clarity, and local service intent.",
+    relatedService: "Growth package with local SEO foundations",
+    impact:
+      "Business impact: better local credibility, faster service comprehension, and a contact path suited to urgent roofing enquiries.",
+    proofLibrary: [
+      { label: "Launch note", text: "The typewriter hero reinforces the service set without adding clutter." },
+      { label: "Process note", text: "Trust signals were front-loaded to help first-time visitors feel confident." },
+      { label: "Visual proof", text: "The service layout supports quick scanning on mobile." },
+    ],
   },
 ] as const;
 
@@ -125,6 +210,191 @@ function getOffset(index: number, active: number): number {
   return offset;
 }
 
+function CaseStudyModal({
+  site,
+  onClose,
+}: {
+  site: Site;
+  onClose: () => void;
+}) {
+  const siteIndex = LIVE_SITES.findIndex((item) => item.name === site.name);
+  const theme = CARD_THEMES[siteIndex >= 0 ? siteIndex % CARD_THEMES.length : 0];
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-100 flex cursor-auto items-center justify-center bg-black/70 px-3 py-3 backdrop-blur-md sm:px-4 sm:py-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${site.name} case study`}
+    >
+      <motion.div
+        className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-agency-border bg-agency-bg shadow-2xl sm:max-h-[calc(100dvh-2rem)]"
+        initial={{ y: 24, scale: 0.98, opacity: 0 }}
+        animate={{ y: 0, scale: 1, opacity: 1 }}
+        exit={{ y: 24, scale: 0.98, opacity: 0 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(event) => event.stopPropagation()}
+        style={{ touchAction: "pan-y" }}
+      >
+        <div className="flex items-center justify-between border-b border-agency-border bg-agency-surface px-5 py-4 sm:px-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-agency-muted">
+              Live website case study
+            </p>
+            <h3 className="mt-1 font-display text-2xl font-bold text-agency-ink sm:text-3xl">
+              {site.name}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            onPointerDown={(event) => event.stopPropagation()}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-agency-border text-agency-muted transition-colors hover:border-agency-ink hover:text-agency-ink"
+            aria-label="Close case study"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="grid min-h-0 flex-1 gap-0 overflow-hidden lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="min-h-0 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+            <div className="space-y-6">
+              <section className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+                  Quick view
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">
+                  <span className="font-semibold text-agency-text">Client:</span> {site.client}
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">
+                  <span className="font-semibold text-agency-text">Package:</span> {site.relatedService}
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">
+                  <span className="font-semibold text-agency-text">Outcome:</span> {site.result}
+                </p>
+              </section>
+
+              <section className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+                  Problem
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">{site.problem}</p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">{site.beforeAfter}</p>
+              </section>
+
+              <section className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+                  Solution
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">{site.solution}</p>
+              </section>
+
+              <section className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+                  Proof notes
+                </p>
+                <ul className="space-y-2 text-sm leading-relaxed text-agency-muted sm:text-base">
+                  {site.proofLibrary.slice(0, 2).map((item) => (
+                    <li key={item.label} className="rounded-2xl border border-agency-border bg-agency-surface px-4 py-3">
+                      <span className="font-semibold text-agency-text">{item.label}:</span> {item.text}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+                  Services link
+                </p>
+                <p className="text-sm leading-relaxed text-agency-muted sm:text-base">
+                  This case study connects back to the Aperix service that delivered it.
+                </p>
+                <Link
+                  href="/services"
+                  className="inline-flex items-center justify-center rounded-full border border-agency-ink px-4 py-2.5 text-sm font-semibold text-agency-ink transition-colors hover:bg-agency-ink hover:text-white"
+                >
+                  View services
+                </Link>
+              </section>
+            </div>
+          </div>
+
+          <div className="min-h-0 overflow-y-auto border-t border-agency-border bg-agency-surface/70 px-5 py-5 lg:border-t-0 lg:border-l sm:px-6 sm:py-6">
+            <div className="space-y-5">
+              <div className="overflow-hidden rounded-3xl border border-agency-border bg-agency-surface shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
+                <div className="relative h-96 w-full overflow-hidden border-t border-agency-border bg-agency-bg">
+                  {"preview" in site && site.preview ? (
+                    <img
+                      src={site.preview}
+                      alt={`Preview of ${site.name}`}
+                      className="absolute inset-0 h-full w-full object-cover object-top"
+                    />
+                  ) : (
+                    <iframe
+                      src={site.href}
+                      title={`Preview of ${site.name}`}
+                      className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
+                      style={{ transform: "scale(0.42)", transformOrigin: "top left" }}
+                      loading="lazy"
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      sandbox="allow-scripts allow-same-origin"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-agency-border bg-agency-bg p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-agency-muted">
+                    Live site
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-agency-muted">
+                    Open the live build once you are done reviewing the case study.
+                  </p>
+                  <a
+                    href={site.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center justify-center rounded-full border border-agency-border bg-agency-surface px-4 py-2.5 text-sm font-semibold text-agency-text transition-colors hover:border-agency-accent hover:text-agency-accent"
+                  >
+                    Open live site
+                  </a>
+                </div>
+
+                <div className="rounded-2xl border border-agency-border bg-agency-bg p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-agency-muted">
+                    Summary
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-agency-muted">
+                    {site.summary}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {site.scope.slice(0, 3).map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-agency-border bg-agency-surface px-3 py-1.5 text-xs font-medium text-agency-muted"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function ProjectCard({
   site,
   theme,
@@ -132,6 +402,7 @@ function ProjectCard({
   isActive,
   isDragging,
   onClick,
+  onOpenCaseStudy,
 }: {
   site: Site;
   theme: (typeof CARD_THEMES)[number];
@@ -139,6 +410,7 @@ function ProjectCard({
   isActive: boolean;
   isDragging: boolean;
   onClick: () => void;
+  onOpenCaseStudy: () => void;
 }) {
   const rotate = offset * STEP_DEG;
   const zIndex = TOTAL - Math.abs(offset);
@@ -235,16 +507,19 @@ function ProjectCard({
         {/* Visit button */}
         <div className="border-t border-agency-border bg-agency-surface px-6 py-4">
           {site.href ? (
-            <Link
-              href={site.href}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               tabIndex={isActive ? 0 : -1}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all ${theme.btn}`}
-              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(event) => event.stopPropagation()}
+              onPointerUp={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenCaseStudy();
+              }}
             >
-              Visit live site <span aria-hidden="true">↗</span>
-            </Link>
+              View case study
+            </button>
           ) : null}
         </div>
       </div>
@@ -255,11 +530,42 @@ function ProjectCard({
 export default function LiveSitesSection() {
   const [active, setActive] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const dragStartX = useRef(0);
 
   const goTo = useCallback((index: number) => {
     setActive(((index % TOTAL) + TOTAL) % TOTAL);
   }, []);
+
+  const openCaseStudy = useCallback((index: number) => {
+    const normalizedIndex = ((index % TOTAL) + TOTAL) % TOTAL;
+    setActive(normalizedIndex);
+    setSelectedSite(LIVE_SITES[normalizedIndex] ?? null);
+  }, []);
+
+  const closeCaseStudy = useCallback(() => {
+    setSelectedSite(null);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedSite) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeCaseStudy();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeCaseStudy, selectedSite]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     dragStartX.current = e.clientX;
@@ -284,23 +590,23 @@ export default function LiveSitesSection() {
   return (
     <section
       id="live-sites"
-      className="overflow-hidden px-6 py-20 lg:px-12 lg:py-32"
+      className="overflow-hidden px-6 py-24 sm:py-28 lg:px-12 lg:py-36"
       aria-labelledby="live-sites-heading"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <Reveal className="max-w-3xl">
             <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
-              Recent Launches
+              Live Aperix-Made Websites
             </p>
             <h2
               id="live-sites-heading"
               className="font-display text-3xl font-bold leading-tight text-agency-ink sm:text-4xl lg:text-5xl"
             >
-              Real launches. Real results.
+              Live website launches and case studies.
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
-              A few of the projects we have shipped — each one built for a real business with a real brief.
+              A few of the projects we have shipped, each one built for a real business with a real brief, clear scope, and a measurable outcome.
             </p>
           </Reveal>
           <Reveal>
@@ -328,7 +634,7 @@ export default function LiveSitesSection() {
         <div className="mt-14 flex justify-center overflow-hidden">
           <div
             className="relative select-none"
-            style={{ height: 520, width: "min(100%, 420px)", touchAction: "none" }}
+            style={{ height: "clamp(620px, 70vh, 780px)", width: "min(100%, 420px)", touchAction: "pan-y" }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerCancel}
@@ -344,6 +650,7 @@ export default function LiveSitesSection() {
                   isActive={i === active}
                   isDragging={isDragging}
                   onClick={() => goTo(i)}
+                  onOpenCaseStudy={() => openCaseStudy(i)}
                 />
               );
             })}
@@ -362,6 +669,12 @@ export default function LiveSitesSection() {
             />
           ))}
         </div>
+
+        <AnimatePresence>
+          {selectedSite ? (
+            <CaseStudyModal site={selectedSite} onClose={closeCaseStudy} />
+          ) : null}
+        </AnimatePresence>
 
 
       </div>

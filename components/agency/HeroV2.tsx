@@ -11,10 +11,10 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
    two CTAs, trust strip inline. No browser mockup.
    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-const HEADLINE_WORDS = ["Websites and" , "Software Solutions", "built for", "Melbourne businesses."];
+const HEADLINE_WORDS = ["Custom Websites and" , "Software Solutions", "built for", "Melbourne businesses."];
 const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
 
-const SECONDARY_HEADLINE_WORDS = ["Hand coded websites,", "Fast turnaround,", "Tailored solutions."];
+const SECONDARY_HEADLINE_WORDS = ["Hand coded,", "Fast turnaround,", "Tailored solutions."];
 const SECONDARY_HEADLINE_TEXT = SECONDARY_HEADLINE_WORDS.join("\n");
 const HEADLINE_SEQUENCE = [HEADLINE_TEXT, SECONDARY_HEADLINE_TEXT];
 
@@ -100,7 +100,7 @@ export default function HeroV2() {
           className="mb-8 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.25em] text-agency-muted"
         >
           <span className="inline-block h-px w-8 bg-agency-muted" />
-          Melbourne Web Studio
+          Melbourne Web Design and Software Studio
         </motion.p>
 
         {/* â”€â”€ Headline â€” word-stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -131,8 +131,7 @@ export default function HeroV2() {
         >
           {/* Subtext */}
           <p className="max-w-sm text-base leading-relaxed text-agency-muted sm:text-lg">
-            Hand-coded, fast, and maintained. We build websites and manage online
-            presence for Melbourne businesses that want to grow.
+            Aperix Studio builds hand-coded custom websites and software for Melbourne businesses that want faster pages, greater presence and better support.
           </p>
 
           {/* CTAs */}

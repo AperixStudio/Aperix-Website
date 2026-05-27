@@ -4,7 +4,7 @@ import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
 import CursorFollower from "@/components/animations/CursorFollower";
 import IntroScreen from "@/components/animations/IntroScreen";
 import PageReveal from "@/components/animations/PageReveal";
-import { getSiteUrl } from "@/lib/site";
+import { getSiteUrl, SITE_SOCIAL_LINKS } from "@/lib/site";
 import "./globals.css";
 
 const themeInitScript = `
@@ -58,6 +58,31 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const siteUrl = getSiteUrl();
+const siteLogoUrl = `${siteUrl}/aperix-logo.svg`;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "Aperix Studio",
+      url: siteUrl,
+      logo: siteLogoUrl,
+      email: "hello@aperix.com.au",
+      sameAs: SITE_SOCIAL_LINKS,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      name: "Aperix Studio",
+      url: siteUrl,
+      publisher: {
+        "@id": `${siteUrl}/#organization`,
+      },
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Aperix Studio — Custom Web Development Melbourne",
@@ -94,6 +119,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         {/* 1. Theme — runs first, no flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/* 2. Intro cover — physically inserts a full-screen div before React mounts.

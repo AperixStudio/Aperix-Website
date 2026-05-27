@@ -19,6 +19,7 @@ import ThemeToggle from "@/components/agency/ThemeToggle";
    ──────────────────────────────────────────────────────────── */
 
 const NAV_LINKS: { label: string; href: string }[] = [
+  { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Our Work", href: "/our-work" },
   { label: "Contact", href: "/contact" },

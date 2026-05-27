@@ -22,7 +22,7 @@ const STEPS: Step[] = [
     number: "01",
     title: "Start the Conversation",
     description:
-      "Send us a message and tell us a bit about the business, what you need, and what is not working right now. We can keep it to email, talk things through properly, or meet in person if that is easier.",
+      "You send through a brief and we talk through the business, the goals, and what the site needs to do. You get a direct point of contact, a clear scope, and a straightforward next step before any work begins.",
     icon: (
       <svg
         width="28"
@@ -44,9 +44,9 @@ const STEPS: Step[] = [
   },
   {
     number: "02",
-    title: "Work Through the Direction",
+    title: "Shape the Direction",
     description:
-      "Once we know the direction, we put together a mockup and work through it with you. Depending on the project, that might be done in Figma or straight in code if that is the faster way to test ideas properly.",
+      "We map out the page structure, content flow, and visual direction with you before the build gets underway. Depending on the project, that might be a Figma concept or a working draft in code so we can test the ideas properly.",
     icon: (
       <svg
         width="28"
@@ -71,7 +71,7 @@ const STEPS: Step[] = [
     number: "03",
     title: "Build, Refine & Launch",
     description:
-      "Once the approach feels right, we build the site, tighten up the details, test everything properly, and get it live. We also help with the handover so you are not left guessing once it is launched.",
+      "Once the direction feels right, we build the site, test it across devices, refine the details, and get it live. You also get handover support so the launch feels smooth and the site is ready to use from day one.",
     icon: (
       <svg
         width="28"
@@ -100,61 +100,64 @@ export default function HowItWorks() {
       aria-labelledby="hiw-heading"
     >
       <div className="agency-panel-wrap mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-32">
-      {/* Section header */}
-      <Reveal className="text-center">
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
-          How It Works
-        </p>
-        <h2
-          id="hiw-heading"
-          className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
-        >
-          A clear process, from first message to finished site.
-        </h2>
-      </Reveal>
-
-      {/* Steps grid */}
-      <StaggerGroup
-        staggerChildren={0.1}
-        className="relative mx-auto mt-16 grid max-w-7xl gap-12 lg:mt-20 lg:grid-cols-3 lg:gap-0"
-      >
-        {/* ── Desktop dashed connecting line (spans full width behind the cards) ── */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-14 left-[16.67%] right-[16.67%] hidden h-px border-t border-dashed border-agency-border lg:block"
-        />
-
-        {STEPS.map((step) => (
-          <StaggerItem
-            key={step.number}
-            preset="fadeUp"
-            className="relative flex flex-col items-center text-center lg:px-10"
+        {/* Section header */}
+        <Reveal className="text-center">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
+            How Aperix Works
+          </p>
+          <h2
+            id="hiw-heading"
+            className="font-display text-3xl font-bold text-agency-ink sm:text-4xl"
           >
-            {/* Large decorative step number */}
-            <span
-              aria-hidden="true"
-              className="absolute -top-4 z-0 font-display text-8xl font-bold leading-none text-agency-surface2 select-none lg:-top-6 lg:text-9xl"
+          A clear process, from first message to finished site.
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
+            Every project follows the same sequence: brief, direction, build, launch, and support. That keeps scope clear and makes the process easy to quote and review.
+          </p>
+        </Reveal>
+
+        {/* Steps grid */}
+        <StaggerGroup
+          staggerChildren={0.1}
+          className="relative mx-auto mt-16 grid max-w-7xl gap-12 lg:mt-20 lg:grid-cols-3 lg:gap-0"
+        >
+          {/* ── Desktop dashed connecting line (spans full width behind the cards) ── */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-14 left-[16.67%] right-[16.67%] hidden h-px border-t border-dashed border-agency-border lg:block"
+          />
+
+          {STEPS.map((step) => (
+            <StaggerItem
+              key={step.number}
+              preset="fadeUp"
+              className="relative flex flex-col items-center text-center lg:px-10"
             >
-              {step.number}
-            </span>
+              {/* Large decorative step number */}
+              <span
+                aria-hidden="true"
+                className="absolute -top-4 z-0 select-none font-display text-8xl font-bold leading-none text-agency-surface2 lg:-top-6 lg:text-9xl"
+              >
+                {step.number}
+              </span>
 
-            {/* Icon circle */}
-            <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-agency-border-dark bg-agency-bg text-agency-ink">
-              {step.icon}
-            </div>
+              {/* Icon circle */}
+              <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-agency-border-dark bg-agency-bg text-agency-ink">
+                {step.icon}
+              </div>
 
-            {/* Heading */}
-            <h3 className="relative z-10 mt-6 font-display text-xl font-semibold">
-              {step.title}
-            </h3>
+              {/* Heading */}
+              <h3 className="relative z-10 mt-6 font-display text-xl font-semibold">
+                {step.title}
+              </h3>
 
-            {/* Description */}
-            <p className="relative z-10 mt-3 max-w-xs text-sm leading-relaxed text-agency-muted">
-              {step.description}
-            </p>
-          </StaggerItem>
-        ))}
-      </StaggerGroup>
+              {/* Description */}
+              <p className="relative z-10 mt-3 max-w-xs text-sm leading-relaxed text-agency-muted">
+                {step.description}
+              </p>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
       </div>
     </section>
   );

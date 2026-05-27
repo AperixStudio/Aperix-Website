@@ -195,7 +195,7 @@ export default function AgencyContactForm() {
         <motion.div
           initial={prefersReduced ? undefined : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center px-8 py-24 text-center"
+          className="flex h-full flex-col items-center justify-center px-7 py-12 text-center lg:px-8 lg:py-14"
         >
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-agency-accent/10">
             <svg
@@ -229,7 +229,7 @@ export default function AgencyContactForm() {
       action="/__forms.html"
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 px-8 py-10"
+      className="flex h-full flex-col justify-center space-y-3 px-7 py-5 lg:px-8 lg:py-6"
       aria-label="Contact enquiry form"
     >
       <input type="hidden" name="form-name" value="contact" />
@@ -246,7 +246,7 @@ export default function AgencyContactForm() {
         />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor="ac-name" className="mb-1.5 block text-sm font-medium text-agency-text">
             Full Name *
@@ -283,7 +283,7 @@ export default function AgencyContactForm() {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor="ac-phone" className="mb-1.5 block text-sm font-medium text-agency-text">
             Phone{" "}
@@ -352,7 +352,7 @@ export default function AgencyContactForm() {
         <textarea
           id="ac-desc"
           name="description"
-          rows={4}
+          rows={2}
           required
           value={form.description}
           onChange={handleChange}
@@ -393,7 +393,7 @@ export default function AgencyContactForm() {
       </fieldset>
 
       {submitError ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700" role="alert">
           <p>{submitError}</p>
         </div>
       ) : null}
@@ -403,7 +403,7 @@ export default function AgencyContactForm() {
         disabled={submitting}
         whileTap={prefersReduced ? undefined : { scale: 0.97 }}
         whileHover={prefersReduced ? undefined : { opacity: 0.88 }}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-agency-accent px-6 py-4 text-sm font-semibold text-agency-bg transition-colors disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-agency-accent px-6 py-3 text-sm font-semibold text-agency-bg transition-colors disabled:opacity-60"
       >
         {submitting ? (
           <>

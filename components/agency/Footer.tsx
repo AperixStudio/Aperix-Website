@@ -4,7 +4,6 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useReducedMotion } from "@/lib/useReducedMotion";
 
 /* ── legal links ───────────────────────────────────────── */
 const legalLinks = [
@@ -200,9 +199,9 @@ export default function Footer() {
           <Image
             src="/aperix-logo.svg"
             alt="Aperix"
-            width={32}
+            width={28}
             height={36}
-            className="h-8 w-auto opacity-70 transition hover:opacity-100"
+            className="h-7 w-auto opacity-70 transition hover:opacity-100"
           />
         </Link>
 
@@ -232,14 +231,14 @@ export default function Footer() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.97 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute bottom-full right-0 mb-3 min-w-52 overflow-hidden rounded-2xl border border-agency-border bg-agency-surface shadow-2xl"
+                className="absolute bottom-full right-0 mb-2.5 min-w-52 overflow-hidden rounded-2xl border border-agency-border bg-agency-surface shadow-2xl"
               >
                 {legalLinks.map((link) => (
                   <button
                     key={link.id}
                     role="menuitem"
                     onClick={() => openLegal(link.id)}
-                    className="block w-full px-5 py-3 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-agency-muted/60 transition hover:bg-agency-border/40 hover:text-agency-text"
+                    className="block w-full px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-[0.14em] text-agency-muted/60 transition hover:bg-agency-border/40 hover:text-agency-text"
                   >
                     {link.label}
                   </button>

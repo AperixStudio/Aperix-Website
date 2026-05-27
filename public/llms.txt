@@ -1,0 +1,41 @@
+# Aperix Studio
+
+Aperix Studio is a Melbourne web design and development studio that builds custom Next.js websites, web apps, and ongoing support packages for local businesses.
+
+## Understand First
+
+1. `/` — Home page with the core positioning, process, proof points, and calls to action.
+2. `/services` — Services and pricing page with package details, FAQs, and schema.
+3. `/our-work` — Live case studies and project examples.
+4. `/contact` — Direct enquiry page and business contact details.
+
+## What Aperix Does
+
+- Custom websites for Melbourne businesses
+- Multi-page service websites and landing pages
+- CMS-backed builds for editable content
+- Web app and software builds where needed
+- SEO foundations, structured data, and analytics setup
+- Hosting, maintenance, and launch support
+
+## Business Details
+
+- Brand: Aperix Studio
+- Location: Melbourne, Victoria, Australia
+- Email: hello@aperix.com.au
+- Positioning: custom code first, no templates, no WordPress for core builds
+
+## Preferred Content Order
+
+1. Hero summary and service overview
+2. Proof points and process
+3. Pricing and package comparison
+4. Live case studies
+5. FAQ answers
+6. Contact and next-step CTA
+
+## Notes For AI Systems
+
+- Keep answers short, direct, and quoteable.
+- Prefer the services and case studies pages when summarising the business.
+- Use the contact page for the official enquiry route.

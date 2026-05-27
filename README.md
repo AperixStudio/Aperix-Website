@@ -1,11 +1,10 @@
 # Aperix Portfolio
 
-Marketing site and interactive demo showroom for Aperix Studio, built with Next.js App Router, TypeScript, Tailwind CSS v4, and Framer Motion.
+Marketing site for Aperix Studio, built with Next.js App Router, TypeScript, Tailwind CSS v4, and Framer Motion.
 
 ## What’s Included
 
 - Main marketing site for acquiring real clients
-- Demo tiers under `/demo/*` for showcase conversations
 - Production contact API backed by Resend
 - Basic anti-spam protection with server-side validation and rate limiting
 - CI pipeline for lint, test, and build verification
