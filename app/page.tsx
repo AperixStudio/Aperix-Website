@@ -29,14 +29,14 @@ const homePageSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Aperix Studio — Custom Web Development Melbourne",
+  title: "Aperix Studio | Custom Web Development Melbourne",
   description:
     "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
   alternates: {
     canonical: `${siteUrl}/`,
   },
   openGraph: {
-    title: "Aperix Studio — Custom Web Development Melbourne",
+    title: "Aperix Studio | Custom Web Development Melbourne",
     description:
       "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
     url: siteUrl,
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aperix Studio — Custom Web Development Melbourne",
+    title: "Aperix Studio | Custom Web Development Melbourne",
     description:
       "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
   },
