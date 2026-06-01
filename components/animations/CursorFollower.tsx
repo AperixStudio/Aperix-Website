@@ -132,7 +132,7 @@ export default function CursorFollower() {
   if (!enabled) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-45" suppressHydrationWarning>
+    <div className="pointer-events-none fixed inset-0 z-200" suppressHydrationWarning>
       <motion.div
         style={{ x: xTrail, y: yTrail }}
         animate={{ opacity: visible && !pillRect ? 0.35 : 0 }}
