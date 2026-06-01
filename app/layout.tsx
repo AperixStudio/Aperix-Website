@@ -20,23 +20,12 @@ const themeInitScript = `
   })();
 `;
 
-// Runs synchronously before React mounts — inserts a full-screen cover div
-// that is completely outside the React tree so React cannot touch or remove it.
-// IntroScreen's releaseIntroGate() removes it when the animation finishes.
-const introCoverScript = `
-  (function() {
-    var cover = document.createElement('div');
-    cover.id = 'aperix-intro-cover';
-    cover.style.cssText = [
-      'position:fixed',
-      'inset:0',
-      'z-index:9998',
-      'background:linear-gradient(135deg,#07070f 0%,#0a0a18 100%)',
-      'pointer-events:all',
-    ].join(';');
-    document.body.appendChild(cover);
-  })();
-`;
+// NOTE: The intro cover is now rendered as a JSX element below (with
+// `suppressHydrationWarning`) so the server-rendered HTML matches the
+// initial DOM. IntroScreen.releaseIntroGate() still removes it via direct
+// DOM manipulation when the intro animation finishes. Previously we
+// injected this div via an inline script which produced React error #418
+// (HTML hydration mismatch) because React did not know about the node.
 
 /* ── Agency Shell fonts (Section 3.2) ────────────────────── */
 const inter = Inter({
@@ -118,6 +107,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <script
           type="application/ld+json"
@@ -125,10 +115,21 @@ export default function RootLayout({
         />
         {/* 1. Theme — runs first, no flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* 2. Intro cover — physically inserts a full-screen div before React mounts.
-               Outside the React tree so React cannot remove it during hydration.
-               Removed by IntroScreen.releaseIntroGate() when the animation finishes. */}
-        <script dangerouslySetInnerHTML={{ __html: introCoverScript }} />
+        {/* 2. Intro cover — rendered server-side so the DOM matches the
+               hydrated tree (avoids React error #418). IntroScreen removes
+               it imperatively when the animation finishes. */}
+        <div
+          id="aperix-intro-cover"
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9998,
+            background:
+              "linear-gradient(135deg,#07070f 0%,#0a0a18 100%)",
+            pointerEvents: "all",
+          }}
+        />
         <IntroScreen />
         <SiteAtmosphere />
         <CursorFollower />

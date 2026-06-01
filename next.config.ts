@@ -15,7 +15,11 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    // `unload=*` allows the deprecated unload event in this document and any
+    // sub-frames. Some third-party scripts inside the live-site iframe
+    // previews (e.g. Google Maps) still rely on it, and without this they
+    // log "Permissions policy violation: unload is not allowed" warnings.
+    value: "camera=(), microphone=(), geolocation=(), unload=*",
   },
 ];
 

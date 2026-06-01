@@ -26,11 +26,26 @@ function applyTheme(theme: Theme) {
 }
 
 export default function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>(() => getPreferredTheme());
+  // IMPORTANT: keep the initial state identical on server and client to
+  // avoid hydration mismatches (React error #418). The real preference is
+  // read from localStorage/matchMedia after mount. The pre-hydration script
+  // in app/layout.tsx already sets `documentElement.dataset.theme`, so the
+  // page colours are correct from byte-one regardless of this button's
+  // rendered icon for the first frame.
+  const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
 
+  // Sync from storage / system after mount.
   useEffect(() => {
+    setTheme(getPreferredTheme());
+    setMounted(true);
+  }, []);
+
+  // Apply theme to <html> whenever it changes (after mount only).
+  useEffect(() => {
+    if (!mounted) return;
     applyTheme(theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";

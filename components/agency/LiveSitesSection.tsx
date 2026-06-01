@@ -400,7 +400,7 @@ function ProjectCard({
   theme,
   offset,
   isActive,
-  isDragging,
+  hasMounted,
   onClick,
   onOpenCaseStudy,
 }: {
@@ -408,7 +408,7 @@ function ProjectCard({
   theme: (typeof CARD_THEMES)[number];
   offset: number;
   isActive: boolean;
-  isDragging: boolean;
+  hasMounted: boolean;
   onClick: () => void;
   onOpenCaseStudy: () => void;
 }) {
@@ -489,19 +489,38 @@ function ProjectCard({
               aria-hidden="true"
             />
           ) : (
-            <iframe
-              src={site.href}
-              title={`Preview of ${site.name}`}
-              className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
-              style={{ transform: "scale(0.235)", transformOrigin: "top left" }}
-              loading="lazy"
-              tabIndex={-1}
-              aria-hidden="true"
-              sandbox="allow-scripts allow-same-origin"
-            />
+            <>
+              {/* Static placeholder — shown for every card except the live front card.
+                  Keeps the deck cheap to composite: only the active iframe ever paints. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 flex items-center justify-center bg-agency-surface"
+              >
+                <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-agency-muted">
+                  Live preview
+                </span>
+              </div>
+              {/* Mount the iframe only once a card has been the active card, then keep
+                  it mounted (no reload flash on swipe-back) but only PAINT it while it
+                  is the front card via `visibility`. */}
+              {hasMounted ? (
+                <iframe
+                  src={site.href}
+                  title={`Preview of ${site.name}`}
+                  className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
+                  style={{
+                    transform: "scale(0.235)",
+                    transformOrigin: "top left",
+                    visibility: isActive ? "visible" : "hidden",
+                  }}
+                  loading="lazy"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              ) : null}
+            </>
           )}
-          {/* Overlay to block interaction and freeze iframe visually during drag */}
-          <div className={`absolute inset-0 transition-colors duration-150 ${isDragging && !isActive ? "bg-agency-bg" : ""}`} />
         </div>
 
         {/* Visit button */}
@@ -529,9 +548,22 @@ function ProjectCard({
 
 export default function LiveSitesSection() {
   const [active, setActive] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const dragStartX = useRef(0);
+
+  // Track which cards have ever been the front card. We only mount a live iframe
+  // once its card first reaches the front, so the page never spins up all five
+  // external sites at once (which previously saturated the GPU compositor and made
+  // the fixed backdrop-blur header flash/break).
+  const [mountedFrames, setMountedFrames] = useState<Set<number>>(() => new Set([0]));
+  useEffect(() => {
+    setMountedFrames((prev) => {
+      if (prev.has(active)) return prev;
+      const next = new Set(prev);
+      next.add(active);
+      return next;
+    });
+  }, [active]);
 
   const goTo = useCallback((index: number) => {
     setActive(((index % TOTAL) + TOTAL) % TOTAL);
@@ -570,22 +602,16 @@ export default function LiveSitesSection() {
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     dragStartX.current = e.clientX;
     e.currentTarget.setPointerCapture(e.pointerId);
-    setIsDragging(true);
   }, []);
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      setIsDragging(false);
       const delta = e.clientX - dragStartX.current;
       if (delta < -DRAG_THRESHOLD) goTo(active + 1);
       else if (delta > DRAG_THRESHOLD) goTo(active - 1);
     },
     [active, goTo],
   );
-
-  const handlePointerCancel = useCallback(() => {
-    setIsDragging(false);
-  }, []);
 
   return (
     <section
@@ -637,7 +663,6 @@ export default function LiveSitesSection() {
             style={{ height: "clamp(620px, 70vh, 780px)", width: "min(100%, 420px)", touchAction: "pan-y" }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerCancel}
           >
             {LIVE_SITES.map((site, i) => {
               const offset = getOffset(i, active);
@@ -648,7 +673,7 @@ export default function LiveSitesSection() {
                   theme={CARD_THEMES[i % CARD_THEMES.length]}
                   offset={offset}
                   isActive={i === active}
-                  isDragging={isDragging}
+                  hasMounted={mountedFrames.has(i)}
                   onClick={() => goTo(i)}
                   onOpenCaseStudy={() => openCaseStudy(i)}
                 />
