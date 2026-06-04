@@ -60,8 +60,8 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4 text-sm leading-relaxed text-agency-muted">
           <p>
-            <strong className="text-agency-text">Aperix Studio</strong> (ABN 22
-            720 293 315) (&ldquo;<strong className="text-agency-text">we</strong>&rdquo;,
+            <strong className="text-agency-text">Aperix Studio</strong> (ABN 57
+            379 139 292) (&ldquo;<strong className="text-agency-text">we</strong>&rdquo;,
             &ldquo;<strong className="text-agency-text">us</strong>&rdquo;,
             &ldquo;<strong className="text-agency-text">our</strong>&rdquo;) is
             committed to protecting your privacy and handling personal
@@ -428,7 +428,7 @@ export default function Footer() {
               <h2 className="mb-6 font-display text-2xl font-bold text-agency-text">Terms &amp; Conditions</h2>
               <div className="space-y-4 text-sm leading-relaxed text-agency-muted">
                 <p>
-                  <strong className="text-agency-text">Aperix Studio</strong> (ABN 22 720 293 315) is a web and software development studio based in Victoria, Australia. By engaging us or by using this website you agree to the following terms. Specific engagements are also governed by the written proposal or Statement of Work (SOW) we issue you, which prevails over these terms in the event of conflict.
+                  <strong className="text-agency-text">Aperix Studio</strong> (ABN 57 379 139 292) is a web and software development studio based in Victoria, Australia. By engaging us or by using this website you agree to the following terms. Specific engagements are also governed by the written proposal or Statement of Work (SOW) we issue you, which prevails over these terms in the event of conflict.
                 </p>
 
                 <h3 className="pt-2 text-base font-semibold text-agency-text">1. Our services</h3>
