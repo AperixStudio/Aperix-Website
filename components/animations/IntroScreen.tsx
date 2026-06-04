@@ -26,6 +26,14 @@ export function onIntroDone(cb: () => void): () => void {
 // Total animation duration in ms  used to sync the CSS bar & bg transition
 const TOTAL_MS = 3800;
 
+// Initial hold before anything moves + the exit fade duration.
+const HOLD_MS = 200;
+const EXIT_MS = 300;
+
+// Full wall-clock time the intro occupies, from mount to fully gone.
+// Consumers (e.g. PageReveal failsafe) use this so timings stay in sync.
+export const INTRO_FULL_MS = HOLD_MS + TOTAL_MS + EXIT_MS;
+
 const LOGO_SIZE = 96;
 const LOGO_H = Math.round(LOGO_SIZE * (836 / 768));
 
@@ -44,8 +52,9 @@ export default function IntroScreen() {
     setVisible(true);
 
     const run = async () => {
+      try {
       // Short hold so the bg colour is seen before anything moves
-      await new Promise<void>((r) => setTimeout(r, 200));
+      await new Promise<void>((r) => setTimeout(r, HOLD_MS));
 
       // --- Logo builds while bar fills (all parallel) ---
 
@@ -66,13 +75,15 @@ export default function IntroScreen() {
 
       // Wait for everything to settle
       await new Promise<void>((r) => setTimeout(r, TOTAL_MS));
-
-      // Done
-      setVisible(false);
-      releaseIntroGate();
-      introHasPlayed = true;
-      doneSubscribers.forEach((fn) => fn());
-      doneSubscribers = [];
+      } finally {
+        // Always run completion  even if an animate() call throws partway
+        // through  so the page is never left permanently gated/blocked.
+        setVisible(false);
+        releaseIntroGate();
+        introHasPlayed = true;
+        doneSubscribers.forEach((fn) => fn());
+        doneSubscribers = [];
+      }
     };
 
     run();

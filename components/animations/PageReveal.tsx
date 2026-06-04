@@ -1,13 +1,25 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { onIntroDone } from "./IntroScreen";
+import { INTRO_FULL_MS, onIntroDone } from "./IntroScreen";
+
+// Failsafe: reveal the page no later than the full intro duration + 2s, even
+// if the intro animation never signals completion (e.g. a hydration hiccup or
+// older mobile browser). This guarantees the site can never be left blank or
+// blocked behind the invisible intro cover. The +2s buffer ensures a healthy
+// intro is never cut off  the normal onIntroDone path fires well before this.
+const REVEAL_FAILSAFE_MS = INTRO_FULL_MS + 2000;
 
 export default function PageReveal({ children }: { children: React.ReactNode }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let revealed = false;
+
     const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+
       // Remove the blocking cover div injected by the introCoverScript in layout.tsx
       const cover = document.getElementById('aperix-intro-cover');
       if (cover) {
@@ -25,7 +37,14 @@ export default function PageReveal({ children }: { children: React.ReactNode }) 
     };
 
     const unsubscribe = onIntroDone(reveal);
-    return unsubscribe;
+
+    // Hard failsafe  fires only if the normal intro-done signal never arrives.
+    const failsafe = window.setTimeout(reveal, REVEAL_FAILSAFE_MS);
+
+    return () => {
+      unsubscribe();
+      window.clearTimeout(failsafe);
+    };
   }, []);
 
   // opacity:0 + visibility:hidden are static inline styles — SSR renders them
