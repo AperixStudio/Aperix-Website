@@ -3,10 +3,15 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "framer-motion";
 import RocketTextBlock from "@/components/agency/RocketTextBlock";
 import { HERO_VIDEO_OFFSCREEN_CLASS, HERO_VIDEO_SRC } from "@/lib/heroVideo";
 import {
+  ACT1_HERO_FADE_IN_START_GLOBAL,
+  ACT1_PULLBACK_COMPLETE_GLOBAL,
+  mapHeroTextOpacity,
+  ACT2_WIREFRAME_END_GLOBAL,
+  ACT2_WIREFRAME_START_GLOBAL,
   HOME_STORY_ACTS,
   HOME_STORY_SCROLL_VH,
   mapPcCameraProgress,
@@ -41,29 +46,38 @@ const ERA_LABELS = ["Blueprint", "Wireframe", "Live site"];
 function EraLabel({
   scrollYProgress,
 }: {
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+  scrollYProgress: MotionValue<number>;
 }) {
-  const act2Start = HOME_STORY_ACTS.act2Monitor.start;
   const act2End = HOME_STORY_ACTS.act2Monitor.end;
 
   const era0Opacity = useTransform(
     scrollYProgress,
-    [act2Start, act2Start + 0.04, act2Start + 0.12, act2Start + 0.18],
+    [
+      HOME_STORY_ACTS.act2Monitor.start,
+      HOME_STORY_ACTS.act2Monitor.start + 0.04,
+      ACT2_WIREFRAME_START_GLOBAL - 0.02,
+      ACT2_WIREFRAME_START_GLOBAL,
+    ],
     [0, 1, 1, 0],
   );
   const era1Opacity = useTransform(
     scrollYProgress,
-    [act2Start + 0.1, act2Start + 0.18, act2Start + 0.28, act2Start + 0.34],
+    [
+      ACT2_WIREFRAME_START_GLOBAL,
+      ACT2_WIREFRAME_START_GLOBAL + 0.04,
+      ACT2_WIREFRAME_END_GLOBAL,
+      ACT2_WIREFRAME_END_GLOBAL + 0.06,
+    ],
     [0, 1, 1, 0],
   );
   const era2Opacity = useTransform(
     scrollYProgress,
-    [act2Start + 0.23, act2Start + 0.27, act2End - 0.04, act2End],
+    [ACT2_WIREFRAME_END_GLOBAL + 0.02, ACT2_WIREFRAME_END_GLOBAL + 0.08, act2End - 0.04, act2End],
     [0, 1, 1, 0],
   );
   const containerOpacity = useTransform(
     scrollYProgress,
-    [act2Start, act2Start + 0.03, act2End - 0.02, act2End + 0.02],
+    [HOME_STORY_ACTS.act2Monitor.start, ACT2_WIREFRAME_START_GLOBAL, act2End - 0.02, act2End + 0.02],
     [0, 1, 1, 0],
   );
 
@@ -111,14 +125,10 @@ export default function HomeStorySection() {
     [],
   );
 
-  const heroTextOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.06, HOME_STORY_ACTS.act1ZoomOut.end - 0.02, HOME_STORY_ACTS.act2Monitor.start + 0.02],
-    [0, 0, 1, 0],
-  );
+  const heroTextOpacity = useTransform(scrollYProgress, mapHeroTextOpacity);
   const heroTextY = useTransform(
     scrollYProgress,
-    [0.06, HOME_STORY_ACTS.act1ZoomOut.end - 0.02],
+    [ACT1_HERO_FADE_IN_START_GLOBAL, ACT1_PULLBACK_COMPLETE_GLOBAL],
     [24, 0],
   );
   const scrollCueOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
@@ -140,8 +150,8 @@ export default function HomeStorySection() {
   const cardsLayerOpacity = useTransform(
     scrollYProgress,
     [
-      HOME_STORY_ACTS.act2Monitor.start - 0.01,
-      HOME_STORY_ACTS.act2Monitor.start + 0.02,
+      ACT2_WIREFRAME_START_GLOBAL - 0.01,
+      ACT2_WIREFRAME_START_GLOBAL + 0.03,
       HOME_STORY_ACTS.act2Monitor.end - 0.02,
       HOME_STORY_ACTS.act2Monitor.end + 0.03,
     ],
