@@ -6,6 +6,9 @@ import type { RocketTextAnchor, RocketTextBlock as RocketTextBlockConfig } from 
 /** Fixed width — all cards match regardless of placement anchor */
 const CARD_WIDTH_CLASS = "w-[min(22rem,calc(100vw-3rem))]";
 
+const CARD_SURFACE_CLASS =
+  "rounded-xl border border-agency-border/80 bg-agency-surface/85 p-5 shadow-[0_16px_48px_rgba(15,17,20,0.2)] backdrop-blur-md lg:p-6";
+
 const ANCHOR_TRANSLATE: Record<RocketTextAnchor, string> = {
   "top-left": "translate(0, 0)",
   "top-right": "translate(-100%, 0)",
@@ -30,6 +33,13 @@ type RocketTextBlockProps = {
   prefersReduced: boolean;
 };
 
+function fadeSegment(progress: number, start: number, end: number) {
+  if (end <= start) {
+    return progress >= start ? 1 : 0;
+  }
+  return Math.min(1, Math.max(0, (progress - start) / (end - start)));
+}
+
 export default function RocketTextBlock({
   block,
   scrollYProgress,
@@ -39,43 +49,55 @@ export default function RocketTextBlock({
   const anchor = block.placement.anchor ?? "top-left";
 
   const opacity = useTransform(scrollYProgress, (progress) => {
-    if (progress < fadeIn || progress > fadeOut) return 0;
-    if (progress < holdStart) return (progress - fadeIn) / (holdStart - fadeIn);
-    if (progress <= holdEnd) return 1;
-    return (fadeOut - progress) / (fadeOut - holdEnd);
+    if (progress < fadeIn || progress > fadeOut) {
+      return 0;
+    }
+    if (progress < holdStart) {
+      return fadeSegment(progress, fadeIn, Math.max(holdStart, fadeIn + 0.001));
+    }
+    if (progress <= holdEnd) {
+      return 1;
+    }
+    return 1 - fadeSegment(progress, holdEnd, Math.max(fadeOut, holdEnd + 0.001));
   });
 
   const y = useTransform(scrollYProgress, (progress) => {
-    if (progress < fadeIn || progress > fadeOut) return 0;
+    if (progress < fadeIn || progress > fadeOut) {
+      return 0;
+    }
     if (progress < holdStart) {
-      const t = (progress - fadeIn) / (holdStart - fadeIn);
-      return 20 * (1 - t);
+      return 20 * (1 - fadeSegment(progress, fadeIn, Math.max(holdStart, fadeIn + 0.001)));
     }
     return 0;
   });
 
-  const visibility = useTransform(opacity, (value) => (value > 0.02 ? "visible" : "hidden"));
   const placementStyle = getPlacementStyle(anchor, block.placement.x, block.placement.y);
 
+  if (prefersReduced) {
+    return (
+      <article className={`relative ${CARD_WIDTH_CLASS}`} aria-label={`${block.number}. ${block.title}`}>
+        <div className={CARD_SURFACE_CLASS}>
+          <p className="font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl">
+            {block.number}
+          </p>
+          <h3 className="mt-4 font-display text-xl font-semibold text-agency-ink lg:text-2xl">
+            {block.title}
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-agency-muted lg:text-base">{block.body}</p>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <motion.article
-      style={
-        prefersReduced
-          ? undefined
-          : {
-              opacity,
-              visibility,
-              ...placementStyle,
-            }
-      }
-      className={
-        prefersReduced ? `relative ${CARD_WIDTH_CLASS}` : `absolute ${CARD_WIDTH_CLASS}`
-      }
+    <div
+      className={`pointer-events-none absolute ${CARD_WIDTH_CLASS}`}
+      style={placementStyle}
       aria-label={`${block.number}. ${block.title}`}
     >
-      <motion.div style={prefersReduced ? undefined : { y }}>
-        <div className="rounded-xl border border-agency-border/60 bg-agency-bg/85 p-5 shadow-[0_12px_40px_rgba(15,17,20,0.08)] backdrop-blur-sm lg:p-6">
-          <p className="font-display text-4xl font-bold leading-none text-agency-surface2 lg:text-5xl">
+      <motion.div style={{ opacity, y }}>
+        <div className={CARD_SURFACE_CLASS}>
+          <p className="font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl">
             {block.number}
           </p>
           <h3 className="mt-4 font-display text-xl font-semibold text-agency-ink lg:text-2xl">
@@ -84,6 +106,6 @@ export default function RocketTextBlock({
           <p className="mt-3 text-sm leading-relaxed text-agency-muted lg:text-base">{block.body}</p>
         </div>
       </motion.div>
-    </motion.article>
+    </div>
   );
 }

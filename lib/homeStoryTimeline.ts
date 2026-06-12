@@ -100,6 +100,21 @@ export function mapAct2ProgressToGlobal(localProgress: number) {
   return mapRange(localProgress, 0, 1, act2Monitor.start, act2Monitor.end);
 }
 
+/** Map full-story scroll progress to Act 2 local (0–1) for step cards. */
+export function mapGlobalToAct2Progress(global: number) {
+  const { act2Monitor } = HOME_STORY_ACTS;
+
+  if (global <= act2Monitor.start) {
+    return 0;
+  }
+
+  if (global >= act2Monitor.end) {
+    return 1;
+  }
+
+  return mapToActLocal(global, act2Monitor);
+}
+
 /** Remap Act 1 local progress (0–1) to global scroll progress */
 export function mapAct1ProgressToGlobal(localProgress: number) {
   const { act1ZoomOut } = HOME_STORY_ACTS;

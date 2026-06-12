@@ -116,7 +116,7 @@ export default function HomeStorySection() {
     pcCameraProgress.set(mapPcCameraProgress(scrollYProgress.get()));
   }, [scrollYProgress, pcCameraProgress]);
 
-  const storyBlocks = useMemo(
+  const storyStepBlocks = useMemo(
     () =>
       HOW_IT_WORKS_BLOCKS.map((block) => ({
         ...block,
@@ -147,17 +147,6 @@ export default function HomeStorySection() {
     ],
     [0, 0.75, 0.25, 0],
   );
-  const cardsLayerOpacity = useTransform(
-    scrollYProgress,
-    [
-      ACT2_WIREFRAME_START_GLOBAL - 0.01,
-      ACT2_WIREFRAME_START_GLOBAL + 0.03,
-      HOME_STORY_ACTS.act2Monitor.end - 0.02,
-      HOME_STORY_ACTS.act2Monitor.end + 0.03,
-    ],
-    [0, 1, 1, 0],
-  );
-
   const visibleHeadlineText = prefersReduced ? HEADLINE_TEXT : headlineText;
   const progressForHero = prefersReduced ? staticZero : pcCameraProgress;
   const progressForScreen = prefersReduced ? staticZero : screenEvolutionProgress;
@@ -375,7 +364,7 @@ export default function HomeStorySection() {
             id="how-it-works"
             className="pointer-events-none relative z-10 mt-12 flex flex-col gap-6 px-6 py-8 lg:px-16"
           >
-            {storyBlocks.map((block) => (
+            {HOW_IT_WORKS_BLOCKS.map((block) => (
               <RocketTextBlock
                 key={block.id}
                 block={block}
@@ -385,18 +374,16 @@ export default function HomeStorySection() {
             ))}
           </div>
         ) : (
-          <motion.div style={{ opacity: cardsLayerOpacity }} className="pointer-events-none absolute inset-0 z-[11]">
-            <div id="how-it-works" className="absolute inset-0">
-              {storyBlocks.map((block) => (
-                <RocketTextBlock
-                  key={block.id}
-                  block={block}
-                  scrollYProgress={scrollYProgress}
-                  prefersReduced={false}
-                />
-              ))}
-            </div>
-          </motion.div>
+          <div id="how-it-works" className="pointer-events-none absolute inset-0 z-[45]">
+            {storyStepBlocks.map((block) => (
+              <RocketTextBlock
+                key={block.id}
+                block={block}
+                scrollYProgress={scrollYProgress}
+                prefersReduced={false}
+              />
+            ))}
+          </div>
         )}
       </div>
     </section>

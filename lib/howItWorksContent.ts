@@ -34,7 +34,11 @@ export type RocketTextBlock = {
 };
 
 /**
- * Progress windows are Act 2 local (0–1). Step 1 is tied to ACT2_WIREFRAME_START.
+ * Card windows are Act 2 local (0–1). Slight overlap at boundaries so cards
+ * crossfade instead of leaving dead zones. Era alignment:
+ *   step 1 · blueprint  → through ~WIREFRAME_START
+ *   step 2 · wireframe  → through ~WIREFRAME_END
+ *   step 3 · live site  → end of Act 2
  */
 export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
   {
@@ -44,12 +48,12 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     body:
       "You send through a brief and we talk through the business, the goals, and what the site needs to do. You get a direct point of contact, a clear scope, and a straightforward next step before any work begins.",
     progress: {
-      in: ACT2_WIREFRAME_START,
-      holdStart: ACT2_WIREFRAME_START + 0.04,
-      holdEnd: ACT2_WIREFRAME_END - 0.06,
-      out: ACT2_WIREFRAME_END,
+      in: 0.02,
+      holdStart: 0.06,
+      holdEnd: ACT2_WIREFRAME_START - 0.02,
+      out: ACT2_WIREFRAME_START + 0.02,
     },
-    placement: { x: 18, y: 18, anchor: "top-left" },
+    placement: { x: 20, y: 28, anchor: "top-left" },
   },
   {
     id: "step-2",
@@ -57,8 +61,13 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     title: "Shape the Direction",
     body:
       "We map out the page structure, content flow, and visual direction with you before the build gets underway. Depending on the project, that might be a Figma concept or a working draft in code so we can test the ideas properly.",
-    progress: { in: ACT2_WIREFRAME_END - 0.04, holdStart: ACT2_WIREFRAME_END, holdEnd: 0.72, out: 0.78 },
-    placement: { x: 78, y: 40, anchor: "center-right" },
+    progress: {
+      in: ACT2_WIREFRAME_START - 0.04,
+      holdStart: ACT2_WIREFRAME_START + 0.04,
+      holdEnd: ACT2_WIREFRAME_END - 0.04,
+      out: ACT2_WIREFRAME_END + 0.02,
+    },
+    placement: { x: 20, y: 50, anchor: "center-left" },
   },
   {
     id: "step-3",
@@ -66,8 +75,13 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     title: "Build, Refine & Launch",
     body:
       "Once the direction feels right, we build the site, test it across devices, refine the details, and get it live. You also get handover support so the launch feels smooth and the site is ready to use from day one.",
-    progress: { in: 0.62, holdStart: 0.68, holdEnd: 0.94, out: 0.98 },
-    placement: { x: 18, y: 74, anchor: "bottom-left" },
+    progress: {
+      in: ACT2_WIREFRAME_END - 0.04,
+      holdStart: ACT2_WIREFRAME_END + 0.04,
+      holdEnd: 0.94,
+      out: 0.98,
+    },
+    placement: { x: 20, y: 72, anchor: "bottom-left" },
   },
 ];
 
