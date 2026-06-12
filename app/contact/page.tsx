@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import AgencyNav from "@/components/agency/AgencyNav";
+import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import Footer from "@/components/agency/Footer";
 import ContactForm from "@/components/agency/ContactForm";
 import BackToTop from "@/components/agency/BackToTop";
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <AgencyNav />
+      <AgencyNavV2 />
 
       <main
         role="main"

@@ -9,7 +9,7 @@ const STORAGE_KEY = "aperix-theme";
 
 function getPreferredTheme(): Theme {
   if (typeof window === "undefined") {
-    return "light";
+    return "dark";
   }
 
   const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -17,7 +17,7 @@ function getPreferredTheme(): Theme {
     return stored;
   }
 
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "dark";
 }
 
 function applyTheme(theme: Theme) {
@@ -32,7 +32,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
   // in app/layout.tsx already sets `documentElement.dataset.theme`, so the
   // page colours are correct from byte-one regardless of this button's
   // rendered icon for the first frame.
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
   // Sync from storage / system after mount.

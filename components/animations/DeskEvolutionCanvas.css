@@ -1,0 +1,61 @@
+.site-evolution-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.site-evolution-stage.h-full,
+.site-evolution-stage--scroll {
+  min-height: 100%;
+  height: 100%;
+}
+
+.site-evolution-stage__canvas {
+  display: block;
+  width: min(92vw, 72rem);
+  height: auto;
+  aspect-ratio: 960 / 600;
+  border-radius: 1rem;
+  border: 1px solid rgba(147, 197, 253, 0.18);
+  box-shadow:
+    0 24px 80px rgba(8, 21, 38, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.desk-evolution-blueprint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(147, 197, 253, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 197, 253, 0.12) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.desk-evolution-era {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 5;
+  min-height: 1rem;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .desk-evolution-era {
+    top: 2rem;
+    left: 2rem;
+    font-size: 0.75rem;
+  }
+}

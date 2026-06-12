@@ -2,40 +2,58 @@
 
 /* ============================================================
    DESIGN SYSTEM — CSS Custom Properties
-   From: docs/PORTFOLIO_PRD.md  Section 3.1
    ============================================================ */
 
 :root {
-  /* ---- Agency Shell (light / editorial palette) ---- */
-  --agency-bg: #f6f8fb;
+  /* ---- Agency Shell (light) ---- */
+  --agency-bg: #f3f4f6;
   --agency-surface: #ffffff;
-  --agency-surface2: #eef3f8;
-  --agency-border: #d5dee8;
-  --agency-border-dark: #8ea1b6;
-  --agency-text: #14202d;
-  --agency-text-secondary: #233140;
-  --agency-muted: #617181;
-  --agency-accent: #0a84ff;       /* Apple-style blue */
-  --agency-accent-dark: #0066cc;  /* deeper hover/focus blue */
-  --agency-accent2: #f59e0b;      /* amber — keep for demos */
-  --agency-accent3: #a78bfa;      /* violet — keep for demos */
-  --agency-ink: #0f1823;          /* deep ink for headlines */
-  --agency-grid: rgba(116, 136, 158, 0.22);
-  --agency-line-sweep: rgba(15, 24, 35, 0.095);
-  --agency-line-sweep-soft: rgba(15, 24, 35, 0.045);
-  --agency-radial: rgba(255, 255, 255, 0.7);
-  --agency-pointer-glow: rgba(10, 132, 255, 0.045);
-  --agency-pointer-glow2: rgba(167, 139, 250, 0.035);
-  --agency-glass-border: rgba(255, 255, 255, 0.78);
-  --agency-glass-bg: rgba(255, 255, 255, 0.62);
-  --agency-glass-soft-border: rgba(255, 255, 255, 0.55);
-  --agency-glass-soft-bg: rgba(255, 255, 255, 0.44);
-  --agency-glass-shadow: 0 8px 32px rgba(67, 92, 122, 0.10), 0 1.5px 0 rgba(255,255,255,0.85) inset;
-  --agency-mobile-overlay: rgba(232, 238, 245, 0.72);
-  --agency-mobile-panel-border: rgba(255, 255, 255, 0.45);
-  --agency-mobile-panel-bg: rgba(255, 255, 255, 0.38);
+  --agency-surface2: #ffffff;
+  --agency-border: #e5e7eb;
+  --agency-border-dark: #a3a3a3;
+  --agency-text: #171717;
+  --agency-text-secondary: #404040;
+  --agency-muted: #737373;
+  --agency-accent: #0ea5e9;
+  --agency-accent-dark: #0284c7;
+  --agency-accent2: #84cc16;
+  --agency-accent3: #38bdf8;
+  --agency-ink: #171717;
+
+  /* ---- Atmosphere (light) ---- */
+  --agency-atmosphere-red: #d08a7a;
+  --agency-atmosphere-blue: #c8d8e4;
+  --agency-atmosphere-peach: #ecd4bc;
+  --agency-atmosphere-ghost: #faf5ef;
+  --agency-atmosphere-base: #fffaf6;
+  --agency-glass-frost: rgba(255, 248, 242, 0.3);
+  --agency-glass-frost-blur: 96px;
+
+  --agency-atmosphere-gradient: linear-gradient(
+    125deg,
+    color-mix(in oklab, var(--agency-atmosphere-red) 62%, var(--agency-atmosphere-ghost) 38%) 0%,
+    color-mix(in oklab, var(--agency-atmosphere-red) 22%, var(--agency-atmosphere-ghost) 78%) 22%,
+    var(--agency-atmosphere-ghost) 44%,
+    color-mix(in oklab, var(--agency-atmosphere-peach) 50%, var(--agency-atmosphere-ghost) 50%) 68%,
+    color-mix(in oklab, var(--agency-atmosphere-blue) 45%, var(--agency-atmosphere-peach) 55%) 100%
+  );
+
+  /* ---- Glass UI (light) ---- */
+  --agency-glass-border: rgba(255, 255, 255, 0.72);
+  --agency-glass-bg: rgba(255, 255, 255, 0.6);
+  --agency-glass-soft-border: rgba(23, 23, 23, 0.08);
+  --agency-glass-soft-bg: rgba(255, 255, 255, 0.88);
+  --agency-glass-shadow: 0 8px 32px rgba(23, 23, 23, 0.08), 0 1.5px 0 rgba(255, 255, 255, 0.8) inset;
+
+  /* ---- Mobile nav ---- */
+  --agency-mobile-overlay: rgba(23, 23, 23, 0.72);
+  --agency-mobile-panel-border: rgba(255, 255, 255, 0.16);
+  --agency-mobile-panel-bg: rgba(38, 38, 38, 0.92);
+
   --agency-pointer-x: 50%;
   --agency-pointer-y: 18%;
+  --agency-pointer-glow: rgba(14, 165, 233, 0.045);
+  --agency-pointer-glow2: rgba(132, 204, 22, 0.035);
 
   /* ---- Demo — Soothe Mobile Massage (Basic Tier) ---- */
   --soothe-bg: #f7f5f2;
@@ -95,31 +113,47 @@ html {
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --agency-bg: #09111d;
-  --agency-surface: #0f1a2a;
-  --agency-surface2: #152337;
-  --agency-border: #22344c;
-  --agency-border-dark: #4d6785;
-  --agency-text: #edf4ff;
-  --agency-text-secondary: #d6e1ef;
-  --agency-muted: #93a7c0;
-  --agency-accent: #66b6ff;
-  --agency-accent-dark: #3d98f5;
-  --agency-accent2: #f8bd56;
-  --agency-accent3: #c5a6ff;
-  --agency-ink: #f7fbff;
-  --agency-grid: rgba(98, 126, 158, 0.28);
-  --agency-line-sweep: rgba(102, 182, 255, 0.18);
-  --agency-line-sweep-soft: rgba(102, 182, 255, 0.085);
-  --agency-radial: rgba(92, 170, 255, 0.16);
-  --agency-glass-border: rgba(255, 255, 255, 0.14);
-  --agency-glass-bg: rgba(28, 42, 62, 0.68);
-  --agency-glass-soft-border: rgba(255, 255, 255, 0.10);
-  --agency-glass-soft-bg: rgba(20, 32, 50, 0.60);
-  --agency-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.38), 0 1.5px 0 rgba(255,255,255,0.10) inset;
-  --agency-mobile-overlay: rgba(5, 10, 19, 0.78);
-  --agency-mobile-panel-border: rgba(118, 145, 182, 0.18);
-  --agency-mobile-panel-bg: rgba(15, 26, 42, 0.84);
+
+  --agency-bg: #171717;
+  --agency-surface: #262626;
+  --agency-surface2: #404040;
+  --agency-border: #525252;
+  --agency-border-dark: #a3a3a3;
+  --agency-text: #ffffff;
+  --agency-text-secondary: #f3f4f6;
+  --agency-muted: #a3a3a3;
+  --agency-accent: #38bdf8;
+  --agency-accent-dark: #0ea5e9;
+  --agency-accent2: #a3e635;
+  --agency-accent3: #7dd3fc;
+  --agency-ink: #ffffff;
+
+  --agency-atmosphere-red: #a87868;
+  --agency-atmosphere-blue: #7a98a8;
+  --agency-atmosphere-peach: #a89078;
+  --agency-atmosphere-ghost: #221e1c;
+  --agency-atmosphere-base: #1a1614;
+  --agency-glass-frost: rgba(255, 255, 255, 0.08);
+  --agency-glass-frost-blur: 72px;
+
+  --agency-atmosphere-gradient: linear-gradient(
+    125deg,
+    color-mix(in oklab, var(--agency-atmosphere-red) 44%, var(--agency-atmosphere-base) 56%) 0%,
+    color-mix(in oklab, var(--agency-atmosphere-red) 14%, var(--agency-atmosphere-ghost) 86%) 24%,
+    var(--agency-atmosphere-ghost) 46%,
+    color-mix(in oklab, var(--agency-atmosphere-peach) 36%, var(--agency-atmosphere-ghost) 64%) 70%,
+    color-mix(in oklab, var(--agency-atmosphere-blue) 28%, var(--agency-atmosphere-peach) 72%) 100%
+  );
+
+  --agency-glass-border: rgba(255, 255, 255, 0.12);
+  --agency-glass-bg: rgba(38, 38, 38, 0.72);
+  --agency-glass-soft-border: rgba(255, 255, 255, 0.08);
+  --agency-glass-soft-bg: rgba(23, 23, 23, 0.68);
+  --agency-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.38), 0 1.5px 0 rgba(255, 255, 255, 0.08) inset;
+
+  --agency-mobile-overlay: rgba(23, 23, 23, 0.82);
+  --agency-mobile-panel-border: rgba(255, 255, 255, 0.12);
+  --agency-mobile-panel-bg: rgba(38, 38, 38, 0.92);
 }
 
 /* ---- Map tokens to Tailwind v4 theme ---- */
@@ -127,7 +161,6 @@ html[data-theme="dark"] {
   --color-background: var(--agency-bg);
   --color-foreground: var(--agency-text);
 
-  /* Agency palette exposed as Tailwind utilities */
   --color-agency-bg: var(--agency-bg);
   --color-agency-surface: var(--agency-surface);
   --color-agency-surface2: var(--agency-surface2);
@@ -141,8 +174,10 @@ html[data-theme="dark"] {
   --color-agency-accent2: var(--agency-accent2);
   --color-agency-accent3: var(--agency-accent3);
   --color-agency-ink: var(--agency-ink);
+  --color-agency-atmosphere-base: var(--agency-atmosphere-base);
 
-  /* Fonts — variables are set by next/font in layout.tsx */
+  --max-width-450: 112.5rem;
+
   --font-sans: var(--font-inter);
   --font-display: var(--font-syne);
   --font-mono: var(--font-jetbrains-mono);
@@ -153,14 +188,8 @@ html[data-theme="dark"] {
    ============================================================ */
 
 body {
-  background-color: var(--agency-bg);
-  background-image:
-    linear-gradient(var(--agency-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--agency-grid) 1px, transparent 1px),
-    radial-gradient(circle at top, var(--agency-radial), transparent 42%);
-  background-size: 72px 72px, 72px 72px, 100% 100%;
-  background-attachment: fixed;
-  color: var(--agency-text);
+  background-color: var(--agency-atmosphere-base);
+  color: var(--agency-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -173,7 +202,161 @@ body {
   }
 }
 
-/* Scoped theme-change transitions — avoid the expensive body * wildcard */
+/* ============================================================
+   SITE ATMOSPHERE — fixed background layer
+   ============================================================ */
+
+.site-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--agency-atmosphere-base);
+}
+
+.site-atmosphere__gradient {
+  position: absolute;
+  inset: 0;
+  background: var(--agency-atmosphere-gradient);
+  background-attachment: fixed;
+}
+
+.site-atmosphere__blobs {
+  position: absolute;
+  inset: -10%;
+}
+
+.site-atmosphere__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+}
+
+.site-atmosphere__blob--coral {
+  top: -6%;
+  left: -4%;
+  width: min(50vw, 440px);
+  height: min(50vw, 440px);
+  background: var(--agency-atmosphere-red);
+  opacity: 0.72;
+  animation: site-atmosphere-drift-a 34s ease-in-out infinite alternate;
+}
+
+.site-atmosphere__blob--peach {
+  bottom: -8%;
+  right: -2%;
+  width: min(54vw, 480px);
+  height: min(54vw, 480px);
+  background: var(--agency-atmosphere-peach);
+  opacity: 0.68;
+  animation: site-atmosphere-drift-b 40s ease-in-out infinite alternate;
+}
+
+.site-atmosphere__blob--sky {
+  top: 32%;
+  right: 14%;
+  width: min(38vw, 340px);
+  height: min(38vw, 340px);
+  background: var(--agency-atmosphere-blue);
+  opacity: 0.58;
+  animation: site-atmosphere-drift-c 44s ease-in-out infinite alternate;
+}
+
+.site-atmosphere__blob--rose {
+  bottom: 22%;
+  left: 10%;
+  width: min(36vw, 320px);
+  height: min(36vw, 320px);
+  background: color-mix(in oklab, var(--agency-atmosphere-red) 65%, var(--agency-atmosphere-peach) 35%);
+  opacity: 0.55;
+  animation: site-atmosphere-drift-d 38s ease-in-out infinite alternate;
+}
+
+.site-atmosphere__frost {
+  position: absolute;
+  inset: 0;
+  background: var(--agency-glass-frost);
+  backdrop-filter: blur(var(--agency-glass-frost-blur)) saturate(1.55) brightness(1.03);
+  -webkit-backdrop-filter: blur(var(--agency-glass-frost-blur)) saturate(1.55) brightness(1.03);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.55);
+}
+
+.site-atmosphere__sheen {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.28) 0%, transparent 40%),
+    radial-gradient(ellipse 110% 70% at 50% -18%, rgba(255, 255, 255, 0.18), transparent 58%);
+}
+
+.site-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="dark"] .site-atmosphere__blob {
+  filter: blur(80px);
+  opacity: 0.42;
+}
+
+html[data-theme="dark"] .site-atmosphere__frost {
+  backdrop-filter: blur(var(--agency-glass-frost-blur)) saturate(1.2) brightness(0.96);
+  -webkit-backdrop-filter: blur(var(--agency-glass-frost-blur)) saturate(1.2) brightness(0.96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .site-atmosphere__sheen {
+  opacity: 0.28;
+}
+
+html[data-theme="dark"] .site-atmosphere::after {
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes site-atmosphere-drift-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(4%, 6%, 0) scale(1.06); }
+}
+
+@keyframes site-atmosphere-drift-b {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-5%, 3%, 0) scale(1.05); }
+}
+
+@keyframes site-atmosphere-drift-c {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(3%, -4%, 0) scale(1.07); }
+}
+
+@keyframes site-atmosphere-drift-d {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-3%, 5%, 0) scale(1.04); }
+}
+
+@media (pointer: coarse) {
+  .site-atmosphere__blob {
+    filter: blur(56px);
+    opacity: 0.5;
+  }
+
+  .site-atmosphere__frost {
+    --agency-glass-frost-blur: 56px;
+  }
+}
+
+/* ============================================================
+   AGENCY UI COMPONENTS
+   ============================================================ */
+
 a,
 button,
 [role="button"],
@@ -194,23 +377,12 @@ button,
 .agency-panel-wrap {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--agency-glass-border);
   border-radius: 2rem;
-  background: color-mix(in oklab, var(--agency-surface) 86%, white 14%);
-  box-shadow:
-    0 20px 60px rgba(67, 92, 122, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -1px 0 rgba(142, 161, 182, 0.08);
-  backdrop-filter: blur(16px);
-}
-
-html[data-theme="dark"] .agency-panel-wrap {
-  border-color: color-mix(in oklab, var(--agency-border) 88%, rgba(255, 255, 255, 0.04) 12%);
-  background: linear-gradient(180deg, rgba(15, 26, 42, 0.96), rgba(11, 19, 32, 0.94));
-  box-shadow:
-    0 26px 70px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 -1px 0 rgba(149, 184, 226, 0.04);
+  background: var(--agency-glass-bg);
+  box-shadow: var(--agency-glass-shadow);
+  backdrop-filter: blur(28px) saturate(1.65);
+  -webkit-backdrop-filter: blur(28px) saturate(1.65);
 }
 
 .agency-panel-dark-wrap {
@@ -218,10 +390,9 @@ html[data-theme="dark"] .agency-panel-wrap {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
-  background:
-    linear-gradient(180deg, rgba(29, 43, 58, 0.96), rgba(15, 24, 35, 0.96));
+  background: linear-gradient(180deg, rgba(38, 38, 38, 0.96), rgba(23, 23, 23, 0.96));
   box-shadow:
-    0 22px 65px rgba(30, 45, 65, 0.28),
+    0 22px 65px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
@@ -358,7 +529,7 @@ html[data-theme="dark"] .agency-panel-wrap {
 .agency-button-primary {
   border: 1px solid color-mix(in oklab, var(--agency-accent-dark) 55%, transparent 45%);
   background: linear-gradient(135deg, var(--agency-accent), var(--agency-accent-dark));
-  color: #fff;
+  color: #ffffff;
   box-shadow:
     0 14px 32px color-mix(in oklab, var(--agency-accent) 28%, transparent 72%),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
@@ -389,10 +560,15 @@ html[data-theme="dark"] .agency-panel-wrap {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.55;
+  opacity: 0.65;
   background:
-    radial-gradient(circle at var(--winding-x) 10%, color-mix(in oklab, var(--agency-accent) 12%, transparent 88%), transparent 34%),
-    linear-gradient(135deg, transparent 0%, color-mix(in oklab, var(--agency-surface) 58%, transparent 42%) 45%, transparent 100%);
+    radial-gradient(circle at var(--winding-x) 10%, color-mix(in oklab, var(--agency-accent) 14%, transparent 86%), transparent 36%),
+    linear-gradient(
+      135deg,
+      transparent 0%,
+      color-mix(in oklab, var(--agency-glass-bg) 70%, transparent 30%) 48%,
+      transparent 100%
+    );
   clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
 }
 
@@ -404,12 +580,10 @@ html[data-theme="dark"] .agency-panel-wrap {
   --winding-x: 92%;
 }
 
-/* Smooth scrolling for anchor links */
 html {
   scroll-behavior: smooth;
 }
 
-/* Respect reduced-motion preference globally */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -421,14 +595,13 @@ html {
   }
 }
 
-/* Focus-visible ring for keyboard navigation (WCAG) */
 :focus-visible {
   outline: 2px solid var(--agency-accent);
   outline-offset: 2px;
 }
 
 /* ============================================================
-   MARQUEE — Pure CSS infinite horizontal scroll (§4.2.3)
+   MARQUEE — Pure CSS infinite horizontal scroll
    ============================================================ */
 
 @keyframes marquee-scroll {
@@ -444,13 +617,10 @@ html {
   animation: marquee-scroll 30s linear infinite;
 }
 
-/* Tailwind v4 utility for marquee (used by Lumina awards strip) */
 @utility animate-marquee {
   animation: marquee-scroll 40s linear infinite;
 }
 
-/* Respect reduced-motion (already handled globally above,
-   but being explicit for the marquee) */
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
   .animate-marquee {

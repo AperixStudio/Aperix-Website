@@ -7,23 +7,11 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import ThemeToggle from "@/components/agency/ThemeToggle";
-
-/* ────────────────────────────────────────────────────────────
-   AgencyNav — PRD §4.2.1
-   Fixed/sticky top navigation for the Agency Shell.
-   • Logo left: "Aperix" wordmark + geometric mark
-  • Nav links right: Services, Our Work, Contact
-   • Scroll-past-hero → bg fills with --agency-surface + blur
-   • Mobile: hamburger → full-screen slide-in overlay
-  • CTA: "Get in Contact" → /contact
-   ──────────────────────────────────────────────────────────── */
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Our Work", href: "/our-work" },
-  { label: "Contact", href: "/contact" },
 ];
 
 function WiggleText({ label }: { label: string }) {
@@ -42,12 +30,33 @@ function WiggleText({ label }: { label: string }) {
   );
 }
 
-export default function AgencyNav() {
+function NavLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      data-cursor-pill
+      aria-label={label}
+      className="agency-nav-link group relative rounded-full px-4 py-2 text-sm font-medium"
+    >
+      <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
+        <span className="text-agency-muted">
+          <WiggleText label={label} />
+        </span>
+      </span>
+      <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+        <span className="text-agency-ink">
+          <WiggleText label={label} />
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+export default function AgencyNavV2() {
   const prefersReduced = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  /* ── scroll listener ──────────────────────────────────── */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -55,7 +64,6 @@ export default function AgencyNav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* ── lock body scroll when mobile menu open ───────────── */
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -64,29 +72,23 @@ export default function AgencyNav() {
   }, [mobileOpen]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
-
   const dur = prefersReduced ? 0 : 0.15;
 
   return (
     <>
-      <header className={cn("agency-header fixed top-0 left-0 right-0 z-50 px-4 pt-4 sm:px-6 lg:px-8", scrolled && "agency-header--scrolled")}>
+      <header
+        className={cn(
+          "agency-header fixed top-0 left-0 right-0 z-50 px-4 pt-4 sm:px-6 lg:px-8",
+          scrolled && "agency-header--scrolled",
+        )}
+      >
         <div aria-hidden="true" className="agency-header-underlay" />
-        {/* Glass pill backplate — tighter and more distinct */}
-        <div
-          aria-hidden="true"
-          className={cn(
-            "agency-glass-pill pointer-events-none absolute left-1/2 top-4 h-18 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-full supports-backdrop-filter:backdrop-blur-none sm:w-[calc(100%-3rem)] lg:w-[calc(100%-4rem)] transition-all duration-300",
-            scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
-          )}
-        />
-        <nav
-          className="relative z-10 mx-auto flex h-18 max-w-6xl items-center justify-between rounded-full px-6 py-0 lg:px-8"
-          aria-label="Main navigation"
-        >
-          {/* ── Logo ────────────────────────────────────── */}
+
+        <div className="relative z-10 mx-auto grid h-18 max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3">
+          {/* Logo — outside the glass pill */}
           <Link
             href="/"
-            className="flex items-center gap-2 group"
+            className="group flex items-center gap-2 justify-self-start"
             aria-label="Aperix — home"
           >
             <motion.span
@@ -108,87 +110,77 @@ export default function AgencyNav() {
                 className="h-[2.15rem] w-auto"
               />
             </motion.span>
-          
-            {/* Wordmark */}
             <span className="font-display text-lg font-bold tracking-tight text-agency-ink">
               <WiggleText label="Aperix" />
             </span>
           </Link>
 
-          {/* ── Desktop links ───────────────────────────── */}
-          <div className="hidden items-center gap-8 md:flex">
+          {/* Centered glass nav pill — links only */}
+          <nav
+            aria-label="Main navigation"
+            className={cn(
+              "hidden items-center rounded-full md:flex",
+              "agency-glass-pill px-1.5 py-1",
+              scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
+            )}
+          >
             {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                data-cursor-pill
-                aria-label={link.label}
-                className="agency-nav-link group relative text-sm font-medium"
-              >
-                <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
-                  <span className="text-agency-muted"><WiggleText label={link.label} /></span>
-                </span>
-                {/* ink layer — fades in on hover */}
-                <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  <span className="text-agency-ink"><WiggleText label={link.label} /></span>
-                </span>
-              </Link>
+              <NavLink key={link.href} href={link.href} label={link.label} />
             ))}
+          </nav>
 
-            <ThemeToggle />
-
+          {/* Contact CTA + theme + mobile menu — outside the pill */}
+          <div className="flex items-center justify-end gap-2 sm:gap-3 justify-self-end">
             <Link
               href="/contact"
               data-cursor-pill
               className={cn(
-                "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold",
+                "hidden items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold md:inline-flex",
                 "agency-button-primary",
                 "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
               )}
             >
               Get in Contact
             </Link>
-          </div>
 
-          {/* ── Mobile hamburger ────────────────────────── */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-agency-border bg-agency-surface/80 text-agency-ink shadow-[0_10px_30px_rgba(67,92,122,0.12)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-          >
-            <div className="flex w-5 flex-col gap-1.25">
-              <motion.span
-                animate={
-                  mobileOpen
-                    ? { rotate: 45, y: 7, transition: { duration: dur } }
-                    : { rotate: 0, y: 0, transition: { duration: dur } }
-                }
-                className="block h-0.5 w-full bg-agency-ink rounded-full origin-center"
-              />
-              <motion.span
-                animate={
-                  mobileOpen
-                    ? { opacity: 0, transition: { duration: dur * 0.5 } }
-                    : { opacity: 1, transition: { duration: dur } }
-                }
-                className="block h-0.5 w-full bg-agency-ink rounded-full"
-              />
-              <motion.span
-                animate={
-                  mobileOpen
-                    ? { rotate: -45, y: -7, transition: { duration: dur } }
-                    : { rotate: 0, y: 0, transition: { duration: dur } }
-                }
-                className="block h-0.5 w-full bg-agency-ink rounded-full origin-center"
-              />
-            </div>
-          </button>
-        </nav>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((open) => !open)}
+              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-agency-border bg-agency-surface/80 text-agency-ink shadow-[0_10px_30px_rgba(23,23,23,0.08)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+            >
+              <div className="flex w-5 flex-col gap-1.25">
+                <motion.span
+                  animate={
+                    mobileOpen
+                      ? { rotate: 45, y: 7, transition: { duration: dur } }
+                      : { rotate: 0, y: 0, transition: { duration: dur } }
+                  }
+                  className="block h-0.5 w-full origin-center rounded-full bg-agency-ink"
+                />
+                <motion.span
+                  animate={
+                    mobileOpen
+                      ? { opacity: 0, transition: { duration: dur * 0.5 } }
+                      : { opacity: 1, transition: { duration: dur } }
+                  }
+                  className="block h-0.5 w-full rounded-full bg-agency-ink"
+                />
+                <motion.span
+                  animate={
+                    mobileOpen
+                      ? { rotate: -45, y: -7, transition: { duration: dur } }
+                      : { rotate: 0, y: 0, transition: { duration: dur } }
+                  }
+                  className="block h-0.5 w-full origin-center rounded-full bg-agency-ink"
+                />
+              </div>
+            </button>
+          </div>
+        </div>
       </header>
 
-      {/* ── Mobile overlay ──────────────────────────────── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -203,17 +195,16 @@ export default function AgencyNav() {
             }
             className="agency-mobile-overlay fixed inset-0 z-40 flex flex-col supports-backdrop-filter:backdrop-blur-2xl md:hidden"
           >
-            {/* Push content below the nav bar height */}
-            <div className="agency-mobile-panel m-4 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl px-6 shadow-[0_18px_60px_rgba(67,92,122,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
-              {NAV_LINKS.map((link, i) => (
+            <div className="agency-mobile-panel m-4 mt-24 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl px-6 shadow-[0_18px_60px_rgba(23,23,23,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
+              {NAV_LINKS.map((link, index) => (
                 <motion.div
-                  key={link.label}
+                  key={link.href}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={
                     prefersReduced
                       ? { duration: 0 }
-                      : { delay: 0.1 + i * 0.08, duration: 0.4, ease: "easeOut" }
+                      : { delay: 0.1 + index * 0.08, duration: 0.4, ease: "easeOut" }
                   }
                 >
                   <Link
@@ -223,19 +214,20 @@ export default function AgencyNav() {
                     aria-label={link.label}
                     className="agency-nav-link group relative font-display text-3xl font-bold"
                   >
-                    {/* base layer */}
-                    <span className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
+                    <span
+                      className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0"
+                      aria-hidden="true"
+                    >
                       <WiggleText label={link.label} />
                     </span>
-                    {/* muted layer — fades in on hover */}
                     <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      <span className="text-agency-muted"><WiggleText label={link.label} /></span>
+                      <span className="text-agency-muted">
+                        <WiggleText label={link.label} />
+                      </span>
                     </span>
                   </Link>
                 </motion.div>
               ))}
-
-              <ThemeToggle className="mt-2" />
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -245,7 +237,37 @@ export default function AgencyNav() {
                     ? { duration: 0 }
                     : { delay: 0.1 + NAV_LINKS.length * 0.08, duration: 0.4, ease: "easeOut" }
                 }
-                className="pt-4"
+              >
+                <Link
+                  href="/contact"
+                  onClick={closeMobile}
+                  data-cursor-pill
+                  aria-label="Contact"
+                  className="agency-nav-link group relative font-display text-3xl font-bold"
+                >
+                  <span
+                    className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0"
+                    aria-hidden="true"
+                  >
+                    <WiggleText label="Contact" />
+                  </span>
+                  <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                    <span className="text-agency-muted">
+                      <WiggleText label="Contact" />
+                    </span>
+                  </span>
+                </Link>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={
+                  prefersReduced
+                    ? { duration: 0 }
+                    : { delay: 0.1 + (NAV_LINKS.length + 1) * 0.08, duration: 0.4, ease: "easeOut" }
+                }
+                className="pt-2"
               >
                 <Link
                   href="/contact"

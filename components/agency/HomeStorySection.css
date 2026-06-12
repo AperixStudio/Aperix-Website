@@ -1,0 +1,11 @@
+.home-story-sticky {
+  background: transparent;
+}
+
+.home-story-copy {
+  pointer-events: auto;
+}
+
+.home-story-copy a {
+  pointer-events: auto;
+}

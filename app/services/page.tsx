@@ -1,4 +1,4 @@
-import AgencyNav from "@/components/agency/AgencyNav";
+import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import Footer from "@/components/agency/Footer";
 import ServiceHero from "@/components/agency/services/ServiceHero";
 import TierDetails from "@/components/agency/services/TierDetails";
@@ -99,7 +99,7 @@ export const metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <AgencyNav />
+      <AgencyNavV2 />
       <main role="main">
         <script
           type="application/ld+json"

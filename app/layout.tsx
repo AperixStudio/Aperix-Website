@@ -11,11 +11,10 @@ const themeInitScript = `
   (() => {
     try {
       const stored = window.localStorage.getItem("aperix-theme");
-      const system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      const theme = stored === "dark" || stored === "light" ? stored : system;
+      const theme = stored === "dark" || stored === "light" ? stored : "dark";
       document.documentElement.dataset.theme = theme;
     } catch {
-      document.documentElement.dataset.theme = "light";
+      document.documentElement.dataset.theme = "dark";
     }
   })();
 `;
@@ -104,7 +103,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning

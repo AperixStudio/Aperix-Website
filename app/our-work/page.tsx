@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AgencyNav from "@/components/agency/AgencyNav";
+import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import LiveSitesSection from "@/components/agency/LiveSitesSection";
 import Footer from "@/components/agency/Footer";
 import BackToTop from "@/components/agency/BackToTop";
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
 export default function OurWorkPage() {
   return (
     <>
-      <AgencyNav />
+      <AgencyNavV2 />
       <main role="main" className="overflow-x-hidden pt-28">
         <section className="px-6 pb-6 pt-10 lg:px-12 lg:pb-10 lg:pt-14">
           <div className="mx-auto grid max-w-7xl gap-8 rounded-4xl border border-agency-border bg-linear-to-br from-agency-surface via-agency-bg to-agency-surface2 px-6 py-10 sm:px-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:px-12 lg:py-14">

@@ -1,0 +1,13 @@
+# Three.js dev assets
+
+Place these files in `/public` for the playgrounds to load models and video:
+
+| File | Used by |
+|------|---------|
+| `retro_electronics_retro_pc.glb` | `/dev/hero-canvas` |
+| `badreception.mp4` | Hero monitor video texture — must be a real file in `/public`, not a symlink to a missing path |
+| `Rocketship.glb` | `/dev/rocket` |
+
+Until the files are added, playgrounds show a loading message instead of crashing.
+
+Copy assets from your AperixV2 project or export from Blender.

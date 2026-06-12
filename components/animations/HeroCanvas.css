@@ -1,0 +1,74 @@
+.hero-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-canvas--scroll {
+  min-height: 100%;
+  height: 100%;
+}
+
+.hero-canvas__container {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-canvas__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
+.hero-canvas__overlay--error {
+  background: rgba(255, 250, 246, 0.35);
+}
+
+.hero-canvas-playground-scroll {
+  height: 300vh;
+}
+
+.hero-canvas-playground-sticky {
+  position: sticky;
+  top: 6rem;
+  height: calc(100vh - 6rem);
+}
+
+.hero-v2-scroll {
+  height: 300vh;
+}
+
+.hero-v2-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero-v2-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-v2-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hero-v2-copy a,
+.hero-v2-copy button {
+  pointer-events: auto;
+}

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import SocialProofBar from "@/components/agency/SocialProofBar";
-import HowItWorks from "@/components/agency/HowItWorks";
+import HomeStorySection from "@/components/agency/HomeStorySection";
 import TierShowcase from "@/components/agency/TierShowcase";
 import LiveSitesSection from "@/components/agency/LiveSitesSection";
 import FinalCTA from "@/components/agency/FinalCTA";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
-import HeroV2 from "@/components/agency/HeroV2";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
 
@@ -55,18 +54,15 @@ export default function Home() {
   return (
     <>
       <AgencyNavV2 />
-      <HeroV2 />
-      <main className="overflow-hidden">
+      <HomeStorySection />
+      <div className="winding-section winding-section-left">
+        <SocialProofBar />
+      </div>
+      <main className="overflow-x-hidden">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
         />
-        <div className="winding-section winding-section-left">
-          <SocialProofBar />
-        </div>
-        <div className="winding-section winding-section-right">
-          <HowItWorks />
-        </div>
         <div className="winding-section winding-section-left">
           <TierShowcase />
         </div>

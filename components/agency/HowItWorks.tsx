@@ -7,7 +7,7 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/animations";
    Three-column layout with large step numbers, icons,
    headings, descriptions, and a connecting dashed line
    between steps (desktop only).
-   Scroll-triggered reveals: whileInView, once: true, 0.15.
+   Scroll-triggered reveals: whileInView, once: true, ROCKET_HOW_IT_WORKS_IMPLEMENTATION_BRIEF.md0.15.
    ──────────────────────────────────────────────────────────── */
 
 interface Step {
