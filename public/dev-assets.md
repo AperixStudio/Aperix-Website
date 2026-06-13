@@ -6,6 +6,8 @@ Place these files in `/public` for the playgrounds to load models and video:
 |------|---------|
 | `retro_electronics_retro_pc.glb` | `/dev/hero-canvas` |
 | `badreception.mp4` | Hero monitor video texture — must be a real file in `/public`, not a symlink to a missing path |
+| `iphone_16_-_free.glb` | `/dev/act-3-reveal` + homepage Act 3 |
+| `monitor_curve_asus_rog_simple.glb` | `/dev/act-3-reveal` + homepage Act 3 |
 | `Rocketship.glb` | `/dev/rocket` |
 
 Until the files are added, playgrounds show a loading message instead of crashing.

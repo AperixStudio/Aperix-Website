@@ -14,6 +14,12 @@ const playgrounds = [
     config: "lib/deskEvolutionScreen.js",
   },
   {
+    href: "/dev/act-3-reveal",
+    title: "Act 3 reveal",
+    description: "iPhone + monitor scroll reveal with Leva pose and camera tuning.",
+    config: "lib/act3RevealConfig.js",
+  },
+  {
     href: "/dev/rocket",
     title: "Rocket",
     description: "Legacy rocket GLB playground (superseded by desk evolution on homepage).",

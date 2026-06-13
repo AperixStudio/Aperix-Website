@@ -1,5 +1,6 @@
 /** Global scroll timeline for the homepage hero + how-it-works story. */
 
+/** Story scroll length — Act 1 + Act 2 + Act 3 reveal. */
 export const HOME_STORY_SCROLL_VH = 450;
 
 export const HOME_STORY_ACTS = {
@@ -7,8 +8,8 @@ export const HOME_STORY_ACTS = {
   act1ZoomOut: { start: 0, end: 0.30 },
   /** Push into monitor — blueprint → wireframe → live on screen + step cards */
   act2Monitor: { start: 0.30, end: 0.72 },
-  /** Pull back from the PC and exit the sequence */
-  act3ZoomOut: { start: 0.72, end: 1 },
+  /** iPhone + monitor reveal — transparent WebGL over SiteAtmosphere */
+  act3Reveal: { start: 0.72, end: 1 },
 } as const;
 
 /**
@@ -56,7 +57,7 @@ export function mapToActLocal(
  * Homepage story: in → out → in → out.
  */
 export function mapPcCameraProgress(global: number) {
-  const { act1ZoomOut, act2Monitor, act3ZoomOut } = HOME_STORY_ACTS;
+  const { act1ZoomOut, act2Monitor } = HOME_STORY_ACTS;
 
   if (global <= act1ZoomOut.end) {
     const local = mapToActLocal(global, act1ZoomOut);
@@ -72,11 +73,22 @@ export function mapPcCameraProgress(global: number) {
     return mapRange(global, act2Monitor.start, act2Monitor.end, ACT1_END_CAMERA, 0);
   }
 
-  if (global <= act3ZoomOut.end) {
-    return mapRange(global, act3ZoomOut.start, act3ZoomOut.end, 0, 1);
+  return 0;
+}
+
+/** Act 3 local progress (0 = tight, 1 = wide reveal) for iPhone + monitor scene. */
+export function mapAct3RevealProgress(global: number) {
+  const { act3Reveal } = HOME_STORY_ACTS;
+
+  if (global <= act3Reveal.start) {
+    return 0;
   }
 
-  return 1;
+  if (global >= act3Reveal.end) {
+    return 1;
+  }
+
+  return mapToActLocal(global, act3Reveal);
 }
 
 /** Blueprint / wireframe / live progression on the monitor (Act 2 only) */

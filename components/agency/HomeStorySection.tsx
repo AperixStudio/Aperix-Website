@@ -14,6 +14,7 @@ import {
   ACT2_WIREFRAME_START_GLOBAL,
   HOME_STORY_ACTS,
   HOME_STORY_SCROLL_VH,
+  mapAct3RevealProgress,
   mapPcCameraProgress,
   mapScreenEvolutionProgress,
   remapBlockProgressForGlobalStory,
@@ -21,12 +22,20 @@ import {
 import { HOW_IT_WORKS_BLOCKS } from "@/lib/howItWorksContent";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import "@/components/animations/HeroCanvas.css";
+import "@/components/animations/Act3RevealCanvas.css";
 import "@/components/animations/DeskEvolutionCanvas.css";
 import "./HomeStorySection.css";
 
 const HeroCanvas = dynamic(() => import("@/components/animations/HeroCanvas"), {
   ssr: false,
 });
+
+const Act3RevealCanvas = dynamic(() => import("@/components/animations/Act3RevealCanvas"), {
+  ssr: false,
+});
+
+/** Hard swap — PC off, Act 3 on (no overlapping transparent canvases). */
+const ACT3_START_GLOBAL = HOME_STORY_ACTS.act3Reveal.start;
 
 const HEADLINE_WORDS = ["Custom Websites and", "Software Solutions", "built for", "Melbourne businesses."];
 const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
@@ -96,6 +105,7 @@ export default function HomeStorySection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [heroVideo, setHeroVideo] = useState<HTMLVideoElement | null>(null);
   const [headlineText, setHeadlineText] = useState("");
+  const [showAct3Scene, setShowAct3Scene] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: scrollRef,
@@ -104,17 +114,32 @@ export default function HomeStorySection() {
 
   const staticZero = useMotionValue(0);
 
-  // HeroCanvas: progress 0 = zoomed in (matches /dev/hero-canvas scrub at 0).
   const pcCameraProgress = useMotionValue(mapPcCameraProgress(0));
+  const act3RevealProgress = useMotionValue(mapAct3RevealProgress(0));
   const screenEvolutionProgress = useTransform(scrollYProgress, mapScreenEvolutionProgress);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     pcCameraProgress.set(mapPcCameraProgress(value));
+    act3RevealProgress.set(mapAct3RevealProgress(value));
+    setShowAct3Scene(value >= ACT3_START_GLOBAL);
   });
 
   useLayoutEffect(() => {
-    pcCameraProgress.set(mapPcCameraProgress(scrollYProgress.get()));
-  }, [scrollYProgress, pcCameraProgress]);
+    const value = scrollYProgress.get();
+    pcCameraProgress.set(mapPcCameraProgress(value));
+    act3RevealProgress.set(mapAct3RevealProgress(value));
+    setShowAct3Scene(value >= ACT3_START_GLOBAL);
+  }, [scrollYProgress, pcCameraProgress, act3RevealProgress]);
+
+  useEffect(() => {
+    if (prefersReduced) {
+      return undefined;
+    }
+    void import("@/components/animations/Act3RevealCanvas");
+    return undefined;
+  }, [prefersReduced]);
+
+  const showPcScene = !showAct3Scene;
 
   const storyStepBlocks = useMemo(
     () =>
@@ -132,11 +157,6 @@ export default function HomeStorySection() {
     [24, 0],
   );
   const scrollCueOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
-  const sceneOpacity = useTransform(
-    scrollYProgress,
-    [HOME_STORY_ACTS.act3ZoomOut.start + 0.15, 1],
-    [1, 0],
-  );
   const blueprintOpacity = useTransform(
     scrollYProgress,
     [
@@ -150,6 +170,7 @@ export default function HomeStorySection() {
   const visibleHeadlineText = prefersReduced ? HEADLINE_TEXT : headlineText;
   const progressForHero = prefersReduced ? staticZero : pcCameraProgress;
   const progressForScreen = prefersReduced ? staticZero : screenEvolutionProgress;
+  const progressForAct3 = prefersReduced ? staticZero : act3RevealProgress;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -260,21 +281,28 @@ export default function HomeStorySection() {
           />
         )}
 
-        <motion.div
-          style={{ opacity: prefersReduced ? 1 : sceneOpacity }}
-          className="pointer-events-none absolute inset-0 z-[2]"
-          aria-hidden="true"
-        >
-          {heroVideo ? (
-            <HeroCanvas
-              scrollProgress={progressForHero}
-              screenEvolutionProgress={progressForScreen}
-              showIntroLabel={!prefersReduced}
-              videoElement={heroVideo}
-              className="hero-canvas--scroll h-full w-full"
+        {showPcScene && (
+          <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+            {heroVideo ? (
+              <HeroCanvas
+                scrollProgress={progressForHero}
+                screenEvolutionProgress={progressForScreen}
+                showIntroLabel={!prefersReduced}
+                videoElement={heroVideo}
+                className="hero-canvas--scroll h-full w-full"
+              />
+            ) : null}
+          </div>
+        )}
+
+        {!prefersReduced && showAct3Scene && (
+          <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+            <Act3RevealCanvas
+              scrollProgress={progressForAct3}
+              className="act3-reveal-scene--scroll h-full w-full"
             />
-          ) : null}
-        </motion.div>
+          </div>
+        )}
 
         {!prefersReduced && <EraLabel scrollYProgress={scrollYProgress} />}
 
