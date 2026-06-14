@@ -118,9 +118,136 @@ function getCameraDefaults(phase: "Start" | "End"): CameraValues {
   };
 }
 
+type ScreenValues = {
+  widthRatio: number;
+  heightRatio: number;
+  normalOffset: number;
+  localX: number;
+  localY: number;
+  localZ: number;
+  rootX: number;
+  rootY: number;
+  rootZ: number;
+  rotXDeg: number;
+  rotYDeg: number;
+  rotZDeg: number;
+};
+
+function screenControls(prefix: "iphone" | "monitor") {
+  const nudgeMax = prefix === "monitor" ? 12 : 8;
+
+  return {
+    widthRatio: {
+      value: D[`${prefix}ScreenWidthRatio`],
+      min: 0.4,
+      max: 1.4,
+      step: 0.005,
+      label: "width %",
+    },
+    heightRatio: {
+      value: D[`${prefix}ScreenHeightRatio`],
+      min: 0.4,
+      max: 1.4,
+      step: 0.005,
+      label: "height %",
+    },
+    normalOffset: {
+      value: D[`${prefix}ScreenNormalOffset`],
+      min: -0.05,
+      max: 0.12,
+      step: 0.001,
+      label: "face depth",
+    },
+    localX: {
+      value: D[`${prefix}ScreenLocalX`],
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "nudge ↔",
+    },
+    localY: {
+      value: D[`${prefix}ScreenLocalY`],
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "nudge ↕",
+    },
+    localZ: {
+      value: D[`${prefix}ScreenLocalZ`],
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "nudge depth",
+    },
+    rootX: {
+      value: D[`${prefix}ScreenRootX`] ?? 0,
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "model x",
+    },
+    rootY: {
+      value: D[`${prefix}ScreenRootY`] ?? 0,
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "model y ↑",
+    },
+    rootZ: {
+      value: D[`${prefix}ScreenRootZ`] ?? 0,
+      min: -nudgeMax,
+      max: nudgeMax,
+      step: 0.002,
+      label: "model z",
+    },
+    rotXDeg: {
+      value: radToDeg(D[`${prefix}ScreenLocalRotX`] ?? 0),
+      min: -180,
+      max: 180,
+      step: 1,
+      label: "rot X° offset",
+    },
+    rotYDeg: {
+      value: radToDeg(D[`${prefix}ScreenLocalRotY`]),
+      min: -180,
+      max: 180,
+      step: 1,
+      label: "rot Y° offset",
+    },
+    rotZDeg: {
+      value: radToDeg(D[`${prefix}ScreenLocalRotZ`]),
+      min: -180,
+      max: 180,
+      step: 1,
+      label: "rot Z° offset",
+    },
+  };
+}
+
+function mapScreenToConfig(prefix: "iphone" | "monitor", values: ScreenValues) {
+  return {
+    [`${prefix}ScreenWidthRatio`]: values.widthRatio,
+    [`${prefix}ScreenHeightRatio`]: values.heightRatio,
+    [`${prefix}ScreenNormalOffset`]: values.normalOffset,
+    [`${prefix}ScreenLocalX`]: values.localX,
+    [`${prefix}ScreenLocalY`]: values.localY,
+    [`${prefix}ScreenLocalZ`]: values.localZ,
+    [`${prefix}ScreenRootX`]: values.rootX,
+    [`${prefix}ScreenRootY`]: values.rootY,
+    [`${prefix}ScreenRootZ`]: values.rootZ,
+    [`${prefix}ScreenLocalRotX`]: degToRad(values.rotXDeg),
+    [`${prefix}ScreenLocalRotY`]: degToRad(values.rotYDeg),
+    [`${prefix}ScreenLocalRotZ`]: degToRad(values.rotZDeg),
+  };
+}
+
 export default function PlaygroundClient() {
   const progress = useMotionValue(0);
-  const [scrub, setScrub] = useState(0);
+  const [scrub, setScrub] = useState(1);
+
+  const preview = useControls("Screen video", {
+    showScreenGuides: { value: true, label: "Show alignment guides" },
+  });
 
   const scene = useControls("Scene", {
     modelTargetSize: { value: D.modelTargetSize, min: 0.2, max: 4, step: 0.01 },
@@ -163,6 +290,8 @@ export default function PlaygroundClient() {
     lookAtY: { value: D.lookAtEndY, min: -4, max: 4, step: 0.01 },
     lookAtZ: { value: D.lookAtEndZ, min: -4, max: 4, step: 0.01 },
   });
+  const iphoneScreen = useControls("iPhone · video screen", screenControls("iphone"));
+  const monitorScreen = useControls("Monitor · video screen", screenControls("monitor"));
 
   const liveConfig = {
     ...DEFAULT_ACT3_REVEAL_CONFIG,
@@ -173,6 +302,8 @@ export default function PlaygroundClient() {
     ...mapPoseToConfig("monitor", "End", monitorEnd),
     ...mapCameraToConfig("Start", cameraStart),
     ...mapCameraToConfig("End", cameraEnd),
+    ...mapScreenToConfig("iphone", iphoneScreen),
+    ...mapScreenToConfig("monitor", monitorScreen),
   };
 
   const liveConfigForExport = useRef(liveConfig);
@@ -218,7 +349,14 @@ export default function PlaygroundClient() {
       </div>
 
       <div className="fixed inset-0 pt-24">
-        <Act3RevealCanvas scrollProgress={progress} liveConfig={liveConfig} className="h-full act3-reveal-scene--scroll" />
+        <div className="relative h-full w-full">
+        <Act3RevealCanvas
+          scrollProgress={progress}
+          liveConfig={liveConfig}
+          showScreenGuides={preview.showScreenGuides}
+          className="h-full act3-reveal-scene--scroll"
+        />
+        </div>
       </div>
     </div>
   );

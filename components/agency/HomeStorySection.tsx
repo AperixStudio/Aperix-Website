@@ -52,6 +52,8 @@ const TRUST_PILLS = [
 
 const ERA_LABELS = ["Blueprint", "Wireframe", "Live site"];
 
+const ACT3_HEADING = "Optimised for desktop and mobile from day 1";
+
 function EraLabel({
   scrollYProgress,
 }: {
@@ -117,6 +119,7 @@ export default function HomeStorySection() {
   const pcCameraProgress = useMotionValue(mapPcCameraProgress(0));
   const act3RevealProgress = useMotionValue(mapAct3RevealProgress(0));
   const screenEvolutionProgress = useTransform(scrollYProgress, mapScreenEvolutionProgress);
+  const showPcScene = !showAct3Scene;
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     pcCameraProgress.set(mapPcCameraProgress(value));
@@ -138,8 +141,6 @@ export default function HomeStorySection() {
     void import("@/components/animations/Act3RevealCanvas");
     return undefined;
   }, [prefersReduced]);
-
-  const showPcScene = !showAct3Scene;
 
   const storyStepBlocks = useMemo(
     () =>
@@ -166,6 +167,16 @@ export default function HomeStorySection() {
       HOME_STORY_ACTS.act2Monitor.end,
     ],
     [0, 0.75, 0.25, 0],
+  );
+  const act3HeadingOpacity = useTransform(
+    scrollYProgress,
+    [ACT3_START_GLOBAL, ACT3_START_GLOBAL + 0.05, 0.98, 1],
+    [0, 1, 1, 0],
+  );
+  const act3HeadingY = useTransform(
+    scrollYProgress,
+    [ACT3_START_GLOBAL, ACT3_START_GLOBAL + 0.06],
+    [20, 0],
   );
   const visibleHeadlineText = prefersReduced ? HEADLINE_TEXT : headlineText;
   const progressForHero = prefersReduced ? staticZero : pcCameraProgress;
@@ -254,7 +265,7 @@ export default function HomeStorySection() {
         className={
           prefersReduced
             ? "relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
-            : "home-story-sticky sticky top-0 h-screen w-full overflow-hidden"
+            : "home-story-sticky relative sticky top-0 h-screen w-full overflow-hidden"
         }
       >
         <video
@@ -366,6 +377,15 @@ export default function HomeStorySection() {
             </div>
           </div>
         </motion.div>
+
+        {!prefersReduced && showAct3Scene && (
+          <motion.h2
+            style={{ opacity: act3HeadingOpacity, y: act3HeadingY }}
+            className="home-story-act3-heading pointer-events-none absolute inset-x-0 bottom-[clamp(5.5rem,14vh,8.5rem)] z-10 mx-auto max-w-3xl px-6 text-center font-display text-[clamp(1.35rem,3.8vw,2.5rem)] font-bold leading-[1.08] tracking-tight text-agency-ink sm:px-10 lg:px-16"
+          >
+            {ACT3_HEADING}
+          </motion.h2>
+        )}
 
         {!prefersReduced && (
           <motion.div style={{ opacity: scrollCueOpacity }} className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">

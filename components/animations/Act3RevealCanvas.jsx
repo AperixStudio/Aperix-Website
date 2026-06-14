@@ -3,6 +3,7 @@
 /**
  * Act3RevealCanvas — scroll-driven iPhone + monitor reveal scene.
  * Transparent renderer so SiteAtmosphere shows through (same as HeroCanvas).
+ * Screen content is MP4 video textures on the 3D planes (no DOM iframe projection).
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +11,11 @@ import { useMotionValue, useMotionValueEvent } from "framer-motion";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DEFAULT_ACT3_REVEAL_CONFIG } from "@/lib/act3RevealConfig";
+import {
+  ACT3_IPHONE_VIDEO_SRC,
+  ACT3_MONITOR_VIDEO_SRC,
+} from "@/lib/act3ScreenContent";
+import { applyScreenSpec, computeAutoScreenSpec } from "@/lib/act3ScreenPlanes";
 import { easeInOutCubic, lerp } from "@/lib/threeAnimation";
 import "./Act3RevealCanvas.css";
 
@@ -56,20 +62,100 @@ function mapCameraProgress(progress) {
   return easeInOutCubic(clamped / 0.88);
 }
 
+function createHiddenVideo(src) {
+  const video = document.createElement("video");
+  video.src = src;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = "auto";
+  video.setAttribute("aria-hidden", "true");
+  video.tabIndex = -1;
+  video.style.cssText =
+    "pointer-events:none;position:fixed;top:0;left:0;width:640px;height:360px;opacity:0.001;z-index:-1";
+  document.body.appendChild(video);
+  return video;
+}
+
+function tryPlayVideo(video) {
+  if (!video) {
+    return;
+  }
+  video.muted = true;
+  video.playsInline = true;
+  void video.play().catch(() => {
+    /* autoplay may wait for user gesture */
+  });
+}
+
+function createVideoTexture(video) {
+  const texture = new THREE.VideoTexture(video);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  return texture;
+}
+
+function createScreenPlane(video, guideColor) {
+  const texture = createVideoTexture(video);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    color: 0xffffff,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    toneMapped: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+  });
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+  mesh.name = "screen-projection";
+  mesh.renderOrder = 12;
+  mesh.userData.videoTexture = texture;
+  mesh.userData.guideColor = guideColor;
+  return mesh;
+}
+
+function applyScreenMaterialMode(mesh, showGuides) {
+  const material = mesh.material;
+  const texture = mesh.userData.videoTexture;
+
+  if (showGuides) {
+    material.map = null;
+    material.color.set(mesh.userData.guideColor);
+    material.transparent = true;
+    material.opacity = 0.35;
+    material.visible = true;
+  } else {
+    material.map = texture;
+    material.color.set(0xffffff);
+    material.transparent = false;
+    material.opacity = 1;
+    material.visible = Boolean(texture?.image?.readyState >= 2);
+  }
+
+  material.needsUpdate = true;
+}
+
 /**
  * @param {object} props
  * @param {string} [props.className]
  * @param {import("framer-motion").MotionValue<number>} [props.scrollProgress]
  * @param {typeof DEFAULT_ACT3_REVEAL_CONFIG} [props.liveConfig]
+ * @param {boolean} [props.showScreenGuides] Dev-only overlay showing screen plane rects.
  */
 export default function Act3RevealCanvas({
   className = "",
   scrollProgress = null,
   liveConfig = null,
+  showScreenGuides = false,
 }) {
   const containerRef = useRef(null);
   const latestConfigRef = useRef(DEFAULT_ACT3_REVEAL_CONFIG);
   latestConfigRef.current = resolveConfig(liveConfig);
+  const showScreenGuidesRef = useRef(showScreenGuides);
+  showScreenGuidesRef.current = showScreenGuides;
 
   const progressRef = useRef(scrollProgress?.get() ?? 0);
   const fallbackProgress = useMotionValue(0);
@@ -91,6 +177,17 @@ export default function Act3RevealCanvas({
     if (!container) {
       return undefined;
     }
+
+    const config = latestConfigRef.current;
+    const monitorVideo = createHiddenVideo(config.monitorScreenVideo ?? ACT3_MONITOR_VIDEO_SRC);
+    const iphoneVideo = createHiddenVideo(config.iphoneScreenVideo ?? ACT3_IPHONE_VIDEO_SRC);
+
+    const onMonitorReady = () => tryPlayVideo(monitorVideo);
+    const onIphoneReady = () => tryPlayVideo(iphoneVideo);
+    monitorVideo.addEventListener("loadeddata", onMonitorReady);
+    iphoneVideo.addEventListener("loadeddata", onIphoneReady);
+    tryPlayVideo(monitorVideo);
+    tryPlayVideo(iphoneVideo);
 
     const scene = new THREE.Scene();
     scene.background = null;
@@ -116,46 +213,78 @@ export default function Act3RevealCanvas({
 
     let iphoneRoot = null;
     let monitorRoot = null;
+    let iphoneScreenPlane = null;
+    let monitorScreenPlane = null;
     let pendingLoads = 2;
     let disposed = false;
+
+    function attachScreenPlanes() {
+      if (iphoneRoot && !iphoneScreenPlane) {
+        iphoneScreenPlane = createScreenPlane(iphoneVideo, 0x22c55e);
+        iphoneRoot.add(iphoneScreenPlane);
+      }
+
+      if (monitorRoot && !monitorScreenPlane) {
+        monitorScreenPlane = createScreenPlane(monitorVideo, 0x38bdf8);
+        monitorRoot.add(monitorScreenPlane);
+      }
+    }
+
+    function updateScreenPlanes() {
+      const liveConfig = latestConfigRef.current;
+      const showGuides = showScreenGuidesRef.current;
+
+      if (iphoneScreenPlane && iphoneRoot) {
+        applyScreenSpec(iphoneScreenPlane, computeAutoScreenSpec(iphoneRoot, "iphone", liveConfig));
+        applyScreenMaterialMode(iphoneScreenPlane, showGuides);
+      }
+
+      if (monitorScreenPlane && monitorRoot) {
+        applyScreenSpec(monitorScreenPlane, computeAutoScreenSpec(monitorRoot, "monitor", liveConfig));
+        applyScreenMaterialMode(monitorScreenPlane, showGuides);
+      }
+    }
 
     function finishLoad() {
       pendingLoads -= 1;
       if (pendingLoads <= 0 && !disposed) {
+        attachScreenPlanes();
         applyConfig();
         setLoading(false);
       }
     }
 
     function applyConfig() {
-      const config = latestConfigRef.current;
+      const liveConfig = latestConfigRef.current;
       const scrollProgressValue = Math.min(1, Math.max(0, progressRef.current));
       const cameraProgress = mapCameraProgress(scrollProgressValue);
 
       scene.children.forEach((child) => {
         if (child.isAmbientLight) {
-          child.intensity = config.ambientIntensity;
+          child.intensity = liveConfig.ambientIntensity;
         }
       });
-      keyLight.intensity = config.keyLightIntensity;
-      fillLight.intensity = config.fillLightIntensity;
+      keyLight.intensity = liveConfig.keyLightIntensity;
+      fillLight.intensity = liveConfig.fillLightIntensity;
 
       if (iphoneRoot) {
-        applyModelPose(iphoneRoot, config, "iphone", scrollProgressValue, "iphoneScale");
+        applyModelPose(iphoneRoot, liveConfig, "iphone", scrollProgressValue, "iphoneScale");
       }
       if (monitorRoot) {
-        applyModelPose(monitorRoot, config, "monitor", scrollProgressValue, "monitorScale");
+        applyModelPose(monitorRoot, liveConfig, "monitor", scrollProgressValue, "monitorScale");
       }
 
+      updateScreenPlanes();
+
       camera.position.set(
-        lerp(config.cameraStartX, config.cameraEndX, cameraProgress),
-        lerp(config.cameraStartY, config.cameraEndY, cameraProgress),
-        lerp(config.cameraStartZ, config.cameraEndZ, cameraProgress),
+        lerp(liveConfig.cameraStartX, liveConfig.cameraEndX, cameraProgress),
+        lerp(liveConfig.cameraStartY, liveConfig.cameraEndY, cameraProgress),
+        lerp(liveConfig.cameraStartZ, liveConfig.cameraEndZ, cameraProgress),
       );
       lookAt.set(
-        lerp(config.lookAtStartX, config.lookAtEndX, cameraProgress),
-        lerp(config.lookAtStartY, config.lookAtEndY, cameraProgress),
-        lerp(config.lookAtStartZ, config.lookAtEndZ, cameraProgress),
+        lerp(liveConfig.lookAtStartX, liveConfig.lookAtEndX, cameraProgress),
+        lerp(liveConfig.lookAtStartY, liveConfig.lookAtEndY, cameraProgress),
+        lerp(liveConfig.lookAtStartZ, liveConfig.lookAtEndZ, cameraProgress),
       );
       camera.lookAt(lookAt);
     }
@@ -197,6 +326,8 @@ export default function Act3RevealCanvas({
 
           const root = gltf.scene;
           root.userData.baseFitScale = fitAndCenter(root, latestConfigRef.current.modelTargetSize);
+          root.userData.boundsBox = new THREE.Box3().setFromObject(root);
+          root.userData.screenFaceBase = null;
           scene.add(root);
           onLoaded(root);
           finishLoad();
@@ -223,6 +354,18 @@ export default function Act3RevealCanvas({
       disposed = true;
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
+      monitorVideo.removeEventListener("loadeddata", onMonitorReady);
+      iphoneVideo.removeEventListener("loadeddata", onIphoneReady);
+      monitorVideo.pause();
+      iphoneVideo.pause();
+      if (monitorVideo.parentNode) {
+        monitorVideo.parentNode.removeChild(monitorVideo);
+      }
+      if (iphoneVideo.parentNode) {
+        iphoneVideo.parentNode.removeChild(iphoneVideo);
+      }
+      iphoneScreenPlane?.userData.videoTexture?.dispose();
+      monitorScreenPlane?.userData.videoTexture?.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
