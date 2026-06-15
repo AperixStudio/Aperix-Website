@@ -1,13 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useMotionValue } from "framer-motion";
-import { Leva, button, useControls } from "leva";
+import { button, useControls } from "leva";
 import Act3RevealCanvas from "@/components/animations/Act3RevealCanvas";
 import { DEFAULT_ACT3_REVEAL_CONFIG } from "@/lib/act3RevealConfig";
+import { MOBILE_ACT3_REVEAL_OVERRIDES } from "@/lib/act3RevealConfig.mobile";
+import {
+  formatMobileConfigModule,
+  pickConfigOverrides,
+} from "@/lib/dev/exportConfigOverrides";
+import { mapPlaygroundScrub } from "@/lib/dev/storyPlaygroundProgress";
 import { degToRad, radToDeg } from "@/lib/threeAnimation";
+import "@/components/animations/Act3RevealCanvas.css";
 
-const D = DEFAULT_ACT3_REVEAL_CONFIG;
+type Act3Defaults = typeof DEFAULT_ACT3_REVEAL_CONFIG;
+
+function getAct3Defaults(mobilePreview: boolean): Act3Defaults {
+  return mobilePreview
+    ? { ...DEFAULT_ACT3_REVEAL_CONFIG, ...MOBILE_ACT3_REVEAL_OVERRIDES }
+    : DEFAULT_ACT3_REVEAL_CONFIG;
+}
 
 type PoseValues = {
   x: number;
@@ -27,50 +40,14 @@ type CameraValues = {
   lookAtZ: number;
 };
 
-function poseControls(prefix: "iphone" | "monitor", phase: "Start" | "End", defaults: PoseValues) {
+function poseControls(defaults: PoseValues) {
   return {
-    x: {
-      value: defaults.x,
-      min: -3,
-      max: 3,
-      step: 0.01,
-      label: "x",
-    },
-    y: {
-      value: defaults.y,
-      min: -3,
-      max: 3,
-      step: 0.01,
-      label: "y",
-    },
-    z: {
-      value: defaults.z,
-      min: -3,
-      max: 3,
-      step: 0.01,
-      label: "z",
-    },
-    rotXDeg: {
-      value: defaults.rotXDeg,
-      min: -180,
-      max: 180,
-      step: 1,
-      label: "rot X°",
-    },
-    rotYDeg: {
-      value: defaults.rotYDeg,
-      min: -180,
-      max: 180,
-      step: 1,
-      label: "rot Y°",
-    },
-    rotZDeg: {
-      value: defaults.rotZDeg,
-      min: -180,
-      max: 180,
-      step: 1,
-      label: "rot Z°",
-    },
+    x: { value: defaults.x, min: -3, max: 3, step: 0.01, label: "x" },
+    y: { value: defaults.y, min: -3, max: 3, step: 0.01, label: "y" },
+    z: { value: defaults.z, min: -3, max: 3, step: 0.01, label: "z" },
+    rotXDeg: { value: defaults.rotXDeg, min: -180, max: 180, step: 1, label: "rot X°" },
+    rotYDeg: { value: defaults.rotYDeg, min: -180, max: 180, step: 1, label: "rot Y°" },
+    rotZDeg: { value: defaults.rotZDeg, min: -180, max: 180, step: 1, label: "rot Z°" },
   };
 }
 
@@ -96,7 +73,7 @@ function mapCameraToConfig(phase: "Start" | "End", values: CameraValues) {
   };
 }
 
-function getPoseDefaults(prefix: "iphone" | "monitor", phase: "Start" | "End"): PoseValues {
+function getPoseDefaults(D: Act3Defaults, prefix: "iphone" | "monitor", phase: "Start" | "End"): PoseValues {
   return {
     x: D[`${prefix}${phase}X`],
     y: D[`${prefix}${phase}Y`],
@@ -107,7 +84,7 @@ function getPoseDefaults(prefix: "iphone" | "monitor", phase: "Start" | "End"): 
   };
 }
 
-function getCameraDefaults(phase: "Start" | "End"): CameraValues {
+function getCameraDefaults(D: Act3Defaults, phase: "Start" | "End"): CameraValues {
   return {
     cameraX: D[`camera${phase}X`],
     cameraY: D[`camera${phase}Y`],
@@ -118,22 +95,7 @@ function getCameraDefaults(phase: "Start" | "End"): CameraValues {
   };
 }
 
-type ScreenValues = {
-  widthRatio: number;
-  heightRatio: number;
-  normalOffset: number;
-  localX: number;
-  localY: number;
-  localZ: number;
-  rootX: number;
-  rootY: number;
-  rootZ: number;
-  rotXDeg: number;
-  rotYDeg: number;
-  rotZDeg: number;
-};
-
-function screenControls(prefix: "iphone" | "monitor") {
+function screenControls(D: Act3Defaults, prefix: "iphone" | "monitor") {
   const nudgeMax = prefix === "monitor" ? 12 : 8;
 
   return {
@@ -158,48 +120,12 @@ function screenControls(prefix: "iphone" | "monitor") {
       step: 0.001,
       label: "face depth",
     },
-    localX: {
-      value: D[`${prefix}ScreenLocalX`],
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "nudge ↔",
-    },
-    localY: {
-      value: D[`${prefix}ScreenLocalY`],
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "nudge ↕",
-    },
-    localZ: {
-      value: D[`${prefix}ScreenLocalZ`],
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "nudge depth",
-    },
-    rootX: {
-      value: D[`${prefix}ScreenRootX`] ?? 0,
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "model x",
-    },
-    rootY: {
-      value: D[`${prefix}ScreenRootY`] ?? 0,
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "model y ↑",
-    },
-    rootZ: {
-      value: D[`${prefix}ScreenRootZ`] ?? 0,
-      min: -nudgeMax,
-      max: nudgeMax,
-      step: 0.002,
-      label: "model z",
-    },
+    localX: { value: D[`${prefix}ScreenLocalX`], min: -nudgeMax, max: nudgeMax, step: 0.002, label: "nudge ↔" },
+    localY: { value: D[`${prefix}ScreenLocalY`], min: -nudgeMax, max: nudgeMax, step: 0.002, label: "nudge ↕" },
+    localZ: { value: D[`${prefix}ScreenLocalZ`], min: -nudgeMax, max: nudgeMax, step: 0.002, label: "nudge depth" },
+    rootX: { value: D[`${prefix}ScreenRootX`] ?? 0, min: -nudgeMax, max: nudgeMax, step: 0.002, label: "model x" },
+    rootY: { value: D[`${prefix}ScreenRootY`] ?? 0, min: -nudgeMax, max: nudgeMax, step: 0.002, label: "model y ↑" },
+    rootZ: { value: D[`${prefix}ScreenRootZ`] ?? 0, min: -nudgeMax, max: nudgeMax, step: 0.002, label: "model z" },
     rotXDeg: {
       value: radToDeg(D[`${prefix}ScreenLocalRotX`] ?? 0),
       min: -180,
@@ -224,7 +150,7 @@ function screenControls(prefix: "iphone" | "monitor") {
   };
 }
 
-function mapScreenToConfig(prefix: "iphone" | "monitor", values: ScreenValues) {
+function mapScreenToConfig(prefix: "iphone" | "monitor", values: Record<string, number>) {
   return {
     [`${prefix}ScreenWidthRatio`]: values.widthRatio,
     [`${prefix}ScreenHeightRatio`]: values.heightRatio,
@@ -241,9 +167,14 @@ function mapScreenToConfig(prefix: "iphone" | "monitor", values: ScreenValues) {
   };
 }
 
-export default function PlaygroundClient() {
+type Act3PlaygroundProps = {
+  mobilePreview: boolean;
+  scrub: number;
+};
+
+export default function Act3Playground({ mobilePreview, scrub }: Act3PlaygroundProps) {
+  const D = getAct3Defaults(mobilePreview);
   const progress = useMotionValue(0);
-  const [scrub, setScrub] = useState(1);
 
   const preview = useControls("Screen video", {
     showScreenGuides: { value: true, label: "Show alignment guides" },
@@ -287,23 +218,11 @@ export default function PlaygroundClient() {
     floorPoolOpacity: { value: D.floorPoolOpacity, min: 0, max: 1, step: 0.01, label: "brightness" },
   });
 
-  const iphoneStart = useControls(
-    "iPhone · start (progress 0)",
-    poseControls("iphone", "Start", getPoseDefaults("iphone", "Start")),
-  );
-  const iphoneEnd = useControls(
-    "iPhone · end (progress 1)",
-    poseControls("iphone", "End", getPoseDefaults("iphone", "End")),
-  );
-  const monitorStart = useControls(
-    "Monitor · start (progress 0)",
-    poseControls("monitor", "Start", getPoseDefaults("monitor", "Start")),
-  );
-  const monitorEnd = useControls(
-    "Monitor · end (progress 1)",
-    poseControls("monitor", "End", getPoseDefaults("monitor", "End")),
-  );
-  const cameraStart = useControls("Camera · start (progress 0)", {
+  const iphoneStart = useControls("iPhone · start", poseControls(getPoseDefaults(D, "iphone", "Start")));
+  const iphoneEnd = useControls("iPhone · end", poseControls(getPoseDefaults(D, "iphone", "End")));
+  const monitorStart = useControls("Monitor · start", poseControls(getPoseDefaults(D, "monitor", "Start")));
+  const monitorEnd = useControls("Monitor · end", poseControls(getPoseDefaults(D, "monitor", "End")));
+  const cameraStart = useControls("Camera · start", {
     cameraX: { value: D.cameraStartX, min: -8, max: 8, step: 0.01 },
     cameraY: { value: D.cameraStartY, min: -8, max: 8, step: 0.01 },
     cameraZ: { value: D.cameraStartZ, min: 0.2, max: 12, step: 0.01 },
@@ -311,7 +230,7 @@ export default function PlaygroundClient() {
     lookAtY: { value: D.lookAtStartY, min: -4, max: 4, step: 0.01 },
     lookAtZ: { value: D.lookAtStartZ, min: -4, max: 4, step: 0.01 },
   });
-  const cameraEnd = useControls("Camera · end (progress 1)", {
+  const cameraEnd = useControls("Camera · end", {
     cameraX: { value: D.cameraEndX, min: -8, max: 8, step: 0.01 },
     cameraY: { value: D.cameraEndY, min: -8, max: 8, step: 0.01 },
     cameraZ: { value: D.cameraEndZ, min: 0.2, max: 12, step: 0.01 },
@@ -319,11 +238,11 @@ export default function PlaygroundClient() {
     lookAtY: { value: D.lookAtEndY, min: -4, max: 4, step: 0.01 },
     lookAtZ: { value: D.lookAtEndZ, min: -4, max: 4, step: 0.01 },
   });
-  const iphoneScreen = useControls("iPhone · video screen", screenControls("iphone"));
-  const monitorScreen = useControls("Monitor · video screen", screenControls("monitor"));
+  const iphoneScreen = useControls("iPhone · video screen", screenControls(D, "iphone"));
+  const monitorScreen = useControls("Monitor · video screen", screenControls(D, "monitor"));
 
   const liveConfig = {
-    ...DEFAULT_ACT3_REVEAL_CONFIG,
+    ...D,
     ...scene,
     ...lighting,
     ...spotlight,
@@ -341,55 +260,33 @@ export default function PlaygroundClient() {
   const liveConfigForExport = useRef(liveConfig);
   liveConfigForExport.current = liveConfig;
 
-  useControls("Export", {
-    "Copy config": button(() => {
+  useControls("Export · Act 3", {
+    "Copy desktop config": button(() => {
       const text = JSON.stringify(liveConfigForExport.current, null, 2);
       void navigator.clipboard.writeText(text);
-      console.log("Act 3 reveal config copied:\n", text);
+      console.log("Paste into lib/act3RevealConfig.js:\n", text);
     }),
-    "Reset page": button(() => window.location.reload()),
+    "Copy mobile overrides": button(() => {
+      const overrides = pickConfigOverrides(liveConfigForExport.current, DEFAULT_ACT3_REVEAL_CONFIG);
+      const text = formatMobileConfigModule("MOBILE_ACT3_REVEAL_OVERRIDES", overrides);
+      void navigator.clipboard.writeText(text);
+      console.log("Paste into lib/act3RevealConfig.mobile.js:\n", text);
+    }),
+    "Reset panel": button(() => window.location.reload()),
   });
 
   useEffect(() => {
-    progress.set(scrub);
+    progress.set(mapPlaygroundScrub(3, scrub).act3Progress);
   }, [progress, scrub]);
 
   return (
-    <div className="min-h-screen">
-      <Leva collapsed={false} titleBar={{ title: "Act 3 reveal" }} />
-
-      <div className="fixed inset-x-0 top-0 z-50 border-b border-agency-border/40 bg-agency-glass-bg/80 px-4 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-agency-muted">
-              Act 3 reveal scrubber
-            </p>
-            <p className="font-mono text-xs text-agency-ink">
-              {(scrub * 100).toFixed(1)}% · 0 = tight · 1 = wide
-            </p>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.001}
-            value={scrub}
-            onChange={(event) => setScrub(Number(event.target.value))}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      <div className="fixed inset-0 pt-24">
-        <div className="relative h-full w-full">
-        <Act3RevealCanvas
-          scrollProgress={progress}
-          liveConfig={liveConfig}
-          showScreenGuides={preview.showScreenGuides}
-          className="h-full act3-reveal-scene--scroll"
-        />
-        </div>
-      </div>
+    <div className={mobilePreview ? "dev-story-mobile-shell h-full" : "h-full w-full"}>
+      <Act3RevealCanvas
+        scrollProgress={progress}
+        liveConfig={liveConfig}
+        showScreenGuides={preview.showScreenGuides}
+        className="h-full act3-reveal-scene--scroll"
+      />
     </div>
   );
 }

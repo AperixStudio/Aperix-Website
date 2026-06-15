@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useTransform, type MotionValue } from "framer-motion";
-import type { RocketTextAnchor, RocketTextBlock as RocketTextBlockConfig } from "@/lib/howItWorksContent";
+import type { RocketTextAnchor, RocketTextBlock as RocketTextBlockConfig, RocketTextPlacement } from "@/lib/howItWorksContent";
+import { useMobileViewport } from "@/lib/useMobileViewport";
 
 /** Fixed width — all cards match regardless of placement anchor */
 const CARD_WIDTH_CLASS = "w-[min(22rem,calc(100vw-3rem))]";
@@ -27,6 +28,18 @@ function getPlacementStyle(anchor: RocketTextAnchor, x: number, y: number) {
   } as const;
 }
 
+function resolvePlacement(placement: RocketTextPlacement, isMobile: boolean) {
+  if (isMobile && placement.mobile) {
+    return {
+      x: placement.mobile.x,
+      y: placement.mobile.y,
+      anchor: placement.mobile.anchor ?? placement.anchor,
+    };
+  }
+
+  return placement;
+}
+
 type RocketTextBlockProps = {
   block: RocketTextBlockConfig;
   scrollYProgress: MotionValue<number>;
@@ -45,8 +58,9 @@ export default function RocketTextBlock({
   scrollYProgress,
   prefersReduced,
 }: RocketTextBlockProps) {
+  const { isMobile } = useMobileViewport();
   const { in: fadeIn, holdStart, holdEnd, out: fadeOut } = block.progress;
-  const anchor = block.placement.anchor ?? "top-left";
+  const { x: placementX, y: placementY, anchor = "top-left" } = resolvePlacement(block.placement, isMobile);
 
   const opacity = useTransform(scrollYProgress, (progress) => {
     if (progress < fadeIn || progress > fadeOut) {
@@ -61,7 +75,7 @@ export default function RocketTextBlock({
     return 1 - fadeSegment(progress, holdEnd, Math.max(fadeOut, holdEnd + 0.001));
   });
 
-  const y = useTransform(scrollYProgress, (progress) => {
+  const motionY = useTransform(scrollYProgress, (progress) => {
     if (progress < fadeIn || progress > fadeOut) {
       return 0;
     }
@@ -71,7 +85,7 @@ export default function RocketTextBlock({
     return 0;
   });
 
-  const placementStyle = getPlacementStyle(anchor, block.placement.x, block.placement.y);
+  const placementStyle = getPlacementStyle(anchor, placementX, placementY);
 
   if (prefersReduced) {
     return (
@@ -95,7 +109,7 @@ export default function RocketTextBlock({
       style={placementStyle}
       aria-label={`${block.number}. ${block.title}`}
     >
-      <motion.div style={{ opacity, y }}>
+      <motion.div style={{ opacity, y: motionY }}>
         <div className={CARD_SURFACE_CLASS}>
           <p className="font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl">
             {block.number}

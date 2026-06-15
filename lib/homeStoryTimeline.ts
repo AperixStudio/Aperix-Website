@@ -3,6 +3,9 @@
 /** Story scroll length — Act 1 + Act 2 + Act 3 reveal. */
 export const HOME_STORY_SCROLL_VH = 450;
 
+/** Shorter story on mobile — same beats, less thumb travel. */
+export const HOME_STORY_SCROLL_VH_MOBILE = 300;
+
 export const HOME_STORY_ACTS = {
   /** Start zoomed in on monitor (video) → pull back to reveal the machine → slight push-in */
   act1ZoomOut: { start: 0, end: 0.30 },

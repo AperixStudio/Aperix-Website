@@ -22,6 +22,12 @@ export type RocketTextPlacement = {
   x: number;
   y: number;
   anchor?: RocketTextAnchor;
+  /** Overrides placement below md breakpoint (cards centered, clear of hero copy). */
+  mobile?: {
+    x: number;
+    y: number;
+    anchor?: RocketTextAnchor;
+  };
 };
 
 export type RocketTextBlock = {
@@ -53,7 +59,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
       holdEnd: ACT2_WIREFRAME_START - 0.02,
       out: ACT2_WIREFRAME_START + 0.02,
     },
-    placement: { x: 20, y: 28, anchor: "top-left" },
+    placement: { x: 20, y: 28, anchor: "top-left", mobile: { x: 50, y: 82, anchor: "center" } },
   },
   {
     id: "step-2",
@@ -67,7 +73,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
       holdEnd: ACT2_WIREFRAME_END - 0.04,
       out: ACT2_WIREFRAME_END + 0.02,
     },
-    placement: { x: 20, y: 50, anchor: "center-left" },
+    placement: { x: 20, y: 50, anchor: "center-left", mobile: { x: 50, y: 82, anchor: "center" } },
   },
   {
     id: "step-3",
@@ -81,7 +87,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
       holdEnd: 0.94,
       out: 0.98,
     },
-    placement: { x: 20, y: 72, anchor: "bottom-left" },
+    placement: { x: 20, y: 72, anchor: "bottom-left", mobile: { x: 50, y: 82, anchor: "center" } },
   },
 ];
 

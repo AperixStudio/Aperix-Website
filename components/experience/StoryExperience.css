@@ -1,0 +1,26 @@
+.story-experience {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.story-experience__canvas-host,
+.story-experience__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.story-experience__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.72);
+}

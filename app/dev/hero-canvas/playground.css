@@ -1,0 +1,23 @@
+.dev-story-toolbar {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 17, 20, 0.82);
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(12px);
+}
+
+.dev-story-mobile-shell {
+  width: min(100%, 390px);
+  height: 100%;
+  margin-inline: auto;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.dev-story-scene-host {
+  position: fixed;
+  inset: 0;
+  padding-top: 7.5rem;
+}

@@ -3,9 +3,10 @@ import Link from "next/link";
 const playgrounds = [
   {
     href: "/dev/hero-canvas",
-    title: "Hero Canvas",
-    description: "Scroll-driven vintage computer with monitor video texture.",
-    config: "lib/heroCanvasConfig.js",
+    title: "Hero Canvas · Story tuning",
+    description:
+      "Acts 1–3 mobile + desktop tuning. Act tabs, mobile preview frame, Leva controls, Copy mobile overrides.",
+    config: "lib/heroCanvasConfig.mobile.js · lib/act3RevealConfig.mobile.js",
   },
   {
     href: "/dev/desk-evolution",

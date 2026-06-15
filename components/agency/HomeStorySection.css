@@ -1,5 +1,9 @@
 .home-story-sticky {
-  background: transparent;
+  background: #000;
+}
+
+#home-story {
+  background: #000;
 }
 
 .home-story-copy {
@@ -12,4 +16,15 @@
 
 .home-story-act3-heading {
   text-wrap: balance;
+}
+
+.home-story-sticky .agency-button-secondary {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.home-story-sticky .agency-button-secondary:hover {
+  border-color: var(--agency-accent);
+  color: var(--agency-accent);
 }

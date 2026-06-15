@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "framer-motion";
 import RocketTextBlock from "@/components/agency/RocketTextBlock";
 import { HERO_VIDEO_OFFSCREEN_CLASS, HERO_VIDEO_SRC } from "@/lib/heroVideo";
+import { resolveHeroCanvasConfig } from "@/lib/resolveHeroCanvasConfig";
 import {
   ACT1_HERO_FADE_IN_START_GLOBAL,
   ACT1_PULLBACK_COMPLETE_GLOBAL,
@@ -14,13 +15,17 @@ import {
   ACT2_WIREFRAME_START_GLOBAL,
   HOME_STORY_ACTS,
   HOME_STORY_SCROLL_VH,
+  HOME_STORY_SCROLL_VH_MOBILE,
   mapAct3RevealProgress,
   mapPcCameraProgress,
   mapScreenEvolutionProgress,
   remapBlockProgressForGlobalStory,
 } from "@/lib/homeStoryTimeline";
 import { HOW_IT_WORKS_BLOCKS } from "@/lib/howItWorksContent";
+import { ACT3_TRANSITION_START, USE_UNIFIED_STORY_EXPERIENCE } from "@/lib/experience/constants";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useInView } from "@/lib/useInView";
+import { useMobileViewport } from "@/lib/useMobileViewport";
 import "@/components/animations/HeroCanvas.css";
 import "@/components/animations/Act3RevealCanvas.css";
 import "@/components/animations/DeskEvolutionCanvas.css";
@@ -31,6 +36,10 @@ const HeroCanvas = dynamic(() => import("@/components/animations/HeroCanvas"), {
 });
 
 const Act3RevealCanvas = dynamic(() => import("@/components/animations/Act3RevealCanvas"), {
+  ssr: false,
+});
+
+const StoryExperienceCanvas = dynamic(() => import("@/components/experience/StoryExperienceCanvas"), {
   ssr: false,
 });
 
@@ -103,11 +112,17 @@ function EraLabel({
 
 export default function HomeStorySection() {
   const prefersReduced = useReducedMotion();
+  const { isMobile, ready: viewportReady } = useMobileViewport();
   const scrollRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [heroVideo, setHeroVideo] = useState<HTMLVideoElement | null>(null);
   const [headlineText, setHeadlineText] = useState("");
   const [showAct3Scene, setShowAct3Scene] = useState(false);
+  const [pauseHeroVideo, setPauseHeroVideo] = useState(false);
+  const [tabVisible, setTabVisible] = useState(true);
+  const storyInView = useInView(scrollRef);
+  const storyScrollVh = isMobile ? HOME_STORY_SCROLL_VH_MOBILE : HOME_STORY_SCROLL_VH;
+  const renderActive = storyInView && tabVisible && !prefersReduced;
 
   const { scrollYProgress } = useScroll({
     target: scrollRef,
@@ -120,11 +135,15 @@ export default function HomeStorySection() {
   const act3RevealProgress = useMotionValue(mapAct3RevealProgress(0));
   const screenEvolutionProgress = useTransform(scrollYProgress, mapScreenEvolutionProgress);
   const showPcScene = !showAct3Scene;
+  const heroLiveConfig = viewportReady && isMobile ? resolveHeroCanvasConfig(true) : undefined;
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     pcCameraProgress.set(mapPcCameraProgress(value));
     act3RevealProgress.set(mapAct3RevealProgress(value));
     setShowAct3Scene(value >= ACT3_START_GLOBAL);
+    if (USE_UNIFIED_STORY_EXPERIENCE) {
+      setPauseHeroVideo(value >= ACT3_TRANSITION_START);
+    }
   });
 
   useLayoutEffect(() => {
@@ -132,13 +151,30 @@ export default function HomeStorySection() {
     pcCameraProgress.set(mapPcCameraProgress(value));
     act3RevealProgress.set(mapAct3RevealProgress(value));
     setShowAct3Scene(value >= ACT3_START_GLOBAL);
-  }, [scrollYProgress, pcCameraProgress, act3RevealProgress]);
+    if (USE_UNIFIED_STORY_EXPERIENCE) {
+      setPauseHeroVideo(value >= ACT3_TRANSITION_START);
+    }
+  }, [scrollYProgress, pcCameraProgress, act3RevealProgress, isMobile]);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      setTabVisible(!document.hidden);
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
 
   useEffect(() => {
     if (prefersReduced) {
       return undefined;
     }
-    void import("@/components/animations/Act3RevealCanvas");
+    if (USE_UNIFIED_STORY_EXPERIENCE) {
+      void import("@/components/experience/StoryExperienceCanvas");
+      void import("@/lib/experience/scenes/act3RevealScene");
+    } else {
+      void import("@/components/animations/Act3RevealCanvas");
+    }
     return undefined;
   }, [prefersReduced]);
 
@@ -189,6 +225,13 @@ export default function HomeStorySection() {
       return undefined;
     }
 
+    const shouldPauseVideo = USE_UNIFIED_STORY_EXPERIENCE ? pauseHeroVideo : !showPcScene;
+
+    if (!renderActive || shouldPauseVideo) {
+      video.pause();
+      return undefined;
+    }
+
     const play = () => {
       video.play().catch(() => {});
     };
@@ -196,7 +239,7 @@ export default function HomeStorySection() {
     play();
     video.addEventListener("loadeddata", play);
     return () => video.removeEventListener("loadeddata", play);
-  }, [prefersReduced, heroVideo]);
+  }, [prefersReduced, heroVideo, renderActive, showPcScene, pauseHeroVideo]);
 
   useEffect(() => {
     if (prefersReduced) {
@@ -257,7 +300,7 @@ export default function HomeStorySection() {
     <section
       ref={scrollRef}
       id="home-story"
-      style={{ height: prefersReduced ? undefined : `${HOME_STORY_SCROLL_VH}vh` }}
+      style={{ height: prefersReduced ? undefined : `${storyScrollVh}vh` }}
       className="relative isolate"
       aria-label="Hero and how it works"
     >
@@ -292,27 +335,50 @@ export default function HomeStorySection() {
           />
         )}
 
-        {showPcScene && (
+        {!prefersReduced && USE_UNIFIED_STORY_EXPERIENCE ? (
           <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
-            {heroVideo ? (
-              <HeroCanvas
-                scrollProgress={progressForHero}
-                screenEvolutionProgress={progressForScreen}
-                showIntroLabel={!prefersReduced}
+            {heroVideo && viewportReady ? (
+              <StoryExperienceCanvas
+                key="story-experience"
+                globalScrollProgress={scrollYProgress}
                 videoElement={heroVideo}
-                className="hero-canvas--scroll h-full w-full"
+                heroLiveConfig={heroLiveConfig}
+                showIntroLabel={!isMobile}
+                renderActive={renderActive}
+                isMobile={isMobile}
+                prefersReducedMotion={prefersReduced}
+                className="h-full w-full"
               />
             ) : null}
           </div>
-        )}
+        ) : (
+          <>
+            {showPcScene && (
+              <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+                {heroVideo ? (
+                  <HeroCanvas
+                    scrollProgress={progressForHero}
+                    screenEvolutionProgress={progressForScreen}
+                    showIntroLabel={!prefersReduced && !isMobile}
+                    videoElement={heroVideo}
+                    liveConfig={heroLiveConfig}
+                    renderActive={renderActive}
+                    className="hero-canvas--scroll h-full w-full"
+                  />
+                ) : null}
+              </div>
+            )}
 
-        {!prefersReduced && showAct3Scene && (
-          <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
-            <Act3RevealCanvas
-              scrollProgress={progressForAct3}
-              className="act3-reveal-scene--scroll h-full w-full"
-            />
-          </div>
+            {showAct3Scene && (
+              <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+                <Act3RevealCanvas
+                  scrollProgress={progressForAct3}
+                  renderActive={renderActive}
+                  className="act3-reveal-scene--scroll h-full w-full"
+                />
+              </div>
+            )}
+          </>
         )}
 
         {!prefersReduced && <EraLabel scrollYProgress={scrollYProgress} />}
@@ -326,17 +392,21 @@ export default function HomeStorySection() {
                   y: heroTextY,
                 }
           }
-          className="home-story-copy relative z-10 mx-auto flex h-full w-full max-w-450 flex-col justify-end px-6 pt-32 pb-2 sm:px-10 sm:pb-6 lg:justify-center lg:px-16 lg:pb-0 2xl:px-24"
+          className={
+            prefersReduced
+              ? "home-story-copy relative z-10 mx-auto flex h-full w-full max-w-450 flex-col justify-end px-6 pt-32 pb-2 sm:px-10 sm:pb-6 lg:justify-center lg:px-16 lg:pb-0 2xl:px-24"
+              : "home-story-copy relative z-10 mx-auto flex h-full w-full max-w-450 flex-col justify-end px-6 pt-32 pb-2 sm:px-10 sm:pb-6 lg:justify-center lg:px-16 lg:pb-0 2xl:px-24"
+          }
         >
           <div className="min-w-0 max-w-xl">
-            <p className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-agency-muted sm:text-xs">
-              <span className="inline-block h-px w-7 bg-agency-muted" />
+            <p className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60 sm:text-xs">
+              <span className="inline-block h-px w-7 bg-white/45" />
               Melbourne Web Design and Software Studio
             </p>
 
             <p className="font-display font-bold leading-[0.94] tracking-tight" aria-label={HEADLINE_WORDS.join(" ")}>
               <span className="block min-h-[4.1lh]">
-                <span className="block whitespace-pre-line text-[clamp(2.15rem,6vw,4.8rem)] text-agency-ink lg:text-[clamp(2.35rem,4.1vw,4.4rem)]">
+                <span className="block whitespace-pre-line text-[clamp(2.15rem,6vw,4.8rem)] text-white lg:text-[clamp(2.35rem,4.1vw,4.4rem)]">
                   {visibleHeadlineText}
                   {!prefersReduced ? <span aria-hidden="true" className="agency-type-caret" /> : null}
                 </span>
@@ -344,7 +414,7 @@ export default function HomeStorySection() {
             </p>
 
             <div className="mt-7 max-w-lg">
-              <p className="text-base leading-relaxed text-agency-muted sm:text-lg">
+              <p className="text-base leading-relaxed text-white/70 sm:text-lg">
                 Aperix Studio builds hand-coded custom websites and software for Melbourne businesses that want faster
                 pages, greater presence and better support.
               </p>
@@ -369,7 +439,7 @@ export default function HomeStorySection() {
               {TRUST_PILLS.map((pill) => (
                 <span
                   key={pill}
-                  className="rounded-full border border-agency-border bg-agency-surface/80 px-3 py-1.5 text-[11px] font-medium text-agency-muted backdrop-blur-sm sm:px-4 sm:text-xs"
+                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white/75 backdrop-blur-sm sm:px-4 sm:text-xs"
                 >
                   {pill}
                 </span>
@@ -381,7 +451,7 @@ export default function HomeStorySection() {
         {!prefersReduced && showAct3Scene && (
           <motion.h2
             style={{ opacity: act3HeadingOpacity, y: act3HeadingY }}
-            className="home-story-act3-heading pointer-events-none absolute inset-x-0 bottom-[clamp(5.5rem,14vh,8.5rem)] z-10 mx-auto max-w-3xl px-6 text-center font-display text-[clamp(1.35rem,3.8vw,2.5rem)] font-bold leading-[1.08] tracking-tight text-agency-ink sm:px-10 lg:px-16"
+            className="home-story-act3-heading pointer-events-none absolute inset-x-0 bottom-[clamp(5.5rem,14vh,8.5rem)] z-10 mx-auto max-w-3xl px-6 text-center font-display text-[clamp(1.35rem,3.8vw,2.5rem)] font-bold leading-[1.08] tracking-tight text-white sm:px-10 lg:px-16"
           >
             {ACT3_HEADING}
           </motion.h2>
