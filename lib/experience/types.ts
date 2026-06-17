@@ -8,6 +8,9 @@ export type StoryScrollFrame = {
   global: number;
   act: StoryActId;
   pcCameraProgress: number;
+  pcModelProgress: number;
+  /** 0–1 slide within Act 2; null outside Act 2. */
+  act2SlideProgress: number | null;
   screenEvolutionProgress: number;
   act3RevealProgress: number;
   /** 0 = PC only, 1 = Act 3 only — drives shader dissolve. */

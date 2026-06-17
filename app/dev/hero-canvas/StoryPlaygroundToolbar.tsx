@@ -88,6 +88,14 @@ export default function StoryPlaygroundToolbar({
               onChange={(event) => onScrubChange(Number(event.target.value))}
               className="w-full"
             />
+
+            {act === 2 ? (
+              <p className="font-mono text-[10px] leading-relaxed text-white/50">
+                Scrub drives the PC slide + monitor evolution together. Tune endpoints with Leva{" "}
+                <strong className="text-white/70">Model start (Act 2)</strong> /{" "}
+                <strong className="text-white/70">Model end (Act 2)</strong> — fully independent of Act 1.
+              </p>
+            ) : null}
           </>
         ) : (
           <p className="font-mono text-[11px] text-white/60">Sticky scroll active — scroll the page</p>

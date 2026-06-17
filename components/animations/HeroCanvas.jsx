@@ -16,6 +16,8 @@ function resolveConfig(liveConfig) {
 /**
  * @param {{
  *   scrollProgress: import("framer-motion").MotionValue<number>,
+ *   modelProgress?: import("framer-motion").MotionValue<number> | null,
+ *   act2SlideProgress?: import("framer-motion").MotionValue<number> | null,
  *   screenEvolutionProgress?: import("framer-motion").MotionValue<number> | null,
  *   liveConfig?: Record<string, unknown> | null,
  *   videoElement?: HTMLVideoElement | null,
@@ -27,6 +29,8 @@ function resolveConfig(liveConfig) {
  */
 export default function HeroCanvas({
   scrollProgress,
+  modelProgress = null,
+  act2SlideProgress = null,
   screenEvolutionProgress = null,
   liveConfig,
   videoElement = null,
@@ -37,6 +41,8 @@ export default function HeroCanvas({
 }) {
   const containerRef = useRef(null);
   const progressRef = useRef(scrollProgress?.get() ?? 0);
+  const modelProgressRef = useRef(scrollProgress?.get() ?? 0);
+  const act2SlideRef = useRef(null);
   const evolutionProgressRef = useRef(0);
   const fallbackEvolutionProgress = useMotionValue(0);
   const videoRef = useRef(videoElement);
@@ -63,6 +69,26 @@ export default function HeroCanvas({
     progressRef.current = value;
   });
 
+  const modelProgressSource = modelProgress ?? scrollProgress;
+
+  useMotionValueEvent(modelProgressSource, "change", (value) => {
+    modelProgressRef.current = value;
+  });
+
+  useEffect(() => {
+    if (!act2SlideProgress) {
+      act2SlideRef.current = null;
+      return undefined;
+    }
+
+    const syncSlide = (value) => {
+      act2SlideRef.current = value;
+    };
+
+    syncSlide(act2SlideProgress.get());
+    return act2SlideProgress.on("change", syncSlide);
+  }, [act2SlideProgress]);
+
   const evolutionSource = screenEvolutionProgress ?? fallbackEvolutionProgress;
 
   useMotionValueEvent(evolutionSource, "change", (value) => {
@@ -73,12 +99,14 @@ export default function HeroCanvas({
 
   useEffect(() => {
     progressRef.current = scrollProgress.get();
+    modelProgressRef.current = modelProgressSource.get();
+    act2SlideRef.current = act2SlideProgress?.get() ?? null;
     if (screenEvolutionProgress) {
       evolutionProgressRef.current = screenEvolutionProgress.get();
     } else {
       evolutionProgressRef.current = 0;
     }
-  }, [scrollProgress, screenEvolutionProgress]);
+  }, [scrollProgress, modelProgressSource, act2SlideProgress, screenEvolutionProgress]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -89,6 +117,8 @@ export default function HeroCanvas({
     const scene = createPcStoryScene({
       container,
       getScrollProgress: () => progressRef.current,
+      getModelProgress: () => modelProgressRef.current,
+      getAct2SlideProgress: () => act2SlideRef.current,
       getScreenEvolutionProgress: () => evolutionProgressRef.current,
       getLiveConfig: () => latestConfigRef.current,
       getVideoElement: () => videoRef.current,

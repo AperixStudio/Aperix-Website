@@ -33,6 +33,14 @@ function mapLevaToConfig(
     modelOffsetEndY: values.endY as number,
     modelOffsetEndZ: values.endZ as number,
     modelRotationY: degToRad(values.rotationYDeg as number),
+    act2ModelOffsetStartX: values.act2StartX as number,
+    act2ModelOffsetStartY: values.act2StartY as number,
+    act2ModelOffsetStartZ: values.act2StartZ as number,
+    act2ModelRotationStartY: degToRad(values.act2StartRotationYDeg as number),
+    act2ModelOffsetEndX: values.act2EndX as number,
+    act2ModelOffsetEndY: values.act2EndY as number,
+    act2ModelOffsetEndZ: values.act2EndZ as number,
+    act2ModelRotationEndY: degToRad(values.act2EndRotationYDeg as number),
     screenFillMargin: values.screenFillMargin as number,
     cameraStartBackoff: values.cameraStartBackoff as number,
     cameraStartAzimuth: degToRad(values.cameraStartAzimuthDeg as number),
@@ -56,6 +64,8 @@ function mapLevaToConfig(
     screenPlaneScaleWidthEnd: values.screenPlaneScaleWidthEnd as number,
     screenPlaneScaleHeightStart: values.screenPlaneScaleHeightStart as number,
     screenPlaneScaleHeightEnd: values.screenPlaneScaleHeightEnd as number,
+    act2ScreenPlaneScaleWidth: values.act2ScreenPlaneScaleWidth as number,
+    act2ScreenPlaneScaleHeight: values.act2ScreenPlaneScaleHeight as number,
     screenPlaneRotationStartX: degToRad(values.screenPlaneRotStartXDeg as number),
     screenPlaneRotationStartY: degToRad(values.screenPlaneRotStartYDeg as number),
     screenPlaneRotationStartZ: degToRad(values.screenPlaneRotStartZDeg as number),
@@ -104,6 +114,8 @@ type HeroActPlaygroundProps = {
 
 function HeroScene({
   heroProgress,
+  modelProgress,
+  act2Slide,
   screenEvolution,
   act,
   mobilePreview,
@@ -111,6 +123,8 @@ function HeroScene({
   videoElement,
 }: {
   heroProgress: MotionValue<number>;
+  modelProgress: MotionValue<number>;
+  act2Slide: MotionValue<number> | null;
   screenEvolution: MotionValue<number>;
   act: StoryPlaygroundAct;
   mobilePreview: boolean;
@@ -124,6 +138,8 @@ function HeroScene({
       <div className={canvasClass}>
         <HeroCanvas
           scrollProgress={heroProgress}
+          modelProgress={act === 2 ? modelProgress : null}
+          act2SlideProgress={act === 2 ? act2Slide : null}
           screenEvolutionProgress={act === 2 ? screenEvolution : null}
           liveConfig={liveConfig}
           videoElement={videoElement}
@@ -144,6 +160,8 @@ export default function HeroActPlayground({
 }: HeroActPlaygroundProps) {
   const D = getHeroDefaults(mobilePreview);
   const heroProgress = useMotionValue(0);
+  const modelProgress = useMotionValue(0);
+  const act2Slide = useMotionValue(0);
   const screenEvolution = useMotionValue(0);
 
   const modelStart = useControls("Model start", {
@@ -152,7 +170,7 @@ export default function HeroActPlayground({
     modelStartZ: { value: D.modelOffsetStartZ, min: -2, max: 2, step: 0.01, label: "z" },
   });
 
-  const modelEnd = useControls("Model end", {
+  const modelEnd = useControls("Model end (Act 1)", {
     endX: { value: D.modelOffsetEndX, min: -2, max: 2, step: 0.01, label: "x" },
     endY: { value: D.modelOffsetEndY, min: -2, max: 2, step: 0.01, label: "y" },
     endZ: { value: D.modelOffsetEndZ, min: -2, max: 2, step: 0.01, label: "z" },
@@ -164,6 +182,76 @@ export default function HeroActPlayground({
       label: "spin Y°",
     },
   });
+
+  const act2ModelStart = useControls(
+    "Model start (Act 2)",
+    {
+      act2StartX: {
+        value: (D.act2ModelOffsetStartX as number) ?? D.modelOffsetEndX,
+        min: -4,
+        max: 4,
+        step: 0.01,
+        label: "x",
+      },
+      act2StartY: {
+        value: (D.act2ModelOffsetStartY as number) ?? D.modelOffsetEndY,
+        min: -2,
+        max: 2,
+        step: 0.01,
+        label: "y",
+      },
+      act2StartZ: {
+        value: (D.act2ModelOffsetStartZ as number) ?? D.modelOffsetEndZ,
+        min: -4,
+        max: 2,
+        step: 0.01,
+        label: "z",
+      },
+      act2StartRotationYDeg: {
+        value: radToDeg((D.act2ModelRotationStartY as number) ?? D.modelRotationY),
+        min: -180,
+        max: 180,
+        step: 1,
+        label: "spin Y°",
+      },
+    },
+    { collapsed: act !== 2 },
+  );
+
+  const act2ModelEnd = useControls(
+    "Model end (Act 2)",
+    {
+      act2EndX: {
+        value: (D.act2ModelOffsetEndX as number) ?? -2.2,
+        min: -4,
+        max: 2,
+        step: 0.01,
+        label: "x (left −)",
+      },
+      act2EndY: {
+        value: (D.act2ModelOffsetEndY as number) ?? D.modelOffsetEndY,
+        min: -2,
+        max: 2,
+        step: 0.01,
+        label: "y",
+      },
+      act2EndZ: {
+        value: (D.act2ModelOffsetEndZ as number) ?? D.modelOffsetEndZ,
+        min: -4,
+        max: 2,
+        step: 0.01,
+        label: "z",
+      },
+      act2EndRotationYDeg: {
+        value: radToDeg((D.act2ModelRotationEndY as number) ?? -0.12),
+        min: -180,
+        max: 180,
+        step: 1,
+        label: "spin Y°",
+      },
+    },
+    { collapsed: act !== 2 },
+  );
 
   const cameraStart = useControls("Camera start", {
     screenFillMargin: { value: D.screenFillMargin, min: 0, max: 0.5, step: 0.01 },
@@ -310,6 +398,29 @@ export default function HeroActPlayground({
     },
   });
 
+  const act2Screen = useControls(
+    "Floating screen (Act 2)",
+    {
+      act2ScreenPlaneScaleWidth: {
+        value:
+          (D.act2ScreenPlaneScaleWidth as number) ?? (D.screenPlaneScaleWidthEnd as number),
+        min: 0.05,
+        max: 1.5,
+        step: 0.01,
+        label: "width",
+      },
+      act2ScreenPlaneScaleHeight: {
+        value:
+          (D.act2ScreenPlaneScaleHeight as number) ?? (D.screenPlaneScaleHeightEnd as number),
+        min: 0.05,
+        max: 1.5,
+        step: 0.01,
+        label: "height",
+      },
+    },
+    { collapsed: act !== 2 },
+  );
+
   const screenRotStart = useControls("Screen rotation start", {
     screenPlaneRotStartXDeg: {
       value: radToDeg(D.screenPlaneRotationStartX),
@@ -444,11 +555,14 @@ export default function HeroActPlayground({
     {
       ...modelStart,
       ...modelEnd,
+      ...act2ModelStart,
+      ...act2ModelEnd,
       ...cameraStart,
       ...cameraEnd,
       ...lighting,
       ...screenStart,
       ...screenEnd,
+      ...act2Screen,
       ...screenRotStart,
       ...screenRotEnd,
       ...introLabelStart,
@@ -481,12 +595,16 @@ export default function HeroActPlayground({
   useEffect(() => {
     const mapped = mapPlaygroundScrub(act, scrub);
     heroProgress.set(mapped.heroProgress);
+    modelProgress.set(mapped.modelProgress);
+    act2Slide.set(mapped.act2Slide ?? 0);
     screenEvolution.set(mapped.screenEvolution);
-  }, [act, scrub, heroProgress, screenEvolution]);
+  }, [act, scrub, heroProgress, modelProgress, act2Slide, screenEvolution]);
 
   return (
     <HeroScene
       heroProgress={heroProgress}
+      modelProgress={modelProgress}
+      act2Slide={act2Slide}
       screenEvolution={screenEvolution}
       act={act}
       mobilePreview={mobilePreview}

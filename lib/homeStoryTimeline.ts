@@ -23,6 +23,9 @@ export const HOME_STORY_ACTS = {
 export const ACT1_PULLBACK_COMPLETE = 0.62;
 export const ACT1_END_CAMERA = 0.82;
 
+/** Act 2 — camera holds Act 1 exit framing; model slides on its own track. */
+export const ACT2_CAMERA_HOLD = ACT1_END_CAMERA;
+
 /** Act 2 local progress when wireframe begins (synced with deskEvolutionScreen.js). */
 export const ACT2_WIREFRAME_START = 0.38;
 
@@ -55,9 +58,8 @@ export function mapToActLocal(
 }
 
 /**
- * PC camera mapped to HeroCanvas scrollProgress (same as /dev/hero-canvas scrubber):
- * 0 = zoomed in on monitor, 1 = pulled back / wide.
- * Homepage story: in → out → in → out.
+ * PC camera progress (0 = tight on monitor, 1 = pulled back).
+ * Act 1: zoom out beats. Act 2: held — no push-in zoom.
  */
 export function mapPcCameraProgress(global: number) {
   const { act1ZoomOut, act2Monitor } = HOME_STORY_ACTS;
@@ -73,10 +75,39 @@ export function mapPcCameraProgress(global: number) {
   }
 
   if (global <= act2Monitor.end) {
-    return mapRange(global, act2Monitor.start, act2Monitor.end, ACT1_END_CAMERA, 0);
+    return ACT2_CAMERA_HOLD;
   }
 
   return 0;
+}
+
+/**
+ * Act 1 model + screen rig progress (0 = tight, 1 = pulled back).
+ * During Act 2 this stays at ACT2_CAMERA_HOLD — use mapAct2SlideProgress for the slide.
+ */
+export function mapPcModelProgress(global: number) {
+  const { act1ZoomOut } = HOME_STORY_ACTS;
+
+  if (global <= act1ZoomOut.end) {
+    return mapPcCameraProgress(global);
+  }
+
+  return ACT2_CAMERA_HOLD;
+}
+
+/** Act 2 local slide progress (0 = Act 1 exit pose, 1 = act2ModelOffsetEnd*). Null outside Act 2. */
+export function mapAct2SlideProgress(global: number): number | null {
+  const { act2Monitor } = HOME_STORY_ACTS;
+
+  if (global < act2Monitor.start) {
+    return null;
+  }
+
+  if (global >= act2Monitor.end) {
+    return 1;
+  }
+
+  return mapToActLocal(global, act2Monitor);
 }
 
 /** Act 3 local progress (0 = tight, 1 = wide reveal) for iPhone + monitor scene. */

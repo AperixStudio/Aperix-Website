@@ -56,6 +56,8 @@ export default function StoryExperienceCanvas({
   const tierRef = useRef(resolveExperienceTier(isMobile, prefersReducedMotion));
 
   const pcProgressRef = useRef(0);
+  const pcModelProgressRef = useRef(0);
+  const act2SlideRef = useRef(null);
   const screenEvolutionRef = useRef(0);
   const act3ProgressRef = useRef(0);
 
@@ -72,6 +74,8 @@ export default function StoryExperienceCanvas({
     globalRef.current = value;
     const frame = getStoryScrollFrame(value);
     pcProgressRef.current = frame.pcCameraProgress;
+    pcModelProgressRef.current = frame.pcModelProgress;
+    act2SlideRef.current = frame.act2SlideProgress;
     screenEvolutionRef.current = frame.screenEvolutionProgress;
     act3ProgressRef.current = frame.act3RevealProgress;
   });
@@ -81,6 +85,8 @@ export default function StoryExperienceCanvas({
     globalRef.current = value;
     const frame = getStoryScrollFrame(value);
     pcProgressRef.current = frame.pcCameraProgress;
+    pcModelProgressRef.current = frame.pcModelProgress;
+    act2SlideRef.current = frame.act2SlideProgress;
     screenEvolutionRef.current = frame.screenEvolutionProgress;
     act3ProgressRef.current = frame.act3RevealProgress;
   }, [globalScrollProgress]);
@@ -183,6 +189,8 @@ export default function StoryExperienceCanvas({
       ownRenderLoop: false,
       canvasClassName: "story-experience__canvas",
       getScrollProgress: () => pcProgressRef.current,
+      getModelProgress: () => pcModelProgressRef.current,
+      getAct2SlideProgress: () => act2SlideRef.current,
       getScreenEvolutionProgress: () => screenEvolutionRef.current,
       getLiveConfig: () => heroLiveConfigRef.current ?? undefined,
       getVideoElement: () => videoRef.current,

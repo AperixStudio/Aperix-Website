@@ -1,7 +1,9 @@
 import {
   HOME_STORY_ACTS,
   mapAct3RevealProgress,
+  mapAct2SlideProgress,
   mapPcCameraProgress,
+  mapPcModelProgress,
   mapScreenEvolutionProgress,
 } from "@/lib/homeStoryTimeline";
 import {
@@ -48,6 +50,8 @@ export function getStoryScrollFrame(global: number): StoryScrollFrame {
     global: clamped,
     act: resolveAct(clamped),
     pcCameraProgress: mapPcCameraProgress(clamped),
+    pcModelProgress: mapPcModelProgress(clamped),
+    act2SlideProgress: mapAct2SlideProgress(clamped),
     screenEvolutionProgress: mapScreenEvolutionProgress(clamped),
     act3RevealProgress: mapAct3RevealProgress(clamped),
     act3TransitionBlend,

@@ -87,7 +87,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
       holdEnd: 0.93,
       out: 0.99,
     },
-    placement: { x: 20, y: 50, anchor: "center-left", mobile: { x: 50, y: 78, anchor: "center" } },
+    placement: { x: 80, y: 50, anchor: "center-right", mobile: { x: 50, y: 78, anchor: "center" } },
   },
 ];
 

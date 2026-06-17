@@ -34,7 +34,7 @@ One sticky full-viewport WebGL canvas (`StoryExperienceCanvas`) driven by scroll
 | Act | Global scroll | Local meaning |
 |-----|---------------|---------------|
 | **Act 1 — zoom out** | `0% → 30%` | Camera: tight on monitor → pull back → slight push-in before Act 2 |
-| **Act 2 — monitor evolution** | `30% → 72%` | Camera: wide → tight on monitor. Screen: blueprint → wireframe → live MP4. How-it-works cards. |
+| **Act 2 — monitor evolution** | `30% → 72%` | Camera **held**; PC **slides left**; screen: blueprint → wireframe → live. Step cards. |
 | **Act 3 — reveal** | `72% → 100%` | iPhone + monitor scene. DOM heading + camera widen. |
 
 ### Act 1 camera (Hero / PC scene)
