@@ -17,7 +17,8 @@ import {
 } from "@/lib/experience/constants";
 import { resolveAct3RevealConfig } from "@/lib/resolveAct3RevealConfig";
 import { resolveExperienceTier } from "@/lib/experience/mobileTier";
-import { getRendererPixelRatio } from "@/lib/webglQuality";
+import { getRendererPixelRatio, shouldRenderMobileHeroFrame } from "@/lib/webglQuality";
+import { HOME_STORY_CLEAR_COLOR } from "@/lib/homeStoryTheme";
 import "@/components/animations/HeroCanvas.css";
 import "@/components/animations/Act3RevealCanvas.css";
 import "./StoryExperience.css";
@@ -97,6 +98,8 @@ export default function StoryExperienceCanvas({
     /** @type {ReturnType<typeof createAct3RevealScene> | null} */
     let act3Scene = null;
     let act3InitStarted = false;
+    let lastMobileRenderTime = 0;
+    let act3PreloadFrame = 0;
 
     const mobileAtMount = isMobileRef.current;
     const useDissolve = tierRef.current === "full";
@@ -107,7 +110,7 @@ export default function StoryExperienceCanvas({
     });
     renderer.setPixelRatio(getRendererPixelRatio());
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(HOME_STORY_CLEAR_COLOR, 1);
     renderer.domElement.className = "story-experience__canvas";
     canvasHost.appendChild(renderer.domElement);
 
@@ -170,15 +173,6 @@ export default function StoryExperienceCanvas({
       updateOverlay();
     }
 
-    function disposePcScene() {
-      if (!pcScene) {
-        return;
-      }
-
-      pcScene.dispose();
-      pcScene = null;
-    }
-
     pcScene = createPcStoryScene({
       container,
       renderer,
@@ -226,12 +220,18 @@ export default function StoryExperienceCanvas({
       return frame.act3TransitionBlend;
     }
 
-    function animate() {
+    function animate(time) {
       animationId = requestAnimationFrame(animate);
 
       if (!renderActiveRef.current || document.hidden) {
         return;
       }
+
+      if (!shouldRenderMobileHeroFrame(time, lastMobileRenderTime, isMobileRef.current)) {
+        return;
+      }
+
+      lastMobileRenderTime = time;
 
       const frame = getStoryScrollFrame(globalRef.current);
       const preloadStart = getPreloadStart();
@@ -247,7 +247,15 @@ export default function StoryExperienceCanvas({
       }
 
       if (act3Scene && (blend > 0 || frame.global >= preloadStart)) {
-        act3Scene.tick();
+        const preloadOnly = blend <= 0;
+        const shouldTickAct3 =
+          !preloadOnly ||
+          !isMobileRef.current ||
+          act3PreloadFrame++ % 2 === 0;
+
+        if (shouldTickAct3) {
+          act3Scene.tick();
+        }
       }
 
       compositor.render({
@@ -255,12 +263,6 @@ export default function StoryExperienceCanvas({
         toScene: act3Scene,
         blend,
       });
-
-      if (blend >= 1 && act3Scene?.isReady()) {
-        disposePcScene();
-      }
-
-      updateOverlay();
     }
 
     animate();

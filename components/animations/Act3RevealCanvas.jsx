@@ -22,6 +22,7 @@ function resolveConfig(liveConfig) {
  * @param {typeof DEFAULT_ACT3_REVEAL_CONFIG} [props.liveConfig]
  * @param {boolean} [props.showScreenGuides] Dev-only overlay showing screen plane rects.
  * @param {boolean} [props.renderActive] Pause WebGL + video when off-screen.
+ * @param {boolean} [props.simulateMobileViewport] Dev playground — use mobile DPR on desktop.
  */
 export default function Act3RevealCanvas({
   className = "",
@@ -29,6 +30,7 @@ export default function Act3RevealCanvas({
   liveConfig = null,
   showScreenGuides = false,
   renderActive = true,
+  simulateMobileViewport = false,
 }) {
   const containerRef = useRef(null);
   const latestConfigRef = useRef(DEFAULT_ACT3_REVEAL_CONFIG);
@@ -37,6 +39,8 @@ export default function Act3RevealCanvas({
   showScreenGuidesRef.current = showScreenGuides;
   const renderActiveRef = useRef(renderActive);
   renderActiveRef.current = renderActive;
+  const simulateMobileViewportRef = useRef(simulateMobileViewport);
+  simulateMobileViewportRef.current = simulateMobileViewport;
 
   const progressRef = useRef(scrollProgress?.get() ?? 0);
   const fallbackProgress = useMotionValue(0);
@@ -64,6 +68,7 @@ export default function Act3RevealCanvas({
       getScrollProgress: () => progressRef.current,
       getLiveConfig: () => latestConfigRef.current,
       getShowScreenGuides: () => showScreenGuidesRef.current,
+      getSimulateMobileViewport: () => simulateMobileViewportRef.current,
       getRenderActive: () => renderActiveRef.current,
       onStatusChange: (message) => {
         if (message?.startsWith("Failed")) {

@@ -1,0 +1,107 @@
+.about-page-hero {
+  position: relative;
+  min-height: 100svh;
+  background: #0c1017;
+}
+
+.about-page-hero__media {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.08), transparent 50%),
+    #121820;
+}
+
+.about-page-hero__media img {
+  object-fit: cover;
+}
+
+.about-page-hero__placeholder {
+  position: absolute;
+  inset: clamp(1rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px dashed rgba(148, 163, 184, 0.28);
+  border-radius: 1rem;
+  color: rgba(148, 163, 184, 0.72);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.about-page-hero__placeholder-label {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.about-page-hero__placeholder-hint {
+  max-width: 22rem;
+  font-size: 0.82rem;
+  color: rgba(148, 163, 184, 0.55);
+}
+
+.about-page-hero__overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  padding-top: 6rem;
+  background: linear-gradient(180deg, rgba(8, 11, 18, 0.15) 0%, rgba(8, 11, 18, 0.92) 72%);
+}
+
+.about-page-hero__kicker {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(186, 230, 253, 0.58);
+}
+
+.about-page-hero__heading {
+  margin-top: 0.75rem;
+  max-width: 12ch;
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+}
+
+.about-page-hero__lede {
+  margin-top: 1.25rem;
+  max-width: 36rem;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  line-height: 1.7;
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.about-page-hero__cta {
+  margin-top: 1.75rem;
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  background: rgba(56, 189, 248, 0.12);
+  padding: 0.8rem 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #f8fafc;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.about-page-hero__cta:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.2);
+  transform: translateY(-1px);
+}

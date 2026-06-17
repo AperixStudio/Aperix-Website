@@ -280,11 +280,12 @@ export default function Act3Playground({ mobilePreview, scrub }: Act3PlaygroundP
   }, [progress, scrub]);
 
   return (
-    <div className={mobilePreview ? "dev-story-mobile-shell h-full" : "h-full w-full"}>
+    <div className={mobilePreview ? "dev-story-mobile-shell" : "h-full w-full"}>
       <Act3RevealCanvas
         scrollProgress={progress}
         liveConfig={liveConfig}
         showScreenGuides={preview.showScreenGuides}
+        simulateMobileViewport={mobilePreview}
         className="h-full act3-reveal-scene--scroll"
       />
     </div>

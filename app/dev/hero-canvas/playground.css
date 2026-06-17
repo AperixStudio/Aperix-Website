@@ -9,11 +9,30 @@
   backdrop-filter: blur(12px);
 }
 
+.dev-story-scene-host--mobile-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
 .dev-story-mobile-shell {
-  width: min(100%, 390px);
-  height: 100%;
+  /* Match iPhone logical viewport — aspect drives canvas resize, not full desktop height. */
+  aspect-ratio: 390 / 844;
+  width: min(390px, 100%, calc((100dvh - 7.5rem) * 390 / 844));
+  max-height: calc(100dvh - 7.5rem);
+  height: auto;
+  flex-shrink: 0;
   margin-inline: auto;
+  overflow: hidden;
+  background: #000;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14);
+  border-radius: 1.25rem;
+}
+
+.dev-story-mobile-shell > * {
+  width: 100%;
+  height: 100%;
 }
 
 .dev-story-scene-host {

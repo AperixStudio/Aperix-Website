@@ -87,7 +87,13 @@ function PlaygroundInner() {
         onScrubChange={setScrub}
       />
 
-      <div className="dev-story-scene-host">
+      <div
+        className={
+          mobilePreview
+            ? "dev-story-scene-host dev-story-scene-host--mobile-preview"
+            : "dev-story-scene-host"
+        }
+      >
         {act === 3 ? (
           <Act3Playground key={panelKey} mobilePreview={mobilePreview} scrub={scrub} />
         ) : (

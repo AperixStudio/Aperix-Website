@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import SocialProofBar from "@/components/agency/SocialProofBar";
 import HomeStorySection from "@/components/agency/HomeStorySection";
-import TierShowcase from "@/components/agency/TierShowcase";
+// import TierShowcase from "@/components/agency/TierShowcase";
 import LiveSitesSection from "@/components/agency/LiveSitesSection";
+import AboutWallTransitionSection from "@/components/agency/AboutWallTransitionSection";
 import FinalCTA from "@/components/agency/FinalCTA";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
@@ -55,23 +56,18 @@ export default function Home() {
     <>
       <AgencyNavV2 />
       <HomeStorySection />
-      <div className="winding-section winding-section-left">
-        <SocialProofBar />
-      </div>
-      <main className="overflow-x-hidden">
+      <SocialProofBar />
+      <main>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
         />
-        <div className="winding-section winding-section-left">
+        {/* <div className="winding-section winding-section-left">
           <TierShowcase />
-        </div>
-        <div className="winding-section winding-section-right">
-          <LiveSitesSection />
-        </div>
-        <div className="winding-section winding-section-left">
-          <FinalCTA />
-        </div>
+        </div> */}
+        <LiveSitesSection />
+        <AboutWallTransitionSection />
+        <FinalCTA />
         <BackToTop />
       </main>
       <Footer />

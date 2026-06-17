@@ -11,7 +11,7 @@ export const ACT3_TRANSITION_END = 0.735;
 export const ACT3_PRELOAD_START = 0.62;
 
 /** Tighter preload on mobile — less time with both scenes in memory. */
-export const ACT3_PRELOAD_START_MOBILE = 0.66;
+export const ACT3_PRELOAD_START_MOBILE = 0.7;
 
 /** Feature flag — unified single-canvas story on the homepage. */
 export const USE_UNIFIED_STORY_EXPERIENCE =

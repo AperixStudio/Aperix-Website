@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/animations";
 import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
 import { cn } from "@/lib/utils";
+import "./LiveSitesSection.css";
 
 type Site = LiveSite;
 
@@ -63,7 +64,8 @@ const CARD_THEMES = [
 ] as const;
 
 const TOTAL = LIVE_SITES.length;
-const STEP_DEG = 18;
+const STEP_DEG = 22;
+const CARD_FAN_X = 24;
 const DRAG_THRESHOLD = 60;
 
 function getOffset(index: number, active: number): number {
@@ -283,9 +285,9 @@ function ProjectCard({
       onClick={!isActive ? onClick : undefined}
       animate={{
         rotate,
-        scale: isActive ? 1 : 0.96 - absOffset * 0.015,
+        scale: isActive ? 1 : 0.955 - absOffset * 0.018,
         opacity: absOffset > 2 ? 0 : 1,
-        x: offset * 14,
+        x: offset * CARD_FAN_X,
       }}
       transition={{ type: "spring", stiffness: 120, damping: 30, mass: 1.2 }}
       style={{
@@ -303,34 +305,16 @@ function ProjectCard({
       } as React.CSSProperties}
       aria-hidden={!isActive}
     >
-      <div className="flex h-120 w-full flex-col overflow-hidden rounded-3xl border border-agency-border bg-agency-surface shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
+      <div className="live-sites-card flex h-120 w-full flex-col overflow-hidden rounded-3xl">
         <div
-          className={`relative flex flex-1 flex-col p-7 bg-linear-to-br dark:hidden ${theme.gradient}`}
+          className={`live-sites-card__header relative flex flex-1 flex-col p-7 bg-linear-to-br ${theme.darkGradient}`}
         >
           <span
             className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${theme.badgeBg}`}
           >
             {site.status}
           </span>
-          <p className="mt-3 text-xs font-medium uppercase tracking-[0.16em] text-agency-muted">
-            {site.location}
-          </p>
-          <h3 className="mt-4 font-display text-3xl font-bold leading-tight text-white">
-            {site.name}
-          </h3>
-          <p className={`mt-1.5 text-xs font-semibold uppercase tracking-[0.14em] ${theme.accent}`}>
-            {site.label}
-          </p>
-        </div>
-        <div
-          className={`relative hidden flex-col p-7 bg-linear-to-br dark:flex flex-1 ${theme.darkGradient}`}
-        >
-          <span
-            className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] ${theme.badgeBg}`}
-          >
-            {site.status}
-          </span>
-          <p className="mt-3 text-xs font-medium uppercase tracking-[0.16em] text-agency-muted">
+          <p className="live-sites-card__location mt-3 text-xs font-medium uppercase tracking-[0.16em]">
             {site.location}
           </p>
           <h3 className="mt-4 font-display text-3xl font-bold leading-tight text-white">
@@ -341,7 +325,7 @@ function ProjectCard({
           </p>
         </div>
         {/* Live preview */}
-        <div className="relative h-44 w-full overflow-hidden border-t border-agency-border bg-agency-bg">
+        <div className="live-sites-card__preview relative h-44 w-full overflow-hidden">
           {"preview" in site && site.preview ? (
             <img
               src={site.preview}
@@ -356,9 +340,9 @@ function ProjectCard({
                   Keeps the deck cheap to composite: only the active iframe ever paints. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center bg-agency-surface"
+                className="live-sites-card__preview-placeholder absolute inset-0 flex items-center justify-center"
               >
-                <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-agency-muted">
+                <span className="text-[11px] font-medium uppercase tracking-[0.16em]">
                   Live preview
                 </span>
               </div>
@@ -386,7 +370,7 @@ function ProjectCard({
         </div>
 
         {/* Visit button */}
-        <div className="border-t border-agency-border bg-agency-surface px-6 py-4">
+        <div className="live-sites-card__footer px-6 py-4">
           {site.href ? (
             <button
               type="button"
@@ -477,24 +461,24 @@ export default function LiveSitesSection() {
 
   return (
     <section
-      id="live-sites"
-      className="overflow-hidden px-6 py-24 sm:py-28 lg:px-12 lg:py-36"
+      id="our-work"
+      className="live-sites-section overflow-hidden px-6 py-24 sm:py-28 lg:px-12 lg:py-36"
       aria-labelledby="live-sites-heading"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <Reveal className="max-w-3xl">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-muted">
-              Live Aperix-Made Websites
+            <p className="live-sites-section__kicker mb-3 text-xs font-semibold uppercase tracking-[0.2em]">
+              Selected work
             </p>
             <h2
               id="live-sites-heading"
-              className="font-display text-3xl font-bold leading-tight text-agency-ink sm:text-4xl lg:text-5xl"
+              className="live-sites-section__heading font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl"
             >
-              Live website launches and case studies.
+              Sites we&apos;ve shipped.
             </h2>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-agency-muted sm:text-lg">
-              A few of the projects we have shipped, each one built for a real business with a real brief, clear scope, and a measurable outcome.
+            <p className="live-sites-section__lede mt-4 max-w-2xl text-base leading-relaxed sm:text-lg">
+              A handful of live builds — hand-coded websites and products for clients, side projects, and our own experiments.
             </p>
           </Reveal>
           <Reveal>
@@ -506,10 +490,8 @@ export default function LiveSitesSection() {
                   aria-selected={active === i}
                   onClick={() => goTo(i)}
                   className={cn(
-                    "rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-200",
-                    active === i
-                      ? "border-agency-ink bg-agency-ink text-white shadow-sm"
-                      : "border-agency-border bg-agency-surface text-agency-muted hover:border-agency-ink/40 hover:text-agency-ink",
+                    "live-sites-tab rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
+                    active === i && "live-sites-tab--active",
                   )}
                 >
                   {site.name}
@@ -522,7 +504,7 @@ export default function LiveSitesSection() {
         <div className="mt-14 flex justify-center overflow-hidden">
           <div
             className="relative select-none"
-            style={{ height: "clamp(620px, 70vh, 780px)", width: "min(100%, 420px)", touchAction: "pan-y" }}
+            style={{ height: "clamp(620px, 70vh, 780px)", width: "min(100%, 480px)", touchAction: "pan-y" }}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
           >
@@ -550,8 +532,8 @@ export default function LiveSitesSection() {
               key={i}
               onClick={() => goTo(i)}
               className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
-                active === i ? "w-6 bg-agency-ink" : "w-1.5 bg-agency-border",
+                "live-sites-dot h-1.5 rounded-full transition-all duration-300",
+                active === i ? "live-sites-dot--active w-6" : "w-1.5",
               )}
             />
           ))}

@@ -4,6 +4,7 @@ import Footer from "@/components/agency/Footer";
 import ContactForm from "@/components/agency/ContactForm";
 import BackToTop from "@/components/agency/BackToTop";
 import { getSiteUrl, SITE_EMAIL, SITE_LOGO_PATH, SITE_NAME, SITE_SOCIAL_LINKS } from "@/lib/site";
+import "./ContactPage.css";
 
 const siteUrl = getSiteUrl();
 const siteLogoUrl = `${siteUrl}${SITE_LOGO_PATH}`;
@@ -74,7 +75,7 @@ export default function ContactPage() {
 
       <main
         role="main"
-        className="h-[calc(100dvh-4.75rem)] overflow-hidden px-6 pt-20 pb-4 lg:h-[calc(100dvh-4.5rem)] lg:pt-24 lg:pb-4"
+        className="contact-page overflow-hidden px-4 pt-20 pb-6 sm:px-6 lg:px-8 lg:pt-24 lg:pb-8"
       >
         <script
           type="application/ld+json"
@@ -84,22 +85,19 @@ export default function ContactPage() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
         />
-        <div className="mx-auto grid h-full max-w-6xl overflow-hidden rounded-4xl border border-agency-border lg:grid-cols-[36%_64%]">
-          {/* ── Left panel ─────────────────────────── */}
-          <div className="flex h-full flex-col justify-center bg-agency-surface px-7 py-8 lg:px-9 lg:py-10">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-agency-accent">
-              Contact Aperix Studio
-            </p>
-            <h1 className="font-display text-3xl font-bold text-agency-text sm:text-[2rem]">
+        <div className="contact-page__shell mx-auto h-full max-w-6xl">
+          <div className="contact-page__intro">
+            <p className="contact-page__kicker">Contact Aperix Studio</p>
+            <h1 className="contact-page__heading">
               Contact us about web design in Melbourne.
             </h1>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-agency-muted">
-              Tell us what your business needs, and we&apos;ll reply with the best-fit package, a clear next step, and the timeline to expect.
+            <p className="contact-page__lede">
+              Tell us what your business needs, and we&apos;ll reply with the best-fit package, a
+              clear next step, and the timeline to expect.
             </p>
           </div>
 
-          {/* ── Right panel — form ──────────────────── */}
-          <div className="h-full bg-agency-bg/65 backdrop-blur-sm">
+          <div className="contact-page__form">
             <ContactForm />
           </div>
         </div>

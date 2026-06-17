@@ -7,11 +7,14 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import MelbourneFlipClock from "@/components/agency/MelbourneFlipClock";
+import HashLink from "@/components/agency/HashLink";
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Our Work", href: "/our-work" },
+  { label: "Our Work", href: "/#our-work" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 function WiggleText({ label }: { label: string }) {
@@ -32,7 +35,7 @@ function WiggleText({ label }: { label: string }) {
 
 function NavLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link
+    <HashLink
       href={href}
       data-cursor-pill
       aria-label={label}
@@ -48,7 +51,41 @@ function NavLink({ href, label }: { href: string; label: string }) {
           <WiggleText label={label} />
         </span>
       </span>
-    </Link>
+    </HashLink>
+  );
+}
+
+function MobileMenuButton({
+  open,
+  onClick,
+  duration,
+}: {
+  open: boolean;
+  onClick: () => void;
+  duration: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative z-50 flex size-[1.25rem] shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8 text-white shadow-[0_4px_14px_rgba(0,0,0,0.22)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
+      aria-label={open ? "Close menu" : "Open menu"}
+      aria-expanded={open}
+    >
+      <motion.span
+        className="grid grid-cols-2 gap-[2.5px]"
+        aria-hidden="true"
+        animate={
+          open
+            ? { rotate: 45, scale: 0.92, transition: { duration } }
+            : { rotate: 0, scale: 1, transition: { duration } }
+        }
+      >
+        {[0, 1, 2, 3].map((index) => (
+          <span key={index} className="size-[2.5px] rounded-full bg-white" />
+        ))}
+      </motion.span>
+    </button>
   );
 }
 
@@ -65,10 +102,18 @@ export default function AgencyNavV2() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
+    if (!mobileOpen) {
+      return undefined;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
     };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [mobileOpen]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -84,42 +129,125 @@ export default function AgencyNavV2() {
       >
         <div aria-hidden="true" className="agency-header-underlay" />
 
-        <div className="relative z-10 mx-auto grid h-18 max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3">
-          {/* Logo — outside the glass pill */}
-          <Link
-            href="/"
-            className="group flex items-center gap-2 justify-self-start"
-            aria-label="Aperix — home"
-          >
-            <motion.span
-              className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90"
-              animate={prefersReduced ? undefined : { rotate: 360 }}
-              transition={
-                prefersReduced
-                  ? undefined
-                  : { duration: 5, ease: "linear", repeat: Infinity }
-              }
+        <div className="relative z-10 mx-auto flex h-18 max-w-6xl items-center justify-between gap-3">
+          {/* Logo + mobile menu — shared text scale so menu matches cap height of “A” */}
+          <div className="relative flex min-w-0 items-center gap-2 font-display text-lg leading-none">
+            <Link
+              href="/"
+              className="group flex min-w-0 items-center gap-2"
+              aria-label="Aperix — home"
             >
-              <Image
-                src="/aperix-logo.svg"
-                alt=""
-                width={34}
-                height={37}
-                priority
-                aria-hidden="true"
-                className="h-[2.15rem] w-auto"
-              />
-            </motion.span>
-            <span className="font-display text-lg font-bold tracking-tight text-agency-ink">
-              <WiggleText label="Aperix" />
-            </span>
-          </Link>
+              <motion.span
+                className="relative shrink-0 overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90"
+                animate={prefersReduced ? undefined : { rotate: 360 }}
+                transition={
+                  prefersReduced
+                    ? undefined
+                    : { duration: 5, ease: "linear", repeat: Infinity }
+                }
+              >
+                <Image
+                  src="/aperix-logo.svg"
+                  alt=""
+                  width={34}
+                  height={37}
+                  priority
+                  aria-hidden="true"
+                  className="h-[2.15rem] w-auto"
+                />
+              </motion.span>
+              <span className="truncate font-bold tracking-tight text-agency-ink">
+                <WiggleText label="Aperix" />
+              </span>
+            </Link>
 
-          {/* Centered glass nav pill — links only */}
+            <MobileMenuButton
+              open={mobileOpen}
+              onClick={() => setMobileOpen((isOpen) => !isOpen)}
+              duration={dur}
+            />
+
+            <AnimatePresence>
+              {mobileOpen ? (
+                <>
+                  <motion.button
+                    type="button"
+                    key="mobile-menu-backdrop"
+                    className="agency-mobile-menu-backdrop fixed inset-0 z-40 md:hidden"
+                    aria-label="Close menu"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={
+                      prefersReduced ? { duration: 0 } : { duration: 0.22, ease: "easeOut" }
+                    }
+                    onClick={closeMobile}
+                  />
+
+                  <motion.nav
+                    key="mobile-menu-panel"
+                    aria-label="Mobile navigation"
+                    className="rocket-step-card fixed top-[5.35rem] left-4 z-50 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-xl px-5 py-2 sm:left-6 md:hidden lg:left-8"
+                    initial={
+                      prefersReduced
+                        ? { opacity: 0 }
+                        : { opacity: 0, y: -10, scale: 0.98, filter: "blur(6px)" }
+                    }
+                    animate={
+                      prefersReduced
+                        ? { opacity: 1 }
+                        : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
+                    }
+                    exit={
+                      prefersReduced
+                        ? { opacity: 0 }
+                        : { opacity: 0, y: -8, scale: 0.98, filter: "blur(4px)" }
+                    }
+                    transition={
+                      prefersReduced
+                        ? { duration: 0 }
+                        : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }
+                    }
+                  >
+                    {NAV_LINKS.map((link, index) => (
+                      <motion.div
+                        key={link.href}
+                        initial={
+                          prefersReduced ? { opacity: 0 } : { opacity: 0, y: 14 }
+                        }
+                        animate={prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                        exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                        transition={
+                          prefersReduced
+                            ? { duration: 0 }
+                            : {
+                                delay: 0.04 + index * 0.05,
+                                duration: 0.34,
+                                ease: [0.22, 1, 0.36, 1],
+                              }
+                        }
+                      >
+                        <HashLink
+                          href={link.href}
+                          onClick={closeMobile}
+                          data-cursor-pill
+                          className="agency-mobile-menu-link block border-b py-3.5 font-display text-xl font-semibold tracking-tight transition-opacity duration-150 last:border-b-0 hover:opacity-70 active:opacity-55"
+                        >
+                          {link.label}
+                        </HashLink>
+                      </motion.div>
+                    ))}
+                  </motion.nav>
+                </>
+              ) : null}
+            </AnimatePresence>
+          </div>
+
+          {/* Centered glass nav pill — desktop only */}
           <nav
             aria-label="Main navigation"
             className={cn(
-              "hidden items-center rounded-full md:flex",
+              "absolute left-1/2 hidden -translate-x-1/2 items-center rounded-full md:flex",
               "agency-glass-pill px-1.5 py-1",
               scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
             )}
@@ -129,163 +257,12 @@ export default function AgencyNavV2() {
             ))}
           </nav>
 
-          {/* Contact CTA + theme + mobile menu — outside the pill */}
-          <div className="flex items-center justify-end gap-2 sm:gap-3 justify-self-end">
-            <Link
-              href="/contact"
-              data-cursor-pill
-              className={cn(
-                "hidden items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold md:inline-flex",
-                "agency-button-primary",
-                "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
-              )}
-            >
-              Get in Contact
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setMobileOpen((open) => !open)}
-              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-full border border-agency-border bg-agency-surface/80 text-agency-ink shadow-[0_10px_30px_rgba(23,23,23,0.08)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileOpen}
-            >
-              <div className="flex w-5 flex-col gap-1.25">
-                <motion.span
-                  animate={
-                    mobileOpen
-                      ? { rotate: 45, y: 7, transition: { duration: dur } }
-                      : { rotate: 0, y: 0, transition: { duration: dur } }
-                  }
-                  className="block h-0.5 w-full origin-center rounded-full bg-agency-ink"
-                />
-                <motion.span
-                  animate={
-                    mobileOpen
-                      ? { opacity: 0, transition: { duration: dur * 0.5 } }
-                      : { opacity: 1, transition: { duration: dur } }
-                  }
-                  className="block h-0.5 w-full rounded-full bg-agency-ink"
-                />
-                <motion.span
-                  animate={
-                    mobileOpen
-                      ? { rotate: -45, y: -7, transition: { duration: dur } }
-                      : { rotate: 0, y: 0, transition: { duration: dur } }
-                  }
-                  className="block h-0.5 w-full origin-center rounded-full bg-agency-ink"
-                />
-              </div>
-            </button>
+          {/* Melbourne flip clock */}
+          <div className="flex shrink-0 justify-end">
+            <MelbourneFlipClock />
           </div>
         </div>
       </header>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={
-              prefersReduced
-                ? { duration: 0 }
-                : { duration: 0.3, ease: "easeOut" }
-            }
-            className="agency-mobile-overlay fixed inset-0 z-40 flex flex-col supports-backdrop-filter:backdrop-blur-2xl md:hidden"
-          >
-            <div className="agency-mobile-panel m-4 mt-24 flex flex-1 flex-col items-center justify-center gap-8 rounded-4xl px-6 shadow-[0_18px_60px_rgba(23,23,23,0.14)] supports-backdrop-filter:backdrop-blur-2xl">
-              {NAV_LINKS.map((link, index) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={
-                    prefersReduced
-                      ? { duration: 0 }
-                      : { delay: 0.1 + index * 0.08, duration: 0.4, ease: "easeOut" }
-                  }
-                >
-                  <Link
-                    href={link.href}
-                    onClick={closeMobile}
-                    data-cursor-pill
-                    aria-label={link.label}
-                    className="agency-nav-link group relative font-display text-3xl font-bold"
-                  >
-                    <span
-                      className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0"
-                      aria-hidden="true"
-                    >
-                      <WiggleText label={link.label} />
-                    </span>
-                    <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      <span className="text-agency-muted">
-                        <WiggleText label={link.label} />
-                      </span>
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={
-                  prefersReduced
-                    ? { duration: 0 }
-                    : { delay: 0.1 + NAV_LINKS.length * 0.08, duration: 0.4, ease: "easeOut" }
-                }
-              >
-                <Link
-                  href="/contact"
-                  onClick={closeMobile}
-                  data-cursor-pill
-                  aria-label="Contact"
-                  className="agency-nav-link group relative font-display text-3xl font-bold"
-                >
-                  <span
-                    className="text-agency-ink transition-opacity duration-150 group-hover:opacity-0"
-                    aria-hidden="true"
-                  >
-                    <WiggleText label="Contact" />
-                  </span>
-                  <span className="absolute inset-0 flex items-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                    <span className="text-agency-muted">
-                      <WiggleText label="Contact" />
-                    </span>
-                  </span>
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={
-                  prefersReduced
-                    ? { duration: 0 }
-                    : { delay: 0.1 + (NAV_LINKS.length + 1) * 0.08, duration: 0.4, ease: "easeOut" }
-                }
-                className="pt-2"
-              >
-                <Link
-                  href="/contact"
-                  onClick={closeMobile}
-                  data-cursor-pill
-                  className={cn(
-                    "inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
-                    "agency-button-primary",
-                    "transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]",
-                  )}
-                >
-                  Get in Contact
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

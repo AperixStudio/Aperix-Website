@@ -48,8 +48,10 @@ function mapLevaToConfig(
     screenPlaneOffsetEnd: values.screenPlaneOffsetEnd as number,
     screenPlaneLocalStartX: values.screenPlaneLocalStartX as number,
     screenPlaneLocalStartY: values.screenPlaneLocalStartY as number,
+    screenPlaneLocalStartZ: values.screenPlaneLocalStartZ as number,
     screenPlaneLocalEndX: values.screenPlaneLocalEndX as number,
     screenPlaneLocalEndY: values.screenPlaneLocalEndY as number,
+    screenPlaneLocalEndZ: values.screenPlaneLocalEndZ as number,
     screenPlaneScaleWidthStart: values.screenPlaneScaleWidthStart as number,
     screenPlaneScaleWidthEnd: values.screenPlaneScaleWidthEnd as number,
     screenPlaneScaleHeightStart: values.screenPlaneScaleHeightStart as number,
@@ -61,6 +63,7 @@ function mapLevaToConfig(
     screenPlaneRotationEndY: degToRad(values.screenPlaneRotEndYDeg as number),
     screenPlaneRotationEndZ: degToRad(values.screenPlaneRotEndZDeg as number),
     screenPlanePolygonOffset: values.screenPlanePolygonOffset as number,
+    screenPlaneCornerRadius: values.screenPlaneCornerRadius as number,
     introLabelGapStart: values.introLabelGapStart as number,
     introLabelGapEnd: values.introLabelGapEnd as number,
     introLabelOffsetStartX: values.introLabelOffsetStartX as number,
@@ -117,14 +120,15 @@ function HeroScene({
   const canvasClass = "h-full w-full";
 
   return (
-    <div className={mobilePreview ? "dev-story-mobile-shell h-full" : "h-full w-full"}>
+    <div className={mobilePreview ? "dev-story-mobile-shell" : "h-full w-full"}>
       <div className={canvasClass}>
         <HeroCanvas
           scrollProgress={heroProgress}
           screenEvolutionProgress={act === 2 ? screenEvolution : null}
           liveConfig={liveConfig}
           videoElement={videoElement}
-          showIntroLabel={!mobilePreview && act === 1}
+          showIntroLabel={act === 1}
+          simulateMobileViewport={mobilePreview}
           className="hero-canvas--scroll h-full min-h-0"
         />
       </div>
@@ -211,10 +215,17 @@ export default function HeroActPlayground({
   const screenStart = useControls("Screen start", {
     screenPlaneOffsetStart: {
       value: D.screenPlaneOffsetStart,
-      min: -0.1,
-      max: 0.1,
+      min: -0.5,
+      max: 0.15,
       step: 0.001,
-      label: "push forward",
+      label: "base depth",
+    },
+    screenPlaneLocalStartZ: {
+      value: D.screenPlaneLocalStartZ,
+      min: -0.5,
+      max: 0.15,
+      step: 0.001,
+      label: "depth into monitor",
     },
     screenPlaneLocalStartX: {
       value: D.screenPlaneLocalStartX,
@@ -245,15 +256,29 @@ export default function HeroActPlayground({
       label: "height",
     },
     screenPlanePolygonOffset: { value: D.screenPlanePolygonOffset, min: -10, max: 10, step: 1 },
+    screenPlaneCornerRadius: {
+      value: D.screenPlaneCornerRadius,
+      min: 0,
+      max: 0.2,
+      step: 0.005,
+      label: "corner radius",
+    },
   });
 
   const screenEnd = useControls("Screen end", {
     screenPlaneOffsetEnd: {
       value: D.screenPlaneOffsetEnd,
-      min: -0.1,
-      max: 0.1,
+      min: -0.5,
+      max: 0.15,
       step: 0.001,
-      label: "push forward",
+      label: "base depth",
+    },
+    screenPlaneLocalEndZ: {
+      value: D.screenPlaneLocalEndZ,
+      min: -0.5,
+      max: 0.15,
+      step: 0.001,
+      label: "depth into monitor",
     },
     screenPlaneLocalEndX: {
       value: D.screenPlaneLocalEndX,

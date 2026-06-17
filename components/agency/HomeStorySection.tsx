@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import HashLink from "@/components/agency/HashLink";
 import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "framer-motion";
 import RocketTextBlock from "@/components/agency/RocketTextBlock";
 import { HERO_VIDEO_OFFSCREEN_CLASS, HERO_VIDEO_SRC } from "@/lib/heroVideo";
@@ -46,22 +47,16 @@ const StoryExperienceCanvas = dynamic(() => import("@/components/experience/Stor
 /** Hard swap — PC off, Act 3 on (no overlapping transparent canvases). */
 const ACT3_START_GLOBAL = HOME_STORY_ACTS.act3Reveal.start;
 
-const HEADLINE_WORDS = ["Custom Websites and", "Software Solutions", "built for", "Melbourne businesses."];
-const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
-const SECONDARY_HEADLINE_WORDS = ["Hand coded,", "Fast turnaround,", "Tailored solutions."];
-const SECONDARY_HEADLINE_TEXT = SECONDARY_HEADLINE_WORDS.join("\n");
-const HEADLINE_SEQUENCE = [HEADLINE_TEXT, SECONDARY_HEADLINE_TEXT];
-
-const TRUST_PILLS = [
-  "Custom code, no templates",
-  "Melbourne-based",
-  "Fast turnaround",
-  "Hosted & maintained",
-];
+const HERO_KICKER = "Two-person team · Melbourne";
+const HERO_TITLE_LINES = ["Web developer", "& SaaS", "studio."];
+const HERO_TITLE = HERO_TITLE_LINES.join(" ");
+const HERO_BODY =
+  "We're two developers in Melbourne — hand-coding websites, web apps, and SaaS products. Landing page or full platform, side project or serious build — if it's worth making well, we're in.";
+const HERO_META = ["Melbourne", "2-person team", "Any size project"];
 
 const ERA_LABELS = ["Blueprint", "Wireframe", "Live site"];
 
-const ACT3_HEADING = "Optimised for desktop and mobile from day 1";
+const ACT3_HEADING = "Designed and built for every screen";
 
 function EraLabel({
   scrollYProgress,
@@ -116,7 +111,6 @@ export default function HomeStorySection() {
   const scrollRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [heroVideo, setHeroVideo] = useState<HTMLVideoElement | null>(null);
-  const [headlineText, setHeadlineText] = useState("");
   const [showAct3Scene, setShowAct3Scene] = useState(false);
   const [pauseHeroVideo, setPauseHeroVideo] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
@@ -140,9 +134,13 @@ export default function HomeStorySection() {
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     pcCameraProgress.set(mapPcCameraProgress(value));
     act3RevealProgress.set(mapAct3RevealProgress(value));
-    setShowAct3Scene(value >= ACT3_START_GLOBAL);
+
+    const showAct3 = value >= ACT3_START_GLOBAL;
+    setShowAct3Scene((prev) => (prev === showAct3 ? prev : showAct3));
+
     if (USE_UNIFIED_STORY_EXPERIENCE) {
-      setPauseHeroVideo(value >= ACT3_TRANSITION_START);
+      const pauseVideo = value >= ACT3_TRANSITION_START;
+      setPauseHeroVideo((prev) => (prev === pauseVideo ? prev : pauseVideo));
     }
   });
 
@@ -214,7 +212,6 @@ export default function HomeStorySection() {
     [ACT3_START_GLOBAL, ACT3_START_GLOBAL + 0.06],
     [20, 0],
   );
-  const visibleHeadlineText = prefersReduced ? HEADLINE_TEXT : headlineText;
   const progressForHero = prefersReduced ? staticZero : pcCameraProgress;
   const progressForScreen = prefersReduced ? staticZero : screenEvolutionProgress;
   const progressForAct3 = prefersReduced ? staticZero : act3RevealProgress;
@@ -241,61 +238,6 @@ export default function HomeStorySection() {
     return () => video.removeEventListener("loadeddata", play);
   }, [prefersReduced, heroVideo, renderActive, showPcScene, pauseHeroVideo]);
 
-  useEffect(() => {
-    if (prefersReduced) {
-      return undefined;
-    }
-
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-    let cancelled = false;
-
-    const tick = () => {
-      if (cancelled) {
-        return;
-      }
-
-      const currentPhrase = HEADLINE_SEQUENCE[phraseIndex] ?? HEADLINE_TEXT;
-
-      if (!deleting) {
-        charIndex += 1;
-        setHeadlineText(currentPhrase.slice(0, charIndex));
-
-        if (charIndex >= currentPhrase.length) {
-          deleting = true;
-          timeoutId = setTimeout(tick, 1400);
-          return;
-        }
-
-        timeoutId = setTimeout(tick, 65);
-        return;
-      }
-
-      charIndex -= 1;
-      setHeadlineText(currentPhrase.slice(0, Math.max(charIndex, 0)));
-
-      if (charIndex <= 0) {
-        deleting = false;
-        phraseIndex = (phraseIndex + 1) % HEADLINE_SEQUENCE.length;
-        timeoutId = setTimeout(tick, 450);
-        return;
-      }
-
-      timeoutId = setTimeout(tick, 32);
-    };
-
-    timeoutId = setTimeout(tick, 150);
-
-    return () => {
-      cancelled = true;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [prefersReduced]);
-
   return (
     <section
       ref={scrollRef}
@@ -308,7 +250,7 @@ export default function HomeStorySection() {
         className={
           prefersReduced
             ? "relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
-            : "home-story-sticky relative sticky top-0 h-screen w-full overflow-hidden"
+            : "home-story-sticky sticky top-0 h-screen w-full overflow-hidden"
         }
       >
         <video
@@ -328,22 +270,35 @@ export default function HomeStorySection() {
         />
 
         {!prefersReduced && (
+          <>
+            <div
+              className="home-story-atmosphere pointer-events-none absolute inset-0 z-0"
+              aria-hidden="true"
+            />
+            <div
+              className="home-story-noise pointer-events-none absolute inset-0 z-0"
+              aria-hidden="true"
+            />
+          </>
+        )}
+
+        {!prefersReduced && (
           <motion.div
             style={{ opacity: blueprintOpacity }}
-            className="desk-evolution-blueprint pointer-events-none absolute inset-0 z-[1]"
+            className="desk-evolution-blueprint pointer-events-none absolute inset-0 z-1"
             aria-hidden="true"
           />
         )}
 
         {!prefersReduced && USE_UNIFIED_STORY_EXPERIENCE ? (
-          <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+          <div className="pointer-events-none absolute inset-0 z-2" aria-hidden="true">
             {heroVideo && viewportReady ? (
               <StoryExperienceCanvas
                 key="story-experience"
                 globalScrollProgress={scrollYProgress}
                 videoElement={heroVideo}
                 heroLiveConfig={heroLiveConfig}
-                showIntroLabel={!isMobile}
+                showIntroLabel={!prefersReduced}
                 renderActive={renderActive}
                 isMobile={isMobile}
                 prefersReducedMotion={prefersReduced}
@@ -354,12 +309,12 @@ export default function HomeStorySection() {
         ) : (
           <>
             {showPcScene && (
-              <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+              <div className="pointer-events-none absolute inset-0 z-2" aria-hidden="true">
                 {heroVideo ? (
                   <HeroCanvas
                     scrollProgress={progressForHero}
                     screenEvolutionProgress={progressForScreen}
-                    showIntroLabel={!prefersReduced && !isMobile}
+                    showIntroLabel={!prefersReduced}
                     videoElement={heroVideo}
                     liveConfig={heroLiveConfig}
                     renderActive={renderActive}
@@ -370,7 +325,7 @@ export default function HomeStorySection() {
             )}
 
             {showAct3Scene && (
-              <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+              <div className="pointer-events-none absolute inset-0 z-2" aria-hidden="true">
                 <Act3RevealCanvas
                   scrollProgress={progressForAct3}
                   renderActive={renderActive}
@@ -379,6 +334,20 @@ export default function HomeStorySection() {
               </div>
             )}
           </>
+        )}
+
+        {!prefersReduced && (
+          <div
+            className="home-story-glow pointer-events-none absolute inset-0 z-3"
+            aria-hidden="true"
+          />
+        )}
+
+        {!prefersReduced && (
+          <div
+            className="home-story-scrim pointer-events-none absolute inset-x-0 bottom-0 z-4 h-[68%] lg:hidden"
+            aria-hidden="true"
+          />
         )}
 
         {!prefersReduced && <EraLabel scrollYProgress={scrollYProgress} />}
@@ -398,53 +367,39 @@ export default function HomeStorySection() {
               : "home-story-copy relative z-10 mx-auto flex h-full w-full max-w-450 flex-col justify-end px-6 pt-32 pb-2 sm:px-10 sm:pb-6 lg:justify-center lg:px-16 lg:pb-0 2xl:px-24"
           }
         >
-          <div className="min-w-0 max-w-xl">
-            <p className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60 sm:text-xs">
-              <span className="inline-block h-px w-7 bg-white/45" />
-              Melbourne Web Design and Software Studio
-            </p>
+          <div className="min-w-0 max-w-2xl lg:max-w-3xl">
+            <p className="home-story-hero-kicker mb-6 sm:mb-7">{HERO_KICKER}</p>
 
-            <p className="font-display font-bold leading-[0.94] tracking-tight" aria-label={HEADLINE_WORDS.join(" ")}>
-              <span className="block min-h-[4.1lh]">
-                <span className="block whitespace-pre-line text-[clamp(2.15rem,6vw,4.8rem)] text-white lg:text-[clamp(2.35rem,4.1vw,4.4rem)]">
-                  {visibleHeadlineText}
-                  {!prefersReduced ? <span aria-hidden="true" className="agency-type-caret" /> : null}
-                </span>
-              </span>
-            </p>
-
-            <div className="mt-7 max-w-lg">
-              <p className="text-base leading-relaxed text-white/70 sm:text-lg">
-                Aperix Studio builds hand-coded custom websites and software for Melbourne businesses that want faster
-                pages, greater presence and better support.
-              </p>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/contact"
-                className="agency-button-primary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98] sm:px-7 sm:py-3.5"
-              >
-                Start your project
-              </Link>
-              <Link
-                href="/our-work"
-                className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98] sm:px-7 sm:py-3.5"
-              >
-                See proof of work
-              </Link>
-            </div>
-
-            <div className="mt-6 flex max-w-lg flex-wrap gap-2">
-              {TRUST_PILLS.map((pill) => (
-                <span
-                  key={pill}
-                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white/75 backdrop-blur-sm sm:px-4 sm:text-xs"
-                >
-                  {pill}
+            <h1 className="home-story-hero-title" aria-label={HERO_TITLE}>
+              {HERO_TITLE_LINES.map((line) => (
+                <span key={line} className="block">
+                  {line}
                 </span>
               ))}
+            </h1>
+
+            <p className="home-story-hero-body mt-7 max-w-lg text-base leading-relaxed text-white/65 sm:mt-8 sm:text-lg">
+              {HERO_BODY}
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3 sm:mt-8">
+              <HashLink
+                href="/#our-work"
+                className="agency-button-primary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98] sm:px-7 sm:py-3.5"
+              >
+                View work
+              </HashLink>
+              <Link
+                href="/contact"
+                className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98] sm:px-7 sm:py-3.5"
+              >
+                Say hello
+              </Link>
             </div>
+
+            <p className="home-story-hero-meta mt-7 text-[11px] font-medium uppercase tracking-[0.18em] text-sky-100/50 sm:text-xs">
+              {HERO_META.join(" · ")}
+            </p>
           </div>
         </motion.div>
 
@@ -488,17 +443,19 @@ export default function HomeStorySection() {
                 block={block}
                 scrollYProgress={staticZero}
                 prefersReduced
+                tone="dark"
               />
             ))}
           </div>
         ) : (
-          <div id="how-it-works" className="pointer-events-none absolute inset-0 z-[45]">
+          <div id="how-it-works" className="pointer-events-none absolute inset-0 z-45">
             {storyStepBlocks.map((block) => (
               <RocketTextBlock
                 key={block.id}
                 block={block}
                 scrollYProgress={scrollYProgress}
                 prefersReduced={false}
+                tone="dark"
               />
             ))}
           </div>

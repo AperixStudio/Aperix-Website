@@ -2,6 +2,10 @@
 
 import type { StoryPlaygroundAct } from "@/lib/dev/storyPlaygroundProgress";
 import { STORY_PLAYGROUND_ACT_LABELS } from "@/lib/dev/storyPlaygroundProgress";
+import {
+  MOBILE_PREVIEW_HEIGHT,
+  MOBILE_PREVIEW_WIDTH,
+} from "@/lib/dev/mobilePreviewViewport";
 
 type StoryPlaygroundToolbarProps = {
   act: StoryPlaygroundAct;
@@ -91,9 +95,9 @@ export default function StoryPlaygroundToolbar({
 
         {mobilePreview ? (
           <p className="font-mono text-[10px] leading-relaxed text-white/50">
-            Mobile preview — 390px wide, full viewport height (matches homepage).
-            {" "}
-            Export with <strong className="text-white/70">Copy mobile overrides</strong>.
+            Mobile preview — {MOBILE_PREVIEW_WIDTH}×{MOBILE_PREVIEW_HEIGHT}px phone frame (matches
+            homepage mobile aspect). Export with{" "}
+            <strong className="text-white/70">Copy mobile overrides</strong>.
           </p>
         ) : null}
       </div>

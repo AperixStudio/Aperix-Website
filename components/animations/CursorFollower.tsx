@@ -137,7 +137,7 @@ export default function CursorFollower() {
         style={{ x: xTrail, y: yTrail }}
         animate={{ opacity: visible && !pillRect ? 0.35 : 0 }}
         transition={{ duration: 0.2 }}
-        className="absolute h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-agency-ink/40"
+        className="absolute h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-sky-400/35"
       />
       <motion.div
         style={{ x: pillRect ? mainXSoft : x, y: pillRect ? mainYSoft : y }}
@@ -150,8 +150,8 @@ export default function CursorFollower() {
         className={cn(
           "absolute -translate-x-1/2 -translate-y-1/2 rounded-full",
           pillRect
-            ? "border border-agency-ink/45 bg-transparent"
-            : "bg-agency-ink",
+            ? "border border-sky-400/50 bg-sky-400/10"
+            : "bg-sky-400 shadow-[0_0_16px_rgba(56,189,248,0.55)]",
         )}
       />
     </div>

@@ -1,0 +1,39 @@
+.social-proof-bar {
+  background: #0c1017;
+}
+
+.social-proof-bar__frame {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(12, 18, 28, 0.45);
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.06),
+    0 12px 40px rgba(14, 165, 233, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.social-proof-bar__track {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 12, 20, 0.35);
+}
+
+.social-proof-bar__fade--left {
+  background: linear-gradient(to right, #0c1017 0%, transparent 100%);
+}
+
+.social-proof-bar__fade--right {
+  background: linear-gradient(to left, #0c1017 0%, transparent 100%);
+}
+
+.social-proof-bar__pill {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.social-proof-bar__pill--accent {
+  border-color: rgba(56, 189, 248, 0.22);
+  background: rgba(56, 189, 248, 0.06);
+  color: rgba(186, 230, 253, 0.82);
+}

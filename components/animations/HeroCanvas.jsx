@@ -22,6 +22,7 @@ function resolveConfig(liveConfig) {
  *   showIntroLabel?: boolean,
  *   className?: string,
  *   renderActive?: boolean,
+ *   simulateMobileViewport?: boolean,
  * }} props
  */
 export default function HeroCanvas({
@@ -32,6 +33,7 @@ export default function HeroCanvas({
   showIntroLabel = false,
   className = "",
   renderActive = true,
+  simulateMobileViewport = false,
 }) {
   const containerRef = useRef(null);
   const progressRef = useRef(scrollProgress?.get() ?? 0);
@@ -45,6 +47,7 @@ export default function HeroCanvas({
   const isDevPlaygroundRef = useRef(liveConfig != null);
   const renderActiveRef = useRef(renderActive);
   const showIntroLabelRef = useRef(showIntroLabel);
+  const simulateMobileViewportRef = useRef(simulateMobileViewport);
   const [status, setStatus] = useState("Loading model…");
 
   latestConfigRef.current = resolveConfig(liveConfig);
@@ -53,6 +56,7 @@ export default function HeroCanvas({
   isDevPlaygroundRef.current = liveConfig != null;
   renderActiveRef.current = renderActive;
   showIntroLabelRef.current = showIntroLabel;
+  simulateMobileViewportRef.current = simulateMobileViewport;
   videoRef.current = videoElement;
 
   useMotionValueEvent(scrollProgress, "change", (value) => {
@@ -90,6 +94,7 @@ export default function HeroCanvas({
       getVideoElement: () => videoRef.current,
       getShowIntroLabel: () => showIntroLabelRef.current,
       getIsDevPlayground: () => isDevPlaygroundRef.current,
+      getSimulateMobileViewport: () => simulateMobileViewportRef.current,
       getRenderActive: () => renderActiveRef.current,
       onStatusChange: setStatus,
     });

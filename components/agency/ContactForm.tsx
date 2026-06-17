@@ -52,7 +52,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   }
 
   return (
-    <p id={id} className="mt-1.5 text-xs text-red-600" role="alert">
+    <p id={id} className="contact-field-error mt-1.5 text-xs text-red-600" role="alert">
       {message}
     </p>
   );
@@ -183,10 +183,10 @@ export default function AgencyContactForm() {
   }
 
   const baseInput =
-    "w-full rounded-xl border border-agency-border bg-agency-surface2 px-4 py-3 text-sm text-agency-text outline-none transition-colors focus:border-agency-accent focus:ring-2 focus:ring-agency-accent/20 placeholder:text-agency-muted";
+    "w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors focus:ring-2";
 
   function getFieldClass(name: keyof FormState) {
-    return `${baseInput} ${errors[name] ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}`;
+    return `${baseInput} ${errors[name] ? "border-red-400/70 focus:border-red-400 focus:ring-red-400/20" : ""}`;
   }
 
   if (submitted) {
@@ -197,7 +197,7 @@ export default function AgencyContactForm() {
           animate={{ opacity: 1, y: 0 }}
           className="flex h-full flex-col items-center justify-center px-7 py-12 text-center lg:px-8 lg:py-14"
         >
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-agency-accent/10">
+          <div className="contact-success-icon mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-agency-accent/10">
             <svg
               className="h-7 w-7 text-agency-accent"
               fill="none"
@@ -209,13 +209,15 @@ export default function AgencyContactForm() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="font-display text-2xl font-bold text-agency-text">
+          <h3 className="contact-success-title font-display text-2xl font-bold text-agency-text">
             Thanks, {submittedName}!
           </h3>
-          <p className="mt-2 text-base text-agency-muted">
+          <p className="contact-success-copy mt-2 text-base text-agency-muted">
             We will review your details and be in touch within 24 hours.
           </p>
-          <p className="mt-6 text-xs text-agency-muted">Your enquiry has been delivered securely.</p>
+          <p className="contact-success-meta mt-6 text-xs text-agency-muted">
+            Your enquiry has been delivered securely.
+          </p>
         </motion.div>
         <ContactToast toast={toast} onDismiss={() => setToast(null)} />
       </>
@@ -248,7 +250,7 @@ export default function AgencyContactForm() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor="ac-name" className="mb-1.5 block text-sm font-medium text-agency-text">
+          <label htmlFor="ac-name" className="mb-1.5 block text-sm font-medium">
             Full Name *
           </label>
           <input
@@ -265,7 +267,7 @@ export default function AgencyContactForm() {
           <FieldError id="err-name" message={errors.name} />
         </div>
         <div>
-          <label htmlFor="ac-email" className="mb-1.5 block text-sm font-medium text-agency-text">
+          <label htmlFor="ac-email" className="mb-1.5 block text-sm font-medium">
             Email *
           </label>
           <input
@@ -285,9 +287,9 @@ export default function AgencyContactForm() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor="ac-phone" className="mb-1.5 block text-sm font-medium text-agency-text">
+          <label htmlFor="ac-phone" className="mb-1.5 block text-sm font-medium">
             Phone{" "}
-            <span className="text-agency-muted">(optional)</span>
+            <span className="opacity-60">(optional)</span>
           </label>
           <input
             id="ac-phone"
@@ -302,7 +304,7 @@ export default function AgencyContactForm() {
           <FieldError id="err-phone" message={errors.phone} />
         </div>
         <div>
-          <label htmlFor="ac-biz" className="mb-1.5 block text-sm font-medium text-agency-text">
+          <label htmlFor="ac-biz" className="mb-1.5 block text-sm font-medium">
             Business Name *
           </label>
           <input
@@ -321,7 +323,7 @@ export default function AgencyContactForm() {
       </div>
 
       <div>
-        <label htmlFor="ac-type" className="mb-1.5 block text-sm font-medium text-agency-text">
+        <label htmlFor="ac-type" className="mb-1.5 block text-sm font-medium">
           Business Type *
         </label>
         <select
@@ -346,7 +348,7 @@ export default function AgencyContactForm() {
 
 
       <div>
-        <label htmlFor="ac-desc" className="mb-1.5 block text-sm font-medium text-agency-text">
+        <label htmlFor="ac-desc" className="mb-1.5 block text-sm font-medium">
           Tell us about your business *
         </label>
         <textarea
@@ -365,17 +367,15 @@ export default function AgencyContactForm() {
 
       {/* Contact method */}
       <fieldset>
-        <legend className="mb-2 text-sm font-medium text-agency-text">
+        <legend className="mb-2 text-sm font-medium">
           Preferred contact
         </legend>
         <div className="flex gap-3">
           {(["phone", "email"] as const).map((opt) => (
             <label
               key={opt}
-              className={`flex cursor-pointer items-center gap-2 rounded-full border px-5 py-2 text-sm transition-colors ${
-                form.contactMethod === opt
-                  ? "border-agency-accent bg-agency-accent/10 text-agency-text"
-                  : "border-agency-border text-agency-muted hover:border-agency-accent/40"
+              className={`contact-method-pill flex cursor-pointer items-center gap-2 rounded-full border px-5 py-2 text-sm transition-colors ${
+                form.contactMethod === opt ? "contact-method-pill--active" : ""
               }`}
             >
               <input
@@ -393,7 +393,7 @@ export default function AgencyContactForm() {
       </fieldset>
 
       {submitError ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700" role="alert">
+        <div className="contact-error-banner rounded-2xl border px-4 py-2 text-sm" role="alert">
           <p>{submitError}</p>
         </div>
       ) : null}
@@ -403,7 +403,7 @@ export default function AgencyContactForm() {
         disabled={submitting}
         whileTap={prefersReduced ? undefined : { scale: 0.97 }}
         whileHover={prefersReduced ? undefined : { opacity: 0.88 }}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-agency-accent px-6 py-3 text-sm font-semibold text-agency-bg transition-colors disabled:opacity-60"
+        className="contact-submit flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-[filter] disabled:opacity-60"
       >
         {submitting ? (
           <>

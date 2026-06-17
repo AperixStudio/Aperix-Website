@@ -7,8 +7,10 @@ import { useMobileViewport } from "@/lib/useMobileViewport";
 /** Fixed width — all cards match regardless of placement anchor */
 const CARD_WIDTH_CLASS = "w-[min(22rem,calc(100vw-3rem))]";
 
-const CARD_SURFACE_CLASS =
+const CARD_SURFACE_LIGHT =
   "rounded-xl border border-agency-border/80 bg-agency-surface/85 p-5 shadow-[0_16px_48px_rgba(15,17,20,0.2)] backdrop-blur-md lg:p-6";
+
+const CARD_SURFACE_DARK = "rocket-step-card rounded-xl p-5 lg:p-6";
 
 const ANCHOR_TRANSLATE: Record<RocketTextAnchor, string> = {
   "top-left": "translate(0, 0)",
@@ -44,6 +46,7 @@ type RocketTextBlockProps = {
   block: RocketTextBlockConfig;
   scrollYProgress: MotionValue<number>;
   prefersReduced: boolean;
+  tone?: "light" | "dark";
 };
 
 function fadeSegment(progress: number, start: number, end: number) {
@@ -57,10 +60,24 @@ export default function RocketTextBlock({
   block,
   scrollYProgress,
   prefersReduced,
+  tone = "light",
 }: RocketTextBlockProps) {
   const { isMobile } = useMobileViewport();
   const { in: fadeIn, holdStart, holdEnd, out: fadeOut } = block.progress;
   const { x: placementX, y: placementY, anchor = "top-left" } = resolvePlacement(block.placement, isMobile);
+  const surfaceClass = tone === "dark" ? CARD_SURFACE_DARK : CARD_SURFACE_LIGHT;
+  const numberClass =
+    tone === "dark"
+      ? "font-display text-4xl font-bold leading-none text-white/90 lg:text-5xl"
+      : "font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl";
+  const titleClass =
+    tone === "dark"
+      ? "mt-4 font-display text-xl font-semibold text-white lg:text-2xl"
+      : "mt-4 font-display text-xl font-semibold text-agency-ink lg:text-2xl";
+  const bodyClass =
+    tone === "dark"
+      ? "mt-3 text-sm leading-relaxed text-slate-300/75 lg:text-base"
+      : "mt-3 text-sm leading-relaxed text-agency-muted lg:text-base";
 
   const opacity = useTransform(scrollYProgress, (progress) => {
     if (progress < fadeIn || progress > fadeOut) {
@@ -90,14 +107,10 @@ export default function RocketTextBlock({
   if (prefersReduced) {
     return (
       <article className={`relative ${CARD_WIDTH_CLASS}`} aria-label={`${block.number}. ${block.title}`}>
-        <div className={CARD_SURFACE_CLASS}>
-          <p className="font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl">
-            {block.number}
-          </p>
-          <h3 className="mt-4 font-display text-xl font-semibold text-agency-ink lg:text-2xl">
-            {block.title}
-          </h3>
-          <p className="mt-3 text-sm leading-relaxed text-agency-muted lg:text-base">{block.body}</p>
+        <div className={surfaceClass}>
+          <p className={numberClass}>{block.number}</p>
+          <h3 className={titleClass}>{block.title}</h3>
+          <p className={bodyClass}>{block.body}</p>
         </div>
       </article>
     );
@@ -110,14 +123,10 @@ export default function RocketTextBlock({
       aria-label={`${block.number}. ${block.title}`}
     >
       <motion.div style={{ opacity, y: motionY }}>
-        <div className={CARD_SURFACE_CLASS}>
-          <p className="font-display text-4xl font-bold leading-none text-agency-ink lg:text-5xl">
-            {block.number}
-          </p>
-          <h3 className="mt-4 font-display text-xl font-semibold text-agency-ink lg:text-2xl">
-            {block.title}
-          </h3>
-          <p className="mt-3 text-sm leading-relaxed text-agency-muted lg:text-base">{block.body}</p>
+        <div className={surfaceClass}>
+          <p className={numberClass}>{block.number}</p>
+          <h3 className={titleClass}>{block.title}</h3>
+          <p className={bodyClass}>{block.body}</p>
         </div>
       </motion.div>
     </div>
