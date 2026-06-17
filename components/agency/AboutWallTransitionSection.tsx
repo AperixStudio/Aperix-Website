@@ -12,6 +12,7 @@ import {
 import UnicornScene from "unicornstudio-react/next";
 import {
   ABOUT_HERO_IMAGE_SRC,
+  ABOUT_PANEL2_UNICORN_PROJECT_ID,
   ABOUT_UNICORN_PROJECT_ID,
   ABOUT_UNICORN_RENDER,
   ABOUT_UNICORN_SDK_URL,
@@ -67,12 +68,43 @@ function AboutPanelUnicornField() {
   );
 }
 
+function AboutPanel2UnicornField() {
+  const { isMobile, ready } = useMobileViewport();
+
+  if (!ready) {
+    return null;
+  }
+
+  const renderQuality = isMobile ? ABOUT_UNICORN_RENDER.mobile : ABOUT_UNICORN_RENDER.desktop;
+
+  return (
+    <div className="about-wall-panel__unicorn-field" aria-hidden="true">
+      <UnicornScene
+        projectId={ABOUT_PANEL2_UNICORN_PROJECT_ID}
+        sdkUrl={ABOUT_UNICORN_SDK_URL}
+        width="100%"
+        height="100%"
+        scale={renderQuality.scale}
+        dpi={renderQuality.dpi}
+        fps={renderQuality.fps}
+        lazyLoad
+        production
+        altText="Decorative studio animation"
+        ariaLabel="Decorative studio animation"
+        className="about-wall-panel__unicorn-scene"
+      />
+    </div>
+  );
+}
+
 function TransitionPanel({
   panel,
   showUnicorn = false,
+  showUnicorn2 = false,
 }: {
   panel: (typeof TRANSITION_PANELS)[number];
   showUnicorn?: boolean;
+  showUnicorn2?: boolean;
 }) {
   return (
     <article
@@ -80,6 +112,7 @@ function TransitionPanel({
       aria-label={panel.title}
     >
       {showUnicorn ? <AboutPanelUnicornField /> : null}
+      {showUnicorn2 ? <AboutPanel2UnicornField /> : null}
       <div className="about-wall-panel__inner">
         <p className="about-wall-panel__index">Panel {panel.index}</p>
         <h2 className="about-wall-panel__title">{panel.title}</h2>
@@ -189,6 +222,7 @@ export default function AboutWallTransitionSection() {
               key={panel.index}
               panel={panel}
               showUnicorn={index === 0}
+              showUnicorn2={index === 1}
             />
           ))}
 

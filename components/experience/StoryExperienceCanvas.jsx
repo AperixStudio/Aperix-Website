@@ -19,6 +19,7 @@ import { resolveAct3RevealConfig } from "@/lib/resolveAct3RevealConfig";
 import { resolveExperienceTier } from "@/lib/experience/mobileTier";
 import { getRendererPixelRatio, shouldRenderMobileHeroFrame } from "@/lib/webglQuality";
 import { HOME_STORY_CLEAR_COLOR } from "@/lib/homeStoryTheme";
+import { expectScene } from "@/lib/storyBus";
 import "@/components/animations/HeroCanvas.css";
 import "@/components/animations/Act3RevealCanvas.css";
 import "./StoryExperience.css";
@@ -91,6 +92,8 @@ export default function StoryExperienceCanvas({
       return undefined;
     }
 
+    expectScene();
+
     let disposed = false;
     let animationId = 0;
     /** @type {ReturnType<typeof createPcStoryScene> | null} */
@@ -110,7 +113,7 @@ export default function StoryExperienceCanvas({
     });
     renderer.setPixelRatio(getRendererPixelRatio());
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setClearColor(HOME_STORY_CLEAR_COLOR, 1);
+    renderer.setClearColor(HOME_STORY_CLEAR_COLOR, 0);
     renderer.domElement.className = "story-experience__canvas";
     canvasHost.appendChild(renderer.domElement);
 

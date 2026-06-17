@@ -192,6 +192,16 @@ export default function HomeStorySection() {
     [24, 0],
   );
   const scrollCueOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
+  const frostyBgOpacity = useTransform(
+    scrollYProgress,
+    [ACT3_START_GLOBAL - 0.05, ACT3_START_GLOBAL],
+    [1, 0],
+  );
+  const darkBgOpacity = useTransform(
+    scrollYProgress,
+    [ACT3_START_GLOBAL - 0.05, ACT3_START_GLOBAL],
+    [0, 1],
+  );
   const blueprintOpacity = useTransform(
     scrollYProgress,
     [
@@ -270,16 +280,33 @@ export default function HomeStorySection() {
         />
 
         {!prefersReduced && (
-          <>
-            <div
-              className="home-story-atmosphere pointer-events-none absolute inset-0 z-0"
-              aria-hidden="true"
-            />
-            <div
-              className="home-story-noise pointer-events-none absolute inset-0 z-0"
-              aria-hidden="true"
-            />
-          </>
+          <motion.video
+            style={{ opacity: frostyBgOpacity }}
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+            src="/frosty_gradient_remix_frosty_gradient.webm"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        )}
+
+        {!prefersReduced && (
+          <div
+            className="home-story-noise pointer-events-none absolute inset-0 z-0"
+            aria-hidden="true"
+          />
+        )}
+
+        {!prefersReduced && (
+          <motion.div
+            style={{ opacity: darkBgOpacity, backgroundColor: "#0c1017" }}
+            className="pointer-events-none absolute inset-0 z-1"
+            aria-hidden="true"
+          />
         )}
 
         {!prefersReduced && (
@@ -336,12 +363,6 @@ export default function HomeStorySection() {
           </>
         )}
 
-        {!prefersReduced && (
-          <div
-            className="home-story-glow pointer-events-none absolute inset-0 z-3"
-            aria-hidden="true"
-          />
-        )}
 
         {!prefersReduced && (
           <div
