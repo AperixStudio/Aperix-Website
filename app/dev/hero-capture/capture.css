@@ -1,0 +1,37 @@
+.hero-capture-host {
+  position: fixed;
+  inset: 0;
+  background: #0c1017;
+  overflow: hidden;
+}
+
+.hero-capture-host--mobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.hero-capture-host--mobile > .hero-canvas {
+  aspect-ratio: 390 / 844;
+  width: min(390px, 100vw);
+  height: auto;
+  max-height: 100vh;
+}
+
+.hero-capture-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
+.hero-capture-status--error {
+  color: #fca5a5;
+}

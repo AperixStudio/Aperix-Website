@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { StoryPlaygroundAct } from "@/lib/dev/storyPlaygroundProgress";
 import { STORY_PLAYGROUND_ACT_LABELS } from "@/lib/dev/storyPlaygroundProgress";
 import {
@@ -17,6 +18,11 @@ type StoryPlaygroundToolbarProps = {
   stickyScroll?: boolean;
   onStickyScrollChange?: (value: boolean) => void;
   showStickyToggle?: boolean;
+  /** Leva playground (default) vs Theatre.js editor */
+  editor?: "leva" | "theatre";
+  theatreReady?: boolean;
+  onShowTheatrePanel?: () => void;
+  onExportTheatre?: () => void;
 };
 
 export default function StoryPlaygroundToolbar({
@@ -29,12 +35,18 @@ export default function StoryPlaygroundToolbar({
   stickyScroll = false,
   onStickyScrollChange,
   showStickyToggle = false,
+  editor = "leva",
+  theatreReady = false,
+  onShowTheatrePanel,
+  onExportTheatre,
 }: StoryPlaygroundToolbarProps) {
+  const acts: StoryPlaygroundAct[] = editor === "theatre" ? [1, 2] : [1, 2, 3];
+
   return (
     <div className="dev-story-toolbar">
       <div className="mx-auto flex max-w-3xl flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          {([1, 2, 3] as StoryPlaygroundAct[]).map((value) => (
+          {acts.map((value) => (
             <button
               key={value}
               type="button"
@@ -48,7 +60,46 @@ export default function StoryPlaygroundToolbar({
               Act {value}
             </button>
           ))}
-          <label className="ml-auto flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80">
+
+          {editor === "theatre" ? (
+            <>
+              <Link
+                href="/dev/hero-canvas"
+                className="ml-auto rounded-full bg-white/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80 hover:bg-white/20"
+              >
+                Leva playground
+              </Link>
+              <button
+                type="button"
+                onClick={onShowTheatrePanel}
+                disabled={!theatreReady}
+                className="rounded-full bg-violet-500/30 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-violet-100 hover:bg-violet-500/40 disabled:opacity-40"
+              >
+                Show timeline
+              </button>
+              <button
+                type="button"
+                onClick={onExportTheatre}
+                disabled={!theatreReady}
+                className="rounded-full bg-white/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80 hover:bg-white/20 disabled:opacity-40"
+              >
+                Copy state
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/dev/hero-theatre"
+              className="ml-auto rounded-full bg-violet-500/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-violet-200 hover:bg-violet-500/30"
+            >
+              Theatre.js
+            </Link>
+          )}
+
+          <label
+            className={`flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80 ${
+              editor === "leva" ? "" : ""
+            }`}
+          >
             <input
               type="checkbox"
               checked={mobilePreview}
@@ -59,6 +110,15 @@ export default function StoryPlaygroundToolbar({
         </div>
 
         <p className="font-mono text-xs text-white/70">{STORY_PLAYGROUND_ACT_LABELS[act]}</p>
+
+        {editor === "theatre" ? (
+          <p className="font-mono text-[10px] leading-relaxed text-white/50">
+            Theatre timeline sits in the <strong className="text-white/70">bottom ~40%</strong> of the
+            window. Expand <strong className="text-white/70">Aperix Hero → Act 1/Act 2</strong> in the
+            left outline, then keyframe Model / Camera / Screen. If you don&apos;t see it, click{" "}
+            <strong className="text-white/70">Show timeline</strong>.
+          </p>
+        ) : null}
 
         {showStickyToggle && onStickyScrollChange ? (
           <label className="flex items-center gap-2 font-mono text-[11px] text-white/70">
@@ -89,7 +149,7 @@ export default function StoryPlaygroundToolbar({
               className="w-full"
             />
 
-            {act === 2 ? (
+            {editor === "leva" && act === 2 ? (
               <p className="font-mono text-[10px] leading-relaxed text-white/50">
                 Scrub drives the PC slide + monitor evolution together. Tune endpoints with Leva{" "}
                 <strong className="text-white/70">Model start (Act 2)</strong> /{" "}
@@ -105,7 +165,10 @@ export default function StoryPlaygroundToolbar({
           <p className="font-mono text-[10px] leading-relaxed text-white/50">
             Mobile preview — {MOBILE_PREVIEW_WIDTH}×{MOBILE_PREVIEW_HEIGHT}px phone frame (matches
             homepage mobile aspect). Export with{" "}
-            <strong className="text-white/70">Copy mobile overrides</strong>.
+            <strong className="text-white/70">
+              {editor === "theatre" ? "Copy state" : "Copy mobile overrides"}
+            </strong>
+            .
           </p>
         ) : null}
       </div>

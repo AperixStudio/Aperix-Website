@@ -20,11 +20,13 @@ function resolveConfig(liveConfig) {
  *   act2SlideProgress?: import("framer-motion").MotionValue<number> | null,
  *   screenEvolutionProgress?: import("framer-motion").MotionValue<number> | null,
  *   liveConfig?: Record<string, unknown> | null,
+ *   getTheatreRig?: () => import("@/lib/dev/heroTheatre/types").HeroTheatreRig | null,
  *   videoElement?: HTMLVideoElement | null,
  *   showIntroLabel?: boolean,
  *   className?: string,
  *   renderActive?: boolean,
  *   simulateMobileViewport?: boolean,
+ *   onSceneStatusChange?: (message: string | null) => void,
  * }} props
  */
 export default function HeroCanvas({
@@ -33,11 +35,13 @@ export default function HeroCanvas({
   act2SlideProgress = null,
   screenEvolutionProgress = null,
   liveConfig,
+  getTheatreRig = null,
   videoElement = null,
   showIntroLabel = false,
   className = "",
   renderActive = true,
   simulateMobileViewport = false,
+  onSceneStatusChange = null,
 }) {
   const containerRef = useRef(null);
   const progressRef = useRef(scrollProgress?.get() ?? 0);
@@ -46,6 +50,7 @@ export default function HeroCanvas({
   const evolutionProgressRef = useRef(0);
   const fallbackEvolutionProgress = useMotionValue(0);
   const videoRef = useRef(videoElement);
+  const theatreRigRef = useRef(getTheatreRig);
   const tryAttachVideoRef = useRef(() => {});
   const latestConfigRef = useRef(resolveConfig(liveConfig));
   const scrollProgressRef = useRef(scrollProgress);
@@ -54,7 +59,13 @@ export default function HeroCanvas({
   const renderActiveRef = useRef(renderActive);
   const showIntroLabelRef = useRef(showIntroLabel);
   const simulateMobileViewportRef = useRef(simulateMobileViewport);
+  const onSceneStatusChangeRef = useRef(onSceneStatusChange);
   const [status, setStatus] = useState("Loading model…");
+
+  const handleStatusChange = (message) => {
+    setStatus(message);
+    onSceneStatusChangeRef.current?.(message);
+  };
 
   latestConfigRef.current = resolveConfig(liveConfig);
   scrollProgressRef.current = scrollProgress;
@@ -63,6 +74,7 @@ export default function HeroCanvas({
   renderActiveRef.current = renderActive;
   showIntroLabelRef.current = showIntroLabel;
   simulateMobileViewportRef.current = simulateMobileViewport;
+  onSceneStatusChangeRef.current = onSceneStatusChange;
   videoRef.current = videoElement;
 
   useMotionValueEvent(scrollProgress, "change", (value) => {
@@ -108,6 +120,8 @@ export default function HeroCanvas({
     }
   }, [scrollProgress, modelProgressSource, act2SlideProgress, screenEvolutionProgress]);
 
+  theatreRigRef.current = getTheatreRig;
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) {
@@ -121,12 +135,13 @@ export default function HeroCanvas({
       getAct2SlideProgress: () => act2SlideRef.current,
       getScreenEvolutionProgress: () => evolutionProgressRef.current,
       getLiveConfig: () => latestConfigRef.current,
+      getTheatreRig: () => (theatreRigRef.current ? theatreRigRef.current() : null),
       getVideoElement: () => videoRef.current,
       getShowIntroLabel: () => showIntroLabelRef.current,
       getIsDevPlayground: () => isDevPlaygroundRef.current,
       getSimulateMobileViewport: () => simulateMobileViewportRef.current,
       getRenderActive: () => renderActiveRef.current,
-      onStatusChange: setStatus,
+      onStatusChange: handleStatusChange,
     });
 
     tryAttachVideoRef.current = scene.tryAttachVideo;

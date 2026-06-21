@@ -12,8 +12,8 @@ import {
 import UnicornScene from "unicornstudio-react/next";
 import {
   ABOUT_HERO_IMAGE_SRC,
+  ABOUT_PANEL1_UNICORN_JSON,
   ABOUT_PANEL2_UNICORN_PROJECT_ID,
-  ABOUT_UNICORN_PROJECT_ID,
   ABOUT_UNICORN_RENDER,
   ABOUT_UNICORN_SDK_URL,
 } from "@/lib/aboutContent";
@@ -51,7 +51,7 @@ function AboutPanelUnicornField() {
   return (
     <div className="about-wall-panel__unicorn-field" aria-hidden="true">
       <UnicornScene
-        projectId={ABOUT_UNICORN_PROJECT_ID}
+        jsonFilePath={ABOUT_PANEL1_UNICORN_JSON}
         sdkUrl={ABOUT_UNICORN_SDK_URL}
         width="100%"
         height="100%"
@@ -59,7 +59,6 @@ function AboutPanelUnicornField() {
         dpi={renderQuality.dpi}
         fps={renderQuality.fps}
         lazyLoad
-        production
         altText="Decorative studio animation"
         ariaLabel="Decorative studio animation"
         className="about-wall-panel__unicorn-scene"
