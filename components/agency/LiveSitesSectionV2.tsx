@@ -37,6 +37,10 @@ type TilePoint = {
   zIndex: number;
 };
 
+function mod(n: number, m: number) {
+  return ((n % m) + m) % m;
+}
+
 function easeInOutSine(progress: number) {
   return -(Math.cos(Math.PI * progress) - 1) / 2;
 }
@@ -59,12 +63,12 @@ function createTouchSlots(count: number): TilePoint[] {
 
     return {
       x: 50 + centerOffset * overlapStep,
-      y: 55 + distanceFromFront * 0.45,
-      z: -distanceFromFront * 5,
+      y: 55 + distanceFromFront * 0.65,
+      z: -distanceFromFront * 8,
       rotateX: 0,
       rotateY: 0,
-      scale: 1 - distanceFromFront * 0.03,
-      opacity: 1 - distanceFromFront * 0.1,
+      scale: 1 - distanceFromFront * 0.045,
+      opacity: 1 - distanceFromFront * 0.14,
       zIndex: 40 + index,
     };
   });
@@ -119,8 +123,8 @@ function getTilePoint(
   flat = false,
 ): TilePoint {
   const slots = flat ? createTouchSlots(count) : createSlots(count);
-  const fromSlot = (tileIndex + cycleIndex) % count;
-  const toSlot = (fromSlot + 1) % count;
+  const fromSlot = mod(tileIndex + cycleIndex, count);
+  const toSlot = mod(fromSlot + 1, count);
   const moveProgress = easeInOutSine(Math.min(1, cycleProgress));
   const from = slots[fromSlot] ?? slots[0];
   const to = slots[toSlot] ?? slots[0];
@@ -322,7 +326,7 @@ function LiveSitesCarouselTile({
         </header>
 
         <div className="live-sites-v2__tile-preview">
-          {hasPreviewVideo && !touchMode ? (
+          {hasPreviewVideo ? (
             <video
               ref={videoRef}
               src={site.previewVideo}
@@ -330,13 +334,9 @@ function LiveSitesCarouselTile({
               muted
               loop
               playsInline
-              preload="metadata"
+              preload={touchMode && !isFrontTile ? "none" : "metadata"}
               aria-hidden="true"
             />
-          ) : hasPreviewVideo && touchMode ? (
-            <div className="live-sites-v2__tile-preview-placeholder live-sites-v2__tile-preview-placeholder--touch" aria-hidden="true">
-              {site.name}
-            </div>
           ) : hasPreviewImage ? (
             <Image
               src={site.preview}
@@ -376,7 +376,7 @@ type CarouselAnimState = {
   timeInCycle: number;
 };
 
-const TOUCH_STEP_TRANSITION_MS = 420;
+const TOUCH_STEP_TRANSITION_MS = 480;
 
 export default function LiveSitesSectionV2() {
   const prefersReducedMotion = useReducedMotion();
@@ -401,9 +401,10 @@ export default function LiveSitesSectionV2() {
     timeInCycle: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
-  const [isStepping, setIsStepping] = useState(false);
+  const [touchStepProgress, setTouchStepProgress] = useState<number | null>(null);
   const [hoveredTileIndex, setHoveredTileIndex] = useState<number | null>(null);
-  const stepTimerRef = useRef<number | null>(null);
+  const touchStepFrameRef = useRef<number | null>(null);
+  const touchStepAnimatingRef = useRef(false);
 
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
@@ -424,29 +425,66 @@ export default function LiveSitesSectionV2() {
         return;
       }
 
-      if (touchCarousel) {
-        setIsStepping(true);
-        if (stepTimerRef.current !== null) {
-          window.clearTimeout(stepTimerRef.current);
-        }
-        stepTimerRef.current = window.setTimeout(() => {
-          setIsStepping(false);
-          stepTimerRef.current = null;
-        }, TOUCH_STEP_TRANSITION_MS);
+      if (!touchCarousel) {
+        setAnimState((current) => ({
+          cycleIndex: current.cycleIndex + direction,
+          timeInCycle: 0,
+        }));
+        return;
       }
 
-      setAnimState((current) => ({
-        cycleIndex: current.cycleIndex + direction,
-        timeInCycle: 0,
-      }));
+      if (touchStepAnimatingRef.current) {
+        return;
+      }
+
+      touchStepAnimatingRef.current = true;
+      const fromProgress = direction === -1 ? 1 : 0;
+      const toProgress = direction === -1 ? 0 : 1;
+
+      if (direction === -1) {
+        setAnimState((current) => ({
+          cycleIndex: current.cycleIndex - 1,
+          timeInCycle: 0,
+        }));
+      }
+
+      setTouchStepProgress(fromProgress);
+
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const elapsed = now - start;
+        const t = Math.min(1, elapsed / TOUCH_STEP_TRANSITION_MS);
+        const eased = easeInOutSine(t);
+        const progress = fromProgress + (toProgress - fromProgress) * eased;
+        setTouchStepProgress(progress);
+
+        if (t < 1) {
+          touchStepFrameRef.current = window.requestAnimationFrame(tick);
+          return;
+        }
+
+        if (direction === 1) {
+          setAnimState((current) => ({
+            cycleIndex: current.cycleIndex + 1,
+            timeInCycle: 0,
+          }));
+        }
+
+        setTouchStepProgress(null);
+        touchStepAnimatingRef.current = false;
+        touchStepFrameRef.current = null;
+      };
+
+      touchStepFrameRef.current = window.requestAnimationFrame(tick);
     },
     [tiles.length, touchCarousel],
   );
 
   useEffect(() => {
     return () => {
-      if (stepTimerRef.current !== null) {
-        window.clearTimeout(stepTimerRef.current);
+      if (touchStepFrameRef.current !== null) {
+        window.cancelAnimationFrame(touchStepFrameRef.current);
       }
     };
   }, []);
@@ -484,8 +522,11 @@ export default function LiveSitesSectionV2() {
   }, [isPaused]);
 
   const { cycleIndex, timeInCycle } = animState;
-  const cycleProgress =
-    touchCarousel || prefersReducedMotion ? 0 : getCycleProgress(timeInCycle);
+  const cycleProgress = touchCarousel
+    ? touchStepProgress ?? 0
+    : prefersReducedMotion
+      ? 0
+      : getCycleProgress(timeInCycle);
   const frontTileIndex = getFrontTileIndex(
     tiles.length,
     cycleIndex,
@@ -608,7 +649,7 @@ export default function LiveSitesSectionV2() {
     <section
       ref={sectionRef}
       id="our-work"
-      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}${isStepping ? " live-sites-v2--stepping" : ""}`}
+      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}${touchStepProgress !== null ? " live-sites-v2--stepping" : ""}`}
       aria-label="Our work"
     >
       <div className="live-sites-v2__inner">

@@ -137,9 +137,7 @@
 }
 
 .live-sites-v2--touch.live-sites-v2--stepping .live-sites-v2__tile {
-  transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 280ms ease;
+  transition: none;
 }
 
 .live-sites-v2--touch .live-sites-v2__carousel {
@@ -167,16 +165,6 @@
     inset 3px 0 0 rgba(255, 255, 255, 0.16),
     inset 7px 0 0 rgba(0, 0, 0, 0.32),
     inset 0 3px 0 rgba(255, 255, 255, 0.38);
-}
-
-.live-sites-v2__tile-preview-placeholder--touch {
-  padding: 0.75rem;
-  text-align: center;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.35;
 }
 
 .live-sites-v2__carousel--spotlight-active .live-sites-v2__tile:not(.live-sites-v2__tile--spotlight) {
