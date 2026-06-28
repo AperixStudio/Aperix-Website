@@ -45,6 +45,31 @@ function lerp(start: number, end: number, progress: number) {
   return start + (end - start) * progress;
 }
 
+function createTouchSlots(count: number): TilePoint[] {
+  if (count <= 1) {
+    return [{ x: 50, y: 55, z: 0, rotateX: 0, rotateY: 0, scale: 1, opacity: 1, zIndex: 10 }];
+  }
+
+  const center = (count - 1) / 2;
+  const overlapStep = Math.max(4, Math.min(6, 28 / count));
+
+  return Array.from({ length: count }, (_, index) => {
+    const distanceFromFront = count - 1 - index;
+    const centerOffset = index - center;
+
+    return {
+      x: 50 + centerOffset * overlapStep,
+      y: 55 + distanceFromFront * 0.45,
+      z: -distanceFromFront * 5,
+      rotateX: 0,
+      rotateY: 0,
+      scale: 1 - distanceFromFront * 0.03,
+      opacity: 1 - distanceFromFront * 0.1,
+      zIndex: 40 + index,
+    };
+  });
+}
+
 function createSlots(count: number): TilePoint[] {
   if (count <= 1) {
     return [{ x: 58, y: 55, z: 0, rotateX: 7, rotateY: 25, scale: 1, opacity: 1, zIndex: 10 }];
@@ -91,8 +116,9 @@ function getTilePoint(
   count: number,
   cycleIndex: number,
   cycleProgress: number,
+  flat = false,
 ): TilePoint {
-  const slots = createSlots(count);
+  const slots = flat ? createTouchSlots(count) : createSlots(count);
   const fromSlot = (tileIndex + cycleIndex) % count;
   const toSlot = (fromSlot + 1) % count;
   const moveProgress = easeInOutSine(Math.min(1, cycleProgress));
@@ -104,6 +130,19 @@ function getTilePoint(
   }
 
   if (fromSlot === count - 1 && toSlot === 0) {
+    if (flat) {
+      return {
+        x: lerp(from.x, to.x, moveProgress),
+        y: lerp(from.y, to.y, moveProgress),
+        z: lerp(from.z, to.z, moveProgress),
+        rotateX: 0,
+        rotateY: 0,
+        scale: lerp(from.scale, to.scale, moveProgress),
+        opacity: lerp(from.opacity, to.opacity, moveProgress),
+        zIndex: Math.round(lerp(from.zIndex, to.zIndex, moveProgress)),
+      };
+    }
+
     return getWrappedPoint(from, to, moveProgress);
   }
 
@@ -123,7 +162,12 @@ function getCycleProgress(timeInCycleMs: number) {
   return timeInCycleMs / LIVE_SITES_CAROUSEL_MOVE_MS;
 }
 
-function getFrontTileIndex(tileCount: number, cycleIndex: number, cycleProgress: number) {
+function getFrontTileIndex(
+  tileCount: number,
+  cycleIndex: number,
+  cycleProgress: number,
+  flat = false,
+) {
   if (tileCount <= 1) {
     return 0;
   }
@@ -132,7 +176,7 @@ function getFrontTileIndex(tileCount: number, cycleIndex: number, cycleProgress:
   let maxZ = Number.NEGATIVE_INFINITY;
 
   for (let index = 0; index < tileCount; index += 1) {
-    const point = getTilePoint(index, tileCount, cycleIndex, cycleProgress);
+    const point = getTilePoint(index, tileCount, cycleIndex, cycleProgress, flat);
     if (point.zIndex > maxZ) {
       maxZ = point.zIndex;
       frontIndex = index;
@@ -151,6 +195,7 @@ function findHoveredTileIndex(
   carouselElement: HTMLDivElement,
   tileWidth: number,
   tileHeight: number,
+  flat = false,
 ): number | null {
   const carouselRect = carouselElement.getBoundingClientRect();
   const halfWidth = tileWidth * 0.44;
@@ -160,7 +205,7 @@ function findHoveredTileIndex(
   const candidates: Candidate[] = [];
 
   for (let index = 0; index < tileCount; index += 1) {
-    const point = getTilePoint(index, tileCount, cycleIndex, cycleProgress);
+    const point = getTilePoint(index, tileCount, cycleIndex, cycleProgress, flat);
     const centerX = carouselRect.left + (point.x / 100) * carouselRect.width;
     const centerY = carouselRect.top + (point.y / 100) * carouselRect.height;
 
@@ -277,7 +322,7 @@ function LiveSitesCarouselTile({
         </header>
 
         <div className="live-sites-v2__tile-preview">
-          {hasPreviewVideo ? (
+          {hasPreviewVideo && !touchMode ? (
             <video
               ref={videoRef}
               src={site.previewVideo}
@@ -288,6 +333,10 @@ function LiveSitesCarouselTile({
               preload="metadata"
               aria-hidden="true"
             />
+          ) : hasPreviewVideo && touchMode ? (
+            <div className="live-sites-v2__tile-preview-placeholder live-sites-v2__tile-preview-placeholder--touch" aria-hidden="true">
+              {site.name}
+            </div>
           ) : hasPreviewImage ? (
             <Image
               src={site.preview}
@@ -327,7 +376,7 @@ type CarouselAnimState = {
   timeInCycle: number;
 };
 
-const TOUCH_CAROUSEL_FRAME_MS = 33;
+const TOUCH_STEP_TRANSITION_MS = 420;
 
 export default function LiveSitesSectionV2() {
   const prefersReducedMotion = useReducedMotion();
@@ -352,8 +401,9 @@ export default function LiveSitesSectionV2() {
     timeInCycle: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
+  const [isStepping, setIsStepping] = useState(false);
   const [hoveredTileIndex, setHoveredTileIndex] = useState<number | null>(null);
-  const mountedAccumRef = useRef(new Set<number>([0]));
+  const stepTimerRef = useRef<number | null>(null);
 
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
@@ -363,6 +413,7 @@ export default function LiveSitesSectionV2() {
 
   const isPaused =
     prefersReducedMotion ||
+    touchCarousel ||
     (!touchCarousel && hoveredTileIndex !== null) ||
     !sectionInView ||
     tiles.length <= 1;
@@ -373,13 +424,32 @@ export default function LiveSitesSectionV2() {
         return;
       }
 
+      if (touchCarousel) {
+        setIsStepping(true);
+        if (stepTimerRef.current !== null) {
+          window.clearTimeout(stepTimerRef.current);
+        }
+        stepTimerRef.current = window.setTimeout(() => {
+          setIsStepping(false);
+          stepTimerRef.current = null;
+        }, TOUCH_STEP_TRANSITION_MS);
+      }
+
       setAnimState((current) => ({
         cycleIndex: current.cycleIndex + direction,
         timeInCycle: 0,
       }));
     },
-    [tiles.length],
+    [tiles.length, touchCarousel],
   );
+
+  useEffect(() => {
+    return () => {
+      if (stepTimerRef.current !== null) {
+        window.clearTimeout(stepTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (isPaused) {
@@ -388,30 +458,22 @@ export default function LiveSitesSectionV2() {
 
     let frameId = 0;
     let lastNow = performance.now();
-    let accumulatedDelta = 0;
-    const frameBudgetMs = touchCarousel ? TOUCH_CAROUSEL_FRAME_MS : 0;
 
     const tick = (now: number) => {
       const delta = now - lastNow;
       lastNow = now;
-      accumulatedDelta += delta;
 
-      if (frameBudgetMs === 0 || accumulatedDelta >= frameBudgetMs) {
-        const stepDelta = accumulatedDelta;
-        accumulatedDelta = 0;
+      setAnimState((current) => {
+        let timeInCycle = current.timeInCycle + delta;
+        let cycleIndex = current.cycleIndex;
 
-        setAnimState((current) => {
-          let timeInCycle = current.timeInCycle + stepDelta;
-          let cycleIndex = current.cycleIndex;
+        while (timeInCycle >= LIVE_SITES_CAROUSEL_STEP_MS) {
+          timeInCycle -= LIVE_SITES_CAROUSEL_STEP_MS;
+          cycleIndex += 1;
+        }
 
-          while (timeInCycle >= LIVE_SITES_CAROUSEL_STEP_MS) {
-            timeInCycle -= LIVE_SITES_CAROUSEL_STEP_MS;
-            cycleIndex += 1;
-          }
-
-          return { cycleIndex, timeInCycle };
-        });
-      }
+        return { cycleIndex, timeInCycle };
+      });
 
       frameId = window.requestAnimationFrame(tick);
     };
@@ -419,26 +481,22 @@ export default function LiveSitesSectionV2() {
     frameId = window.requestAnimationFrame(tick);
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [isPaused, touchCarousel]);
+  }, [isPaused]);
 
   const { cycleIndex, timeInCycle } = animState;
-  const cycleProgress = prefersReducedMotion ? 0 : getCycleProgress(timeInCycle);
-  const frontTileIndex = getFrontTileIndex(tiles.length, cycleIndex, cycleProgress);
+  const cycleProgress =
+    touchCarousel || prefersReducedMotion ? 0 : getCycleProgress(timeInCycle);
+  const frontTileIndex = getFrontTileIndex(
+    tiles.length,
+    cycleIndex,
+    cycleProgress,
+    touchCarousel,
+  );
   const activePreviewIndex = touchCarousel
     ? frontTileIndex
     : hoveredTileIndex !== null && !prefersReducedMotion
       ? hoveredTileIndex
       : frontTileIndex;
-
-  const mountedFrames = useMemo(() => {
-    const accumulated = mountedAccumRef.current;
-    const sizeBefore = accumulated.size;
-    accumulated.add(frontTileIndex);
-    if (hoveredTileIndex !== null) {
-      accumulated.add(hoveredTileIndex);
-    }
-    return accumulated.size === sizeBefore ? accumulated : new Set(accumulated);
-  }, [frontTileIndex, hoveredTileIndex]);
 
   const updateHoveredFromPointer = useCallback(
     (clientX: number, clientY: number) => {
@@ -550,7 +608,7 @@ export default function LiveSitesSectionV2() {
     <section
       ref={sectionRef}
       id="our-work"
-      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}`}
+      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}${isStepping ? " live-sites-v2--stepping" : ""}`}
       aria-label="Our work"
     >
       <div className="live-sites-v2__inner">
@@ -584,7 +642,13 @@ export default function LiveSitesSectionV2() {
           onKeyDown={handleKeyDown}
         >
           {tiles.map((site, tileIndex) => {
-            const basePoint = getTilePoint(tileIndex, tiles.length, cycleIndex, cycleProgress);
+            const basePoint = getTilePoint(
+              tileIndex,
+              tiles.length,
+              cycleIndex,
+              cycleProgress,
+              touchCarousel,
+            );
             const isSpotlight = !touchCarousel && !prefersReducedMotion && hoveredTileIndex === tileIndex;
             const point = isSpotlight ? getSpotlightPoint(basePoint) : basePoint;
             const isDimmed =
@@ -606,7 +670,7 @@ export default function LiveSitesSectionV2() {
                 }
                 isSpotlight={isSpotlight}
                 isActivePreview={tileIndex === activePreviewIndex}
-                hasMounted={mountedFrames.has(tileIndex)}
+                hasMounted={tileIndex === activePreviewIndex}
                 onTileClick={handleTileClick}
                 onHoverStart={
                   touchCarousel ? undefined : () => setHoveredTileIndex(tileIndex)

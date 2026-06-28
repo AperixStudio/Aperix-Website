@@ -9,7 +9,7 @@
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   generateDepartureRowMeta,
@@ -18,11 +18,14 @@ import {
   SOCIAL_PROOF_VISIBLE_ROWS,
   type DepartureRowMeta,
 } from "@/lib/socialProofContent";
+import { useInView } from "@/lib/useInView";
+import { useMobileViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import "./SocialProofBoard.css";
 
 /** Milliseconds between board refreshes (phrases, times, and cities shift together). */
 const CYCLE_MS = 4200;
+const TOUCH_CYCLE_MS = 6500;
 
 /** Stagger flip start per row so lines update top → bottom like a real board. */
 const ROW_FLIP_STAGGER_S = 0.1;
@@ -120,6 +123,35 @@ function FlapRow({
   );
 }
 
+function TouchBoardRow({
+  time,
+  message,
+  cityCode,
+  rowIndex,
+}: {
+  time: string;
+  message: string;
+  cityCode: string;
+  rowIndex: number;
+}) {
+  return (
+    <div
+      className="social-proof-board__row social-proof-board__row--touch"
+      style={{ animationDelay: `${rowIndex * 0.08}s` }}
+    >
+      <div className="social-proof-board__cell social-proof-board__cell--time">
+        <span className="social-proof-board__touch-text">{time.trim()}</span>
+      </div>
+      <div className="social-proof-board__cell social-proof-board__cell--message">
+        <span className="social-proof-board__touch-text">{message.trim()}</span>
+      </div>
+      <div className="social-proof-board__cell social-proof-board__cell--destination">
+        <span className="social-proof-board__touch-text">{cityCode.trim()}</span>
+      </div>
+    </div>
+  );
+}
+
 /** One departure line: Time | Message | Destination. */
 function BoardRow({
   time,
@@ -156,30 +188,36 @@ function BoardRow({
 
 export default function SocialProofBoard() {
   const prefersReduced = useReducedMotion();
+  const { isMobile } = useMobileViewport();
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { rootMargin: "60px 0px" });
+  const touchBoard = isMobile;
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [departureRows, setDepartureRows] = useState<DepartureRowMeta[]>(() =>
     generateDepartureRowMeta(SOCIAL_PROOF_VISIBLE_ROWS),
   );
 
   useEffect(() => {
-    if (prefersReduced) {
+    if (prefersReduced || !inView) {
       return undefined;
     }
 
+    const cycleMs = touchBoard ? TOUCH_CYCLE_MS : CYCLE_MS;
     const intervalId = window.setInterval(() => {
       setPhraseIndex((current) => (current + 1) % SOCIAL_PROOF_PHRASES.length);
       setDepartureRows(generateDepartureRowMeta(SOCIAL_PROOF_VISIBLE_ROWS));
-    }, CYCLE_MS);
+    }, cycleMs);
 
     return () => window.clearInterval(intervalId);
-  }, [prefersReduced]);
+  }, [prefersReduced, inView, touchBoard]);
 
   const visiblePhrases = getVisibleSocialProofPhrases(phraseIndex);
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Studio departures board"
-      className="social-proof-board"
+      className={`social-proof-board${touchBoard ? " social-proof-board--touch" : ""}`}
     >
       <div className="social-proof-board__frame">
         <header className="social-proof-board__header">
@@ -230,6 +268,18 @@ export default function SocialProofBoard() {
             const departure = departureRows[rowIndex];
             if (!departure) {
               return null;
+            }
+
+            if (touchBoard) {
+              return (
+                <TouchBoardRow
+                  key={`${phraseIndex}-${rowIndex}-${departure.time}-${departure.cityCode}`}
+                  time={departure.timeFormatted}
+                  message={phrase.formatted}
+                  cityCode={departure.cityCodeFormatted}
+                  rowIndex={rowIndex}
+                />
+              );
             }
 
             return (

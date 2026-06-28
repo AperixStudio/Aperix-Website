@@ -331,3 +331,43 @@
     filter: none !important;
   }
 }
+
+/* Mobile: plain text rows — no per-character Framer Motion / blur. */
+.social-proof-board--touch .social-proof-board__touch-text {
+  display: block;
+  color: #f8fafc;
+  font-family: var(--font-sans);
+  font-size: clamp(0.48rem, 2.6vw, 0.62rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.social-proof-board--touch .social-proof-board__cell--message .social-proof-board__touch-text {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.social-proof-board__row--touch {
+  animation: social-proof-row-in 0.38s ease backwards;
+}
+
+@keyframes social-proof-row-in {
+  from {
+    opacity: 0.5;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-proof-board__row--touch {
+    animation: none;
+  }
+}

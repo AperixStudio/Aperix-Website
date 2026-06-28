@@ -7,6 +7,7 @@ import {
 } from "framer-motion";
 import UnicornScene from "unicornstudio-react/next";
 import { useIntroDone } from "@/lib/useIntroDone";
+import { useInView } from "@/lib/useInView";
 import { useMobileViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import "./HeroV4.css";
@@ -177,6 +178,8 @@ export default function HeroV4() {
   const prefersReduced = useReducedMotion();
   const sceneRef = useRef<HeroV4UnicornSceneInstance | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const heroInView = useInView(sectionRef, { initialInView: true });
+  const heroInViewRef = useRef(heroInView);
   const sceneReadyRef = useRef(false);
   const scrollEngagedRef = useRef(false);
   const scrollProgressRef = useRef(0);
@@ -225,6 +228,11 @@ export default function HeroV4() {
     }
 
     const tick = () => {
+      if (!heroInViewRef.current) {
+        scrollHoldFrameRef.current = null;
+        return;
+      }
+
       if (scrollEngagedRef.current) {
         scrollHoldFrameRef.current = null;
         return;
@@ -243,6 +251,10 @@ export default function HeroV4() {
 
     scrollHoldFrameRef.current = window.requestAnimationFrame(tick);
   }, [applyHeroScroll, holdScrollAtStart]);
+
+  useLayoutEffect(() => {
+    heroInViewRef.current = heroInView;
+  }, [heroInView]);
 
   useLayoutEffect(() => {
     holdScrollAtStart();
@@ -353,6 +365,7 @@ export default function HeroV4() {
             dpi={renderQuality.dpi}
             fps={renderQuality.fps}
             lazyLoad
+            paused={!heroInView}
             altText="3D animation scene"
             ariaLabel="3D animation scene"
             className="hero-v4__unicorn-scene"

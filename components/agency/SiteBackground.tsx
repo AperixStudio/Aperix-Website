@@ -108,6 +108,24 @@ function SiteBackgroundMobileVideo() {
     video.addEventListener("timeupdate", syncLoop);
     video.addEventListener("ended", ensurePlaying);
 
+    const hero = document.getElementById("home-hero");
+    const heroObserver =
+      hero && typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                ensurePlaying();
+              } else {
+                video.pause();
+              }
+            },
+            { threshold: 0 },
+          )
+        : null;
+    if (hero) {
+      heroObserver?.observe(hero);
+    }
+
     if (video.readyState >= 1) {
       onReady();
     }
@@ -122,6 +140,7 @@ function SiteBackgroundMobileVideo() {
       video.removeEventListener("canplay", ensurePlaying);
       video.removeEventListener("timeupdate", syncLoop);
       video.removeEventListener("ended", ensurePlaying);
+      heroObserver?.disconnect();
     };
   }, [signalReadyOnce]);
 
