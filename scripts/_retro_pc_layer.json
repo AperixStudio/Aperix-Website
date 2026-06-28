@@ -1,0 +1,214 @@
+{
+  "breakpoints": [],
+  "visible": true,
+  "locked": true,
+  "aspectRatio": 1,
+  "layerName": "",
+  "userDownsample": 1,
+  "states": {
+    "appear": [
+      {
+        "local": {
+          "pendingChanges": {},
+          "changeDebouncer": null,
+          "dragSession": null
+        },
+        "type": "appear",
+        "id": "097d24d8-4d48-4080-974d-3f56d937e51d",
+        "prop": "pos",
+        "transition": {
+          "ease": "easeInOutSine",
+          "duration": 1000,
+          "delay": 0
+        },
+        "complete": false,
+        "progress": 0,
+        "value": {
+          "type": "Vec3",
+          "_x": 0.53,
+          "_y": 0.58,
+          "_z": 0.89
+        },
+        "endValue": {
+          "type": "Vec3",
+          "_x": 0.745,
+          "_y": 0.494,
+          "_z": -0.13
+        },
+        "responsiveProps": {},
+        "initialized": false,
+        "breakpoints": [],
+        "loop": "none",
+        "loopDelay": 0
+      }
+    ],
+    "scroll": [
+      {
+        "local": {
+          "pendingChanges": {},
+          "changeDebouncer": null,
+          "dragSession": null
+        },
+        "type": "scroll",
+        "id": "2f7bf510-ebf7-4caa-8ff4-a5478fb93388",
+        "prop": "pos",
+        "progress": 0,
+        "momentum": 0.4,
+        "spring": 0,
+        "_velocity": 0,
+        "range": 1,
+        "offset": 1,
+        "mode": "scrollIntoView",
+        "delta": 0.01,
+        "sceneTop": 0,
+        "startScroll": 0,
+        "endScroll": 0,
+        "lastScrollTop": 0,
+        "absScrollValue": true,
+        "value": {
+          "type": "Vec3",
+          "_x": 0.2,
+          "_y": 0.494,
+          "_z": -0.13
+        },
+        "responsiveProps": {},
+        "breakpoints": []
+      },
+      {
+        "local": {
+          "pendingChanges": {},
+          "changeDebouncer": null,
+          "dragSession": null
+        },
+        "type": "scroll",
+        "id": "09758789-ea10-4ac0-8cd2-0172cf32fc15",
+        "prop": "modelRotation",
+        "progress": 0,
+        "momentum": 0.25,
+        "spring": 0,
+        "_velocity": 0,
+        "range": 1,
+        "offset": 1,
+        "mode": "scrollIntoView",
+        "delta": 0.01,
+        "sceneTop": 0,
+        "startScroll": 0,
+        "endScroll": 0,
+        "lastScrollTop": 0,
+        "absScrollValue": true,
+        "value": {
+          "type": "Vec3",
+          "_x": 0.5555555555555556,
+          "_y": 0.0222222222222222,
+          "_z": 0.5
+        },
+        "responsiveProps": {},
+        "breakpoints": []
+      }
+    ],
+    "hover": [],
+    "mousemove": []
+  },
+  "layerType": "model",
+  "isModel": true,
+  "pos": {
+    "type": "Vec3",
+    "_x": 0.745,
+    "_y": 0.494,
+    "_z": -0.13
+  },
+  "modelUrl": "https://assets.unicorn.studio/models/2Aut9osmKiM8joJ4vQuhvSoegQj2/retro_pc_comp.glb",
+  "scale": 0.4,
+  "modelRotation": {
+    "type": "Vec3",
+    "_x": 0.48237840367478196,
+    "_y": 0.0222222222222222,
+    "_z": 0.5
+  },
+  "lightIntensity": 0.2,
+  "ambientLightIntensity": 0.2,
+  "fillLightIntensity": 0.2,
+  "lightColor": "#FFFFFF",
+  "ambientLightColor": "#FFFFFF",
+  "fillLightColor": "#FFFFFF",
+  "lightPosition": {
+    "type": "Vec3",
+    "_x": 0.75,
+    "_y": 0.75,
+    "_z": 0.75
+  },
+  "materialMetalness": 0.5,
+  "materialRoughness": 0.5,
+  "rotationTracking": 0,
+  "lightTracking": 0,
+  "trackMouse": 0,
+  "animationAxis": {
+    "type": "Vec3",
+    "_x": 0,
+    "_y": 1,
+    "_z": 0
+  },
+  "selectedAnimationClip": "",
+  "refractScale": 0.5,
+  "chromAbAmount": 0.5,
+  "renderNormals": 0,
+  "blendMode": "NORMAL",
+  "opacity": 1,
+  "colorMapUrl": "",
+  "colorMapScale": 1,
+  "colorMapPosition": {
+    "type": "Vec2",
+    "_x": 0.5,
+    "_y": 0.5
+  },
+  "colorMapIntensity": 1,
+  "normalMapUrl": "",
+  "normalMapScale": 1,
+  "normalMapPosition": {
+    "type": "Vec2",
+    "_x": 0.5,
+    "_y": 0.5
+  },
+  "normalMapIntensity": 1,
+  "quality": "fast",
+  "environmentMapIntensity": 0,
+  "environmentMapUrl": "",
+  "extrudeDepth": 10,
+  "bevelEnabled": false,
+  "bevelThickness": 1,
+  "bevelSize": 1,
+  "bevelSegments": 2,
+  "glassIOR": 1.5,
+  "glassThickness": 0.5,
+  "glassRoughness": 0,
+  "glassTint": "#ffffff",
+  "glassDispersion": 0,
+  "materialMode": "standard",
+  "matcapUrl": "https://assets.unicorn.studio/media/matcaps/unicorn_matcap_default.webp",
+  "matcapIntensity": 0.5,
+  "matcapRotation": 0,
+  "contextType": "webgl",
+  "trackAxes": "x",
+  "mouseMomentum": 0,
+  "mouseSpring": 0,
+  "animating": false,
+  "speed": 0.5,
+  "compiledFragmentShaders": [
+    "#version 300 es\n// Copyright (c) Unicorn Studio. Licensed under the Unicorn Studio Commercial License.\n// Unauthorized copying, redistribution, or use in competing products is prohibited.\nprecision highp float;in vec2 vTextureCoord;\nin vec3 vVertexPosition;uniform sampler2D uBgTexture;\nuniform sampler2D uTexture;uniform float uOpacity;\nout vec4 fragColor;void main() {\nvec4 bgColor = texture(uBgTexture, vTextureCoord);\nvec4 fgColor = texture(uTexture, vTextureCoord);\nvec4 color = vec4(1.0, 0.0, 0.0, 1.0);if(uOpacity < 0.001) {\nfragColor = bgColor;\nreturn;\n}color = mix(bgColor, mix(bgColor, fgColor, fgColor.a), uOpacity);fragColor = color;\n}"
+  ],
+  "compiledVertexShaders": [
+    "#version 300 es\n// Copyright (c) Unicorn Studio. Licensed under the Unicorn Studio Commercial License.\n// Unauthorized copying, redistribution, or use in competing products is prohibited.\nprecision mediump float;in vec3 aVertexPosition;\nin vec2 aTextureCoord;uniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uTextureMatrix;out vec2 vTextureCoord;\nout vec3 vVertexPosition;void main() {\ngl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\nvTextureCoord = (uTextureMatrix * vec4(aTextureCoord, 0.0, 1.0)).xy;\n}"
+  ],
+  "data": {
+    "uniforms": {
+      "opacity": {
+        "name": "uOpacity",
+        "type": "1f",
+        "value": 1
+      }
+    }
+  },
+  "moduleRef": "model_renderer",
+  "id": "d5e54be9-90a4-44d5-985a-4d1b18abb3a2",
+  "publicId": "model"
+}

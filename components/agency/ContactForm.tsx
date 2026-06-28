@@ -24,28 +24,6 @@ const initialForm: FormState = {
   website: "",
 };
 
-function buildNetlifyFormData(data: ContactSubmission) {
-  const formData = new URLSearchParams();
-  const appendIfPresent = (label: string, value?: string) => {
-    const trimmed = value?.trim();
-    if (trimmed) {
-      formData.append(label, trimmed);
-    }
-  };
-
-  formData.append("form-name", "contact");
-  appendIfPresent("website", data.website);
-  formData.append("Name", data.name);
-  formData.append("Email", data.email);
-  appendIfPresent("Phone", data.phone);
-  formData.append("Business Name", data.businessName);
-  formData.append("Business Type", data.businessType);
-  formData.append("Preferred Contact", data.contactMethod);
-  formData.append("Project Details", data.description);
-
-  return formData;
-}
-
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {
     return null;
@@ -151,16 +129,23 @@ export default function AgencyContactForm() {
         return;
       }
 
-      const formData = buildNetlifyFormData(parsed.data);
-
-      const response = await fetch("/__forms.html", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
       });
 
+      const body = (await response.json().catch(() => null)) as {
+        error?: string;
+        fieldErrors?: ContactFieldErrors;
+      } | null;
+
       if (!response.ok) {
-        const msg = "Your enquiry could not be sent. Please try again.";
+        if (body?.fieldErrors) {
+          setErrors(body.fieldErrors);
+        }
+        const msg =
+          body?.error ?? "Your enquiry could not be sent. Please try again.";
         setSubmitError(msg);
         setToast({ type: "error", message: msg });
         setTimeout(() => setToast(null), 6000);
@@ -226,15 +211,11 @@ export default function AgencyContactForm() {
 
   return (
     <form
-      name="contact"
-      method="POST"
-      action="/__forms.html"
       onSubmit={handleSubmit}
       noValidate
       className="flex h-full flex-col justify-center space-y-3 px-7 py-5 lg:px-8 lg:py-6"
       aria-label="Contact enquiry form"
     >
-      <input type="hidden" name="form-name" value="contact" />
       <div className="sr-only">
         <label htmlFor="ac-website">Website</label>
         <input

@@ -1,0 +1,333 @@
+/* =============================================================================
+   SocialProofBoard — airport split-flap departure board styles
+   @see SOCIAL_PROOF_BOARD_IMPLEMENTATION_BRIEF.md
+   ============================================================================= */
+
+.social-proof-board {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 1.75rem clamp(0.75rem, 3vw, 1.25rem) 2rem;
+  overflow-x: clip;
+  background: transparent;
+}
+
+.social-proof-board__frame {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.35rem;
+  background: linear-gradient(180deg, #101010 0%, #080808 100%);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 1.1rem 1rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .social-proof-board {
+    padding-inline: clamp(1rem, 2.5vw, 2rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .social-proof-board__frame {
+    padding: 1.15rem 1.35rem 1.05rem;
+  }
+}
+
+.social-proof-board__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.social-proof-board__title {
+  margin: 0;
+  color: #f8fafc;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.social-proof-board__plane {
+  width: 1.35rem;
+  height: 1.35rem;
+  color: rgba(248, 250, 252, 0.92);
+  flex-shrink: 0;
+}
+
+.social-proof-board__columns {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.45rem;
+  padding: 0 0.1rem;
+  color: rgba(248, 250, 252, 0.72);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.social-proof-board__columns span:nth-child(1) {
+  flex: 0 0 auto;
+}
+
+.social-proof-board__columns span:nth-child(2) {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.social-proof-board__columns span:nth-child(3) {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.social-proof-board__columns-label--mobile {
+  display: none;
+}
+
+.social-proof-board__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+}
+
+.social-proof-board__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 2.5vw, 2rem);
+  width: 100%;
+}
+
+.social-proof-board__row:not(:last-child) {
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.social-proof-board__cell {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.social-proof-board__cell--message {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.social-proof-board__cell--message::-webkit-scrollbar {
+  display: none;
+}
+
+.social-proof-board__flap-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.14rem;
+}
+
+.social-proof-board__flap-row--mobile {
+  display: none;
+}
+
+.social-proof-board__cell--time .social-proof-board__flap-row,
+.social-proof-board__cell--message .social-proof-board__flap-row,
+.social-proof-board__cell--destination .social-proof-board__flap-row {
+  justify-content: flex-start;
+}
+
+.board-flap {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(0.95rem, 2.4vw, 1.45rem);
+  height: clamp(1.55rem, 3.6vw, 2.25rem);
+  font-family: var(--font-sans);
+  font-size: clamp(0.72rem, 1.65vw, 1.05rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #f8fafc;
+}
+
+.board-flap__card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0.18rem;
+  background: linear-gradient(180deg, #242424 0%, #111 52%, #0a0a0a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+    0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.board-flap__split {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.72);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.board-flap__hinge {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 0.18rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #555 0%, #2a2a2a 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.board-flap__hinge--left {
+  left: 0.12rem;
+}
+
+.board-flap__hinge--right {
+  right: 0.12rem;
+}
+
+.board-flap__tick {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  will-change: transform, opacity, filter;
+}
+
+@media (min-width: 1024px) {
+  .social-proof-board__flap-row {
+    gap: 0.18rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .social-proof-board {
+    padding: 1rem clamp(0.75rem, 3vw, 1.25rem) 1.25rem;
+  }
+
+  .social-proof-board__frame {
+    padding: 0.7rem 0.5rem 0.65rem;
+  }
+
+  .social-proof-board__header {
+    gap: 0.45rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .social-proof-board__title {
+    font-size: clamp(0.82rem, 4.2vw, 1.05rem);
+    letter-spacing: 0.06em;
+  }
+
+  .social-proof-board__plane {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .social-proof-board__columns {
+    font-size: 0.48rem;
+    letter-spacing: 0.1em;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .social-proof-board__columns-label--desktop {
+    display: none;
+  }
+
+  .social-proof-board__columns-label--mobile {
+    display: inline;
+  }
+
+  .social-proof-board__row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.3rem;
+    justify-content: initial;
+  }
+
+  .social-proof-board__cell--message {
+    justify-content: flex-start;
+  }
+
+  .social-proof-board__cell--message .social-proof-board__flap-row {
+    min-width: max-content;
+  }
+
+  .social-proof-board__cell--destination {
+    justify-self: end;
+  }
+
+  .social-proof-board__cell--destination .social-proof-board__flap-row--desktop {
+    display: none;
+  }
+
+  .social-proof-board__cell--destination .social-proof-board__flap-row--mobile {
+    display: flex;
+  }
+
+  .social-proof-board__body {
+    gap: 0.28rem;
+  }
+
+  .social-proof-board__row:not(:last-child) {
+    padding-bottom: 0.28rem;
+  }
+
+  .board-flap {
+    width: 0.62rem;
+    height: 1.05rem;
+    font-size: 0.5rem;
+  }
+
+  .board-flap__hinge {
+    width: 0.12rem;
+    height: 0.22rem;
+  }
+
+  .board-flap__hinge--left {
+    left: 0.06rem;
+  }
+
+  .board-flap__hinge--right {
+    right: 0.06rem;
+  }
+
+  .social-proof-board__flap-row {
+    gap: 0.05rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-flap__tick {
+    filter: none !important;
+  }
+}

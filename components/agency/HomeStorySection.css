@@ -1,4 +1,5 @@
-#home-story {
+#home-story,
+#home-hero {
   --home-story-base: #0c1017;
   --home-story-surface: #121820;
   --home-story-elevated: #171f2b;
@@ -71,7 +72,7 @@
 }
 
 .home-story-hero-kicker {
-  font-family: var(--font-jetbrains-mono), monospace;
+  font-family: var(--font-sans);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.24em;
@@ -80,9 +81,9 @@
 }
 
 .home-story-hero-title {
-  font-family: var(--font-syne), sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.65rem, 8.2vw, 5.75rem);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 0.9;
   letter-spacing: -0.035em;
   text-transform: uppercase;
@@ -95,21 +96,23 @@
 }
 
 .home-story-hero-meta {
-  font-family: var(--font-jetbrains-mono), monospace;
+  font-family: var(--font-sans);
 }
 
 .home-story-act3-heading {
   text-wrap: balance;
 }
 
-.home-story-sticky .agency-button-secondary {
+.home-story-sticky .agency-button-secondary,
+#home-hero .agency-button-secondary {
   border-color: var(--home-story-glass-border);
   background: var(--home-story-glass);
   color: #f8fafc;
   backdrop-filter: blur(12px);
 }
 
-.home-story-sticky .agency-button-secondary:hover {
+.home-story-sticky .agency-button-secondary:hover,
+#home-hero .agency-button-secondary:hover {
   border-color: var(--agency-accent);
   background: rgba(56, 189, 248, 0.1);
   color: var(--agency-accent);

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Syne, JetBrains_Mono } from "next/font/google";
 import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
+import SiteBackground from "@/components/agency/SiteBackground";
 import CursorFollower from "@/components/animations/CursorFollower";
 import IntroScreen from "@/components/animations/IntroScreen";
 import PageReveal from "@/components/animations/PageReveal";
+import SmoothScroll from "@/components/animations/SmoothScroll";
 import { getSiteUrl, SITE_SOCIAL_LINKS } from "@/lib/site";
 import "./globals.css";
 
@@ -26,24 +27,7 @@ const themeInitScript = `
 // injected this div via an inline script which produced React error #418
 // (HTML hydration mismatch) because React did not know about the node.
 
-/* ── Agency Shell fonts (Section 3.2) ────────────────────── */
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Hubot Sans is loaded globally via app/globals.css (@fontsource-variable/hubot-sans).
 
 const siteUrl = getSiteUrl();
 const siteLogoUrl = `${siteUrl}/aperix-logo.svg`;
@@ -104,10 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
-        suppressHydrationWarning
-      >
+      <body className="antialiased" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -130,7 +111,9 @@ export default function RootLayout({
           }}
         />
         <IntroScreen />
+        <SiteBackground />
         <SiteAtmosphere />
+        <SmoothScroll />
         <CursorFollower />
         <PageReveal>{children}</PageReveal>
       </body>

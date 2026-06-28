@@ -13,8 +13,8 @@ import HashLink from "@/components/agency/HashLink";
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
   { label: "Our Work", href: "/#our-work" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 function WiggleText({ label }: { label: string }) {

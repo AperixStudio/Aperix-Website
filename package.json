@@ -14,6 +14,7 @@
     "capture:hero:video": "node scripts/capture-hero-frames.mjs --video ./captures/hero.mp4"
   },
   "dependencies": {
+    "@fontsource-variable/hubot-sans": "^5.2.8",
     "@theatre/core": "^0.7.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.2",

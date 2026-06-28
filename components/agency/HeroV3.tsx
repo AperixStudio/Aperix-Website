@@ -1,252 +1,531 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useScroll, useTransform } from "framer-motion";
-import { HERO_VIDEO_OFFSCREEN_CLASS, HERO_VIDEO_SRC } from "@/lib/heroVideo";
+import HashLink from "@/components/agency/HashLink";
+import RocketTextBlock from "@/components/agency/RocketTextBlock";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import UnicornScene from "unicornstudio-react/next";
+import {
+  applyHeroV3MonitorScrollEnd,
+  commitHeroV3ModelRestPose,
+  HERO_V3_APPEAR_DURATION_MS,
+  HERO_V3_MODEL_APPEAR_MS,
+  HERO_V3_SCROLL_ENGAGE_THRESHOLD,
+  HERO_V3_SCROLL_HEIGHT_VH,
+  HERO_V3_UNICORN_JSON,
+  HERO_V3_UNICORN_RENDER,
+  HERO_V3_UNICORN_SDK_URL,
+  heroV3UnicornScrollStart,
+  mapHeroV3UnicornScrollY,
+  type HeroV3UnicornSceneInstance,
+} from "@/lib/heroUnicornContent";
+
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import "@/components/animations/HeroCanvas.css";
+import { useIntroDone } from "@/lib/useIntroDone";
+import { useInView } from "@/lib/useInView";
+import { useMobileViewport } from "@/lib/useMobileViewport";
+import { HOW_IT_WORKS_BLOCKS } from "@/lib/howItWorksContent";
+import {
+  HERO_V3_ACT3_HEADING,
+  HERO_V3_ACT3_SCROLL,
+  HERO_V3_TEXT_FADE_OUT,
+  remapHeroV3StepProgress,
+} from "@/lib/heroV3StoryTimeline";
+import "./HeroV3.css";
+import "./HomeStorySection.css";
 
-const HeroCanvas = dynamic(() => import("@/components/animations/HeroCanvas"), {
-  ssr: false,
-});
+type UnicornScrollApi = {
+  setScroll?: (scrollY: number) => void;
+  useNativeScroll?: () => void;
+  scenes?: HeroV3UnicornSceneInstance[];
+};
 
-const HEADLINE_WORDS = ["Custom Websites and", "Software Solutions", "built for", "Melbourne businesses."];
-const HEADLINE_TEXT = HEADLINE_WORDS.join("\n");
+function getUnicornScrollApi(): UnicornScrollApi | undefined {
+  return window.UnicornStudio as unknown as UnicornScrollApi | undefined;
+}
 
-const SECONDARY_HEADLINE_WORDS = ["Hand coded,", "Fast turnaround,", "Tailored solutions."];
-const SECONDARY_HEADLINE_TEXT = SECONDARY_HEADLINE_WORDS.join("\n");
-const HEADLINE_SEQUENCE = [HEADLINE_TEXT, SECONDARY_HEADLINE_TEXT];
+const HERO_KICKER = "Two-person team · Melbourne";
+const HERO_TITLE_LINES = ["Web developer", "& SaaS", "studio."];
+const HERO_TITLE = HERO_TITLE_LINES.join(" ");
+const HERO_BODY =
+  "We're two developers in Melbourne — hand-coding websites, web apps, and SaaS products. Landing page or full platform, side project or serious build — if it's worth making well, we're in.";
+const HERO_META = ["Melbourne", "2-person team", "Any size project"];
 
-const TRUST_PILLS = [
-  "Custom code, no templates",
-  "Melbourne-based",
-  "Fast turnaround",
-  "Hosted & maintained",
-];
+function readHeroScrollMetrics() {
+  const viewportHeight = window.innerHeight;
+  const canvas = document.querySelector<HTMLElement>(".hero-v3__unicorn-scene");
+  const sceneHalfHeight = canvas
+    ? canvas.getBoundingClientRect().height / 2
+    : viewportHeight / 2;
+  return { viewportHeight, sceneHalfHeight };
+}
 
-/** Total scroll distance — one continuous sticky sequence (video → 3D zoom) */
-const SCROLL_HEIGHT_VH = 300;
+function applyHeroScroll(progress: number) {
+  const { viewportHeight, sceneHalfHeight } = readHeroScrollMetrics();
+  getUnicornScrollApi()?.setScroll?.(mapHeroV3UnicornScrollY(progress, viewportHeight, sceneHalfHeight));
+}
+
+function applyHeroScrollStart() {
+  const { viewportHeight, sceneHalfHeight } = readHeroScrollMetrics();
+  getUnicornScrollApi()?.setScroll?.(heroV3UnicornScrollStart(viewportHeight, sceneHalfHeight));
+}
+
+function resolveHeroUnicornScene(
+  sceneRef: HeroV3UnicornSceneInstance | null,
+): HeroV3UnicornSceneInstance | null {
+  if (sceneRef?.layers?.length) {
+    return sceneRef;
+  }
+
+  const root = document.querySelector<HTMLElement>(".hero-v3__unicorn-scene");
+  if (!root) {
+    return sceneRef;
+  }
+
+  const scenes = getUnicornScrollApi()?.scenes ?? [];
+  return (
+    scenes.find((scene) => {
+      const element = scene.element;
+      return element === root || element?.contains(root) || root.contains(element ?? null);
+    }) ?? sceneRef
+  );
+}
+
+function requestHeroUnicornResize(sceneRef: HeroV3UnicornSceneInstance | null) {
+  const scene = resolveHeroUnicornScene(sceneRef);
+  const element = scene?.element;
+  if (!element) {
+    return;
+  }
+
+  const unicornScene = getUnicornScrollApi()?.scenes?.find(
+    (candidate) => candidate.element === element || element.contains(candidate.element ?? null),
+  ) as { resize?: () => void } | undefined;
+
+  unicornScene?.resize?.();
+}
+
+function syncHeroScrollAfterLayout(
+  scrollYProgress: MotionValue<number>,
+  syncHeroScroll: (progress: number) => void,
+  sceneRef: HeroV3UnicornSceneInstance | null,
+) {
+  requestHeroUnicornResize(sceneRef);
+  syncHeroScroll(scrollYProgress.get());
+}
+
+function holdHeroUnicornScrollOnly(sceneRef: HeroV3UnicornSceneInstance | null) {
+  const scene = resolveHeroUnicornScene(sceneRef);
+  if (scene) {
+    scene.isFixed = true;
+    applyHeroV3MonitorScrollEnd(scene);
+  }
+  applyHeroScrollStart();
+}
+
+function holdHeroUnicornAtRest(sceneRef: HeroV3UnicornSceneInstance | null) {
+  holdHeroUnicornScrollOnly(sceneRef);
+  commitHeroV3ModelRestPose(resolveHeroUnicornScene(sceneRef));
+}
+
+function HeroV3UnicornScene({
+  scrollYProgress,
+  renderActive,
+  onAppearStart,
+}: {
+  scrollYProgress: MotionValue<number>;
+  renderActive: boolean;
+  onAppearStart?: () => void;
+}) {
+  const scrollRef = useRef(0);
+  const sceneReadyRef = useRef(false);
+  const scrollEngagedRef = useRef(false);
+  const appearCompleteRef = useRef(false);
+  const appearTimerRef = useRef<number | null>(null);
+  const scrollHoldFrameRef = useRef<number | null>(null);
+  const unicornSceneRef = useRef<HeroV3UnicornSceneInstance | null>(null);
+  const { isMobile, ready } = useMobileViewport();
+
+  const holdScrollAtStart = useCallback(() => {
+    if (!appearCompleteRef.current) {
+      holdHeroUnicornScrollOnly(unicornSceneRef.current);
+      return;
+    }
+    holdHeroUnicornAtRest(unicornSceneRef.current);
+  }, []);
+
+  const syncHeroScroll = useCallback(
+    (progress: number) => {
+      if (progress < HERO_V3_SCROLL_ENGAGE_THRESHOLD) {
+        holdScrollAtStart();
+        return;
+      }
+
+      scrollEngagedRef.current = true;
+      applyHeroScroll(progress);
+    },
+    [holdScrollAtStart],
+  );
+
+  const startScrollHoldLoop = useCallback(() => {
+    if (scrollHoldFrameRef.current !== null) {
+      window.cancelAnimationFrame(scrollHoldFrameRef.current);
+    }
+
+    const tick = () => {
+      if (scrollEngagedRef.current) {
+        scrollHoldFrameRef.current = null;
+        return;
+      }
+
+      if (scrollRef.current >= HERO_V3_SCROLL_ENGAGE_THRESHOLD) {
+        scrollEngagedRef.current = true;
+        applyHeroScroll(scrollRef.current);
+        scrollHoldFrameRef.current = null;
+        return;
+      }
+
+      holdScrollAtStart();
+      scrollHoldFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    scrollHoldFrameRef.current = window.requestAnimationFrame(tick);
+  }, [holdScrollAtStart]);
+
+  useLayoutEffect(() => {
+    holdScrollAtStart();
+  }, [holdScrollAtStart]);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    scrollRef.current = value;
+    if (sceneReadyRef.current) {
+      syncHeroScroll(value);
+    }
+  });
+
+  useEffect(() => {
+    scrollRef.current = scrollYProgress.get();
+
+    const container = document.querySelector<HTMLElement>(".hero-v3__unicorn-scene");
+    const resizeObserver =
+      container && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            if (!sceneReadyRef.current) {
+              return;
+            }
+            syncHeroScrollAfterLayout(scrollYProgress, syncHeroScroll, unicornSceneRef.current);
+          })
+        : null;
+    resizeObserver?.observe(container!);
+
+    const onResize = () => {
+      if (sceneReadyRef.current) {
+        syncHeroScrollAfterLayout(scrollYProgress, syncHeroScroll, unicornSceneRef.current);
+      }
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", onResize);
+      if (appearTimerRef.current !== null) {
+        window.clearTimeout(appearTimerRef.current);
+      }
+      if (scrollHoldFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollHoldFrameRef.current);
+      }
+      getUnicornScrollApi()?.useNativeScroll?.();
+    };
+  }, [scrollYProgress, syncHeroScroll]);
+
+  const handleLoad = () => {
+    sceneReadyRef.current = true;
+    scrollEngagedRef.current = false;
+    appearCompleteRef.current = false;
+    scrollRef.current = scrollYProgress.get();
+    onAppearStart?.();
+
+    if (appearTimerRef.current !== null) {
+      window.clearTimeout(appearTimerRef.current);
+    }
+
+    holdScrollAtStart();
+    startScrollHoldLoop();
+    syncHeroScrollAfterLayout(scrollYProgress, syncHeroScroll, unicornSceneRef.current);
+
+    const relayout = () => {
+      syncHeroScrollAfterLayout(scrollYProgress, syncHeroScroll, unicornSceneRef.current);
+    };
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(relayout);
+    });
+    window.setTimeout(relayout, 120);
+    window.setTimeout(relayout, 400);
+
+    appearTimerRef.current = window.setTimeout(() => {
+      appearCompleteRef.current = true;
+      if (!scrollEngagedRef.current) {
+        holdScrollAtStart();
+      } else {
+        relayout();
+      }
+    }, HERO_V3_APPEAR_DURATION_MS);
+  };
+
+  if (!ready) {
+    return null;
+  }
+
+  const renderQuality = isMobile ? HERO_V3_UNICORN_RENDER.mobile : HERO_V3_UNICORN_RENDER.desktop;
+
+  return (
+    <div className="hero-v3__unicorn-stage">
+      <UnicornScene
+        key={HERO_V3_UNICORN_JSON}
+        jsonFilePath={HERO_V3_UNICORN_JSON}
+        sdkUrl={HERO_V3_UNICORN_SDK_URL}
+        width="100%"
+        height="100%"
+        scale={renderQuality.scale}
+        dpi={renderQuality.dpi}
+        fps={renderQuality.fps}
+        lazyLoad={false}
+        paused={!renderActive}
+        altText="Retro computer, monitor, and phone animation"
+        ariaLabel="Retro computer, monitor, and phone animation"
+        className="hero-v3__unicorn-scene"
+        sceneRef={unicornSceneRef as unknown as RefObject<{ element: HTMLElement; destroy: () => void } | null>}
+        onLoad={handleLoad}
+      />
+
+    </div>
+  );
+}
 
 export default function HeroV3() {
   const prefersReduced = useReducedMotion();
+  const introDone = useIntroDone();
+  const [heroTextRevealed, setHeroTextRevealed] = useState(false);
+  const [appearAnimationDone, setAppearAnimationDone] = useState(false);
+  const [scrollHasStarted, setScrollHasStarted] = useState(false);
+  const heroCopyDismissedRef = useRef(false);
+  const scrollHasStartedRef = useRef(false);
+  const staticZero = useMotionValue(0);
   const scrollRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [heroVideo, setHeroVideo] = useState<HTMLVideoElement | null>(null);
-  const [headlineText, setHeadlineText] = useState("");
+  const sectionInView = useInView(scrollRef);
+  const renderActive = sectionInView && !prefersReduced;
+
+  const storyStepBlocks = useMemo(
+    () =>
+      HOW_IT_WORKS_BLOCKS.map((block) => ({
+        ...block,
+        progress: remapHeroV3StepProgress(block.progress),
+      })),
+    [],
+  );
+
+  const handleUnicornAppearStart = useCallback(() => {
+    setHeroTextRevealed(true);
+  }, []);
+
+  useEffect(() => {
+    if (!heroTextRevealed || prefersReduced) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      setAppearAnimationDone(true);
+    }, HERO_V3_MODEL_APPEAR_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [heroTextRevealed, prefersReduced]);
+
+  const showHeroText = prefersReduced || heroTextRevealed;
 
   const { scrollYProgress } = useScroll({
     target: scrollRef,
     offset: ["start start", "end end"],
   });
 
-  const staticEnd = useMotionValue(1);
-  const visibleHeadlineText = prefersReduced ? HEADLINE_TEXT : headlineText;
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    if (value >= HERO_V3_TEXT_FADE_OUT.start) {
+      scrollHasStartedRef.current = true;
+      setScrollHasStarted(true);
+    }
+    if (scrollHasStartedRef.current && value >= HERO_V3_TEXT_FADE_OUT.end) {
+      heroCopyDismissedRef.current = true;
+    }
+  });
 
-  const zoomProgress = useTransform(scrollYProgress, [0, 0.78], [0, 1]);
-  const cameraProgress = prefersReduced ? staticEnd : zoomProgress;
-
-  // Hero copy fades in halfway through the 3D zoom (zoomProgress 0 → 1).
-  const textOpacity = useTransform(zoomProgress, [0.45, 0.55], [0, 1]);
-  const textY = useTransform(zoomProgress, [0.45, 0.55], [48, 0]);
-  const textVisibility = useTransform(textOpacity, (value) => (value > 0.02 ? "visible" : "hidden"));
-  const scrollCueOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || prefersReduced) return;
-
-    const play = () => {
-      video.play().catch(() => {});
-    };
-
-    play();
-    video.addEventListener("loadeddata", play);
-    return () => video.removeEventListener("loadeddata", play);
-  }, [prefersReduced, heroVideo]);
-
-  useEffect(() => {
-    if (prefersReduced) {
-      return;
+  const scrollCopyOpacity = useTransform(scrollYProgress, (progress) => {
+    if (heroCopyDismissedRef.current) {
+      return 0;
     }
 
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-    let cancelled = false;
+    if (progress <= HERO_V3_TEXT_FADE_OUT.start) {
+      return 1;
+    }
 
-    const tick = () => {
-      if (cancelled) {
-        return;
-      }
+    if (progress >= HERO_V3_TEXT_FADE_OUT.end) {
+      return 0;
+    }
 
-      const currentPhrase = HEADLINE_SEQUENCE[phraseIndex] ?? HEADLINE_TEXT;
+    const span = HERO_V3_TEXT_FADE_OUT.end - HERO_V3_TEXT_FADE_OUT.start;
+    return 1 - (progress - HERO_V3_TEXT_FADE_OUT.start) / span;
+  });
 
-      if (!deleting) {
-        charIndex += 1;
-        setHeadlineText(currentPhrase.slice(0, charIndex));
+  const scrollCopyY = useTransform(scrollYProgress, (progress) => {
+    if (heroCopyDismissedRef.current || progress >= HERO_V3_TEXT_FADE_OUT.end) {
+      return 28;
+    }
 
-        if (charIndex >= currentPhrase.length) {
-          deleting = true;
-          timeoutId = setTimeout(tick, 1400);
-          return;
-        }
+    if (progress <= HERO_V3_TEXT_FADE_OUT.start) {
+      return 0;
+    }
 
-        timeoutId = setTimeout(tick, 65);
-        return;
-      }
+    const span = HERO_V3_TEXT_FADE_OUT.end - HERO_V3_TEXT_FADE_OUT.start;
+    return (28 * (progress - HERO_V3_TEXT_FADE_OUT.start)) / span;
+  });
 
-      charIndex -= 1;
-      setHeadlineText(currentPhrase.slice(0, Math.max(charIndex, 0)));
-
-      if (charIndex <= 0) {
-        deleting = false;
-        phraseIndex = (phraseIndex + 1) % HEADLINE_SEQUENCE.length;
-        timeoutId = setTimeout(tick, 450);
-        return;
-      }
-
-      timeoutId = setTimeout(tick, 32);
-    };
-
-    timeoutId = setTimeout(tick, 150);
-
-    return () => {
-      cancelled = true;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [prefersReduced]);
+  const heroCopyVisibility = useTransform(scrollCopyOpacity, (opacity) =>
+    opacity <= 0 ? "hidden" : "visible",
+  );
+  const scrollCueOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
+  const scrollCopyActive = appearAnimationDone && scrollHasStarted;
+  const act3HeadingOpacity = useTransform(
+    scrollYProgress,
+    [
+      HERO_V3_ACT3_SCROLL.start,
+      HERO_V3_ACT3_SCROLL.fadeInEnd,
+      HERO_V3_ACT3_SCROLL.fadeOutStart,
+      HERO_V3_ACT3_SCROLL.end,
+    ],
+    [0, 1, 1, 0],
+  );
+  const act3HeadingY = useTransform(
+    scrollYProgress,
+    [HERO_V3_ACT3_SCROLL.start, HERO_V3_ACT3_SCROLL.fadeInEnd],
+    [20, 0],
+  );
 
   return (
     <section
       ref={scrollRef}
-      style={{ height: prefersReduced ? undefined : `${SCROLL_HEIGHT_VH}vh` }}
-      className="relative"
+      id="home-hero"
+      style={{ height: prefersReduced ? undefined : `${HERO_V3_SCROLL_HEIGHT_VH}vh` }}
+      className="relative isolate"
       aria-label="Hero"
     >
       <div
         className={
           prefersReduced
-            ? "relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
-            : "sticky top-0 flex h-screen flex-col justify-center overflow-hidden bg-transparent px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
+            ? "relative flex min-h-screen flex-col justify-end overflow-hidden px-6 pt-32 pb-20 sm:px-10 lg:px-16 2xl:px-24"
+            : "home-story-sticky sticky top-0 h-screen w-full overflow-hidden"
         }
       >
-        {/* Hidden video — texture source for the monitor plane in HeroCanvas */}
-        <video
-          ref={(node) => {
-            videoRef.current = node;
-            setHeroVideo(node);
-          }}
-          className={HERO_VIDEO_OFFSCREEN_CLASS}
-          src={HERO_VIDEO_SRC}
-          autoPlay={!prefersReduced}
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-          tabIndex={-1}
-        />
+        {!prefersReduced ? (
+          <>
+            <div className="home-story-atmosphere pointer-events-none absolute inset-0 z-0" aria-hidden="true" />
+            <div className="home-story-glow pointer-events-none absolute inset-0 z-0" aria-hidden="true" />
+            <div className="home-story-noise pointer-events-none absolute inset-0 z-0" aria-hidden="true" />
+          </>
+        ) : null}
 
-        {/* 3D canvas — mp4 plays on the GLB monitor screen */}
-        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-          {heroVideo ? (
-            <HeroCanvas
-              scrollProgress={cameraProgress}
-              showIntroLabel={!prefersReduced}
-              videoElement={heroVideo}
-              className="hero-canvas--scroll"
+        {!prefersReduced && introDone ? (
+          <div className="hero-v3__unicorn" aria-hidden="true">
+            <HeroV3UnicornScene
+              scrollYProgress={scrollYProgress}
+              renderActive={renderActive && introDone}
+              onAppearStart={handleUnicornAppearStart}
             />
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-450 items-end pb-2 sm:pb-6 lg:grid-cols-[minmax(0,0.46fr)_minmax(360px,0.54fr)] lg:items-center lg:pb-0">
-          <motion.div
-            style={
-              prefersReduced
-                ? undefined
-                : {
-                    opacity: textOpacity,
-                    y: textY,
-                    visibility: textVisibility,
-                  }
-            }
-            className="min-w-0 max-w-xl lg:col-start-1"
-          >
-            <p className="mb-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-agency-muted sm:text-xs">
-              <span className="inline-block h-px w-7 bg-agency-muted" />
-              Melbourne Web Design and Software Studio
-            </p>
+        {!prefersReduced ? (
+          <div className="hero-v3__scrim pointer-events-none absolute inset-x-0 bottom-0 z-4 h-[72%]" aria-hidden="true" />
+        ) : null}
 
-            <p
-              className="font-display font-bold leading-[0.94] tracking-tight"
-              aria-label={HEADLINE_WORDS.join(" ")}
-            >
-              <span className="block min-h-[4.1lh]">
-                <span className="block whitespace-pre-line text-[clamp(2.15rem,6vw,4.8rem)] text-agency-ink lg:text-[clamp(2.35rem,4.1vw,4.4rem)]">
-                  {visibleHeadlineText}
-                  {!prefersReduced ? <span aria-hidden="true" className="agency-type-caret" /> : null}
-                </span>
-              </span>
-            </p>
+        <motion.div
+          initial={prefersReduced ? false : { opacity: 0, y: 28 }}
+          animate={
+            scrollCopyActive || prefersReduced
+              ? undefined
+              : showHeroText || appearAnimationDone
+                ? { opacity: 1, y: 0 }
+                : { opacity: 0, y: 28 }
+          }
+          style={
+            scrollCopyActive && !prefersReduced
+              ? {
+                  opacity: scrollCopyOpacity,
+                  y: scrollCopyY,
+                  visibility: heroCopyVisibility,
+                }
+              : undefined
+          }
+          transition={
+            prefersReduced
+              ? undefined
+              : {
+                  duration: HERO_V3_MODEL_APPEAR_MS / 1000,
+                  ease: [0.445, 0.05, 0.55, 0.95],
+                }
+          }
+          className="hero-v3__copy home-story-copy relative z-10 mx-auto flex h-full w-full max-w-450 flex-col justify-end px-6 pt-32 pb-2 sm:px-10 sm:pb-6 lg:justify-center lg:px-16 lg:pb-0 2xl:px-24"
+        >
+          <div className="min-w-0 max-w-2xl lg:max-w-3xl">
+            <p className="hero-v3__kicker mb-6 sm:mb-7">{HERO_KICKER}</p>
 
-            <div className="mt-7 max-w-lg">
-              <p className="text-base leading-relaxed text-agency-muted sm:text-lg">
-                Aperix Studio builds hand-coded custom websites and software for Melbourne businesses that want faster pages, greater presence and better support.
-              </p>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/contact"
-                className="agency-button-primary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98] sm:px-7 sm:py-3.5"
-              >
-                Start your project
-              </Link>
-              <Link
-                href="/our-work"
-                className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98] sm:px-7 sm:py-3.5"
-              >
-                See proof of work
-              </Link>
-            </div>
-
-            <div className="mt-6 flex max-w-lg flex-wrap gap-2">
-              {TRUST_PILLS.map((pill) => (
-                <span
-                  key={pill}
-                  className="rounded-full border border-agency-border bg-agency-surface/80 px-3 py-1.5 text-[11px] font-medium text-agency-muted backdrop-blur-sm sm:px-4 sm:text-xs"
-                >
-                  {pill}
+            <h1 className="hero-v3__title" aria-label={HERO_TITLE}>
+              {HERO_TITLE_LINES.map((line) => (
+                <span key={line} className="block">
+                  {line}
                 </span>
               ))}
-            </div>
-          </motion.div>
-        </div>
+            </h1>
 
-        {!prefersReduced && (
+            <p className="hero-v3__body mt-7 max-w-lg text-base leading-relaxed text-white/65 sm:mt-8 sm:text-lg">
+              {HERO_BODY}
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3 sm:mt-8">
+              <HashLink
+                href="/#our-work"
+                className="agency-button-primary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-80 active:scale-[0.98] sm:px-7 sm:py-3.5"
+              >
+                View work
+              </HashLink>
+              <Link
+                href="/contact"
+                className="agency-button-secondary inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity duration-150 hover:opacity-60 active:scale-[0.98] sm:px-7 sm:py-3.5"
+              >
+                Say hello
+              </Link>
+            </div>
+
+            <p className="hero-v3__meta mt-7 text-[11px] font-medium uppercase tracking-[0.18em] text-sky-100/50 sm:text-xs">
+              {HERO_META.join(" · ")}
+            </p>
+          </div>
+        </motion.div>
+
+        {!prefersReduced ? (
           <motion.div
             style={{ opacity: scrollCueOpacity }}
             className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
           >
             <div className="flex flex-col items-center gap-2.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]">
-              <span className="text-sm font-semibold uppercase tracking-[0.22em] text-white">
-                Scroll
-              </span>
+              <span className="text-sm font-semibold uppercase tracking-[0.22em] text-white">Scroll</span>
               <svg width="28" height="44" viewBox="0 0 28 44" fill="none" aria-hidden="true">
-                <rect
-                  x="1"
-                  y="1"
-                  width="26"
-                  height="42"
-                  rx="13"
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                />
+                <rect x="1" y="1" width="26" height="42" rx="13" stroke="#ffffff" strokeWidth="2" />
                 <motion.rect
                   x="12"
                   width="4"
@@ -259,6 +538,44 @@ export default function HeroV3() {
               </svg>
             </div>
           </motion.div>
+        ) : null}
+
+        {!prefersReduced ? (
+          <motion.h2
+            style={{ opacity: act3HeadingOpacity, y: act3HeadingY }}
+            className="home-story-act3-heading pointer-events-none absolute inset-x-0 bottom-[clamp(5.5rem,14vh,8.5rem)] z-10 mx-auto max-w-3xl px-6 text-center font-display text-[clamp(1.35rem,3.8vw,2.5rem)] font-bold leading-[1.08] tracking-tight text-white sm:px-10 lg:px-16"
+          >
+            {HERO_V3_ACT3_HEADING}
+          </motion.h2>
+        ) : null}
+
+        {prefersReduced ? (
+          <div
+            id="how-it-works"
+            className="pointer-events-none relative z-10 mt-12 flex flex-col gap-6 px-6 py-8 lg:px-16"
+          >
+            {storyStepBlocks.map((block) => (
+              <RocketTextBlock
+                key={block.id}
+                block={block}
+                scrollYProgress={staticZero}
+                prefersReduced
+                tone="dark"
+              />
+            ))}
+          </div>
+        ) : (
+          <div id="how-it-works" className="pointer-events-none absolute inset-0 z-20">
+            {storyStepBlocks.map((block) => (
+              <RocketTextBlock
+                key={block.id}
+                block={block}
+                scrollYProgress={scrollYProgress}
+                prefersReduced={false}
+                tone="dark"
+              />
+            ))}
+          </div>
         )}
       </div>
     </section>

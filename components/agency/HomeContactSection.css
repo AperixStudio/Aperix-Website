@@ -1,0 +1,19 @@
+.home-contact-section {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+.home-contact-section.contact-page {
+  min-height: auto;
+}
+
+.home-contact-section__shell {
+  min-height: auto;
+}
+
+@media (min-width: 1024px) {
+  .home-contact-section__shell {
+    min-height: 36rem;
+  }
+}

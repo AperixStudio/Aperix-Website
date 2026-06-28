@@ -174,7 +174,7 @@ function AccordionTrigger({
         onClick={() => toggle(value)}
         className={cn(
           "flex w-full items-center justify-between gap-4 py-5 text-left",
-          "font-(family-name:--font-syne) font-semibold text-lg",
+          "font-(family-name:--font-display) font-semibold text-lg",
           "text-agency-text transition-colors duration-150",
           "hover:text-agency-accent focus-visible:outline-none focus-visible:text-agency-accent",
           className,

@@ -69,7 +69,7 @@ function FlipSeparator() {
 }
 
 export default function MelbourneFlipClock() {
-  const [time, setTime] = useState<MelbourneTimeParts>(() => getMelbourneTimeParts());
+  const [time, setTime] = useState<MelbourneTimeParts | null>(null);
 
   useEffect(() => {
     const tick = () => setTime(getMelbourneTimeParts());
@@ -79,26 +79,34 @@ export default function MelbourneFlipClock() {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const clockLabel = formatMelbourneFlipClock(time);
+  const displayTime =
+    time ??
+    ({
+      hours: "00",
+      minutes: "00",
+      seconds: "00",
+      timeZoneName: "AEST",
+    } satisfies MelbourneTimeParts);
+  const clockLabel = formatMelbourneFlipClock(displayTime);
 
   return (
     <div className="flip-clock">
       <div className="flip-clock__meta">
         <span>Melbourne</span>
         <span aria-hidden="true">·</span>
-        <span>{time.timeZoneName}</span>
+        <span>{displayTime.timeZoneName}</span>
       </div>
 
       <time
         className="flip-clock__face"
         dateTime={clockLabel}
-        aria-label={`Melbourne time ${clockLabel} ${time.timeZoneName}`}
+        aria-label={`Melbourne time ${clockLabel} ${displayTime.timeZoneName}`}
       >
-        <DigitPair value={time.hours} />
+        <DigitPair value={displayTime.hours} />
         <FlipSeparator />
-        <DigitPair value={time.minutes} />
+        <DigitPair value={displayTime.minutes} />
         <FlipSeparator />
-        <DigitPair value={time.seconds} />
+        <DigitPair value={displayTime.seconds} />
       </time>
     </div>
   );

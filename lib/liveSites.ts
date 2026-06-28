@@ -2,6 +2,7 @@ export const LIVE_SITES = [
   {
     name: "The Hidden Chapter",
     href: "https://thehiddenchapter.com.au/",
+    previewVideo: "/theHiddenChapterPreview.webm",
     location: "Victoria, Australia",
     status: "Live now",
     label: "E-commerce / brand experience",
@@ -29,6 +30,7 @@ export const LIVE_SITES = [
   {
     name: "Rhino's Walk",
     href: "https://admirable-axolotl-39bf5e.netlify.app/",
+    previewVideo: "/RhinowalkPreview.webm",
     location: "Melbourne, VIC",
     status: "Live now",
     label: "Fundraiser / community campaign",
@@ -84,6 +86,7 @@ export const LIVE_SITES = [
   {
     name: "Complete Trade Solutions",
     href: "https://completetradesolutions.netlify.app/",
+    previewVideo: "/CSPreview.webm",
     location: "Melbourne, VIC",
     status: "Live now",
     label: "Trades / home renovation",
@@ -111,6 +114,7 @@ export const LIVE_SITES = [
   {
     name: "National Roofing Solutions",
     href: "https://nationalroofingsolutions.netlify.app/",
+    previewVideo: "/NRSPreview.webm",
     location: "Sunbury, VIC",
     status: "Live now",
     label: "Roofing contractor",

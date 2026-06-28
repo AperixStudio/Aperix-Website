@@ -11,7 +11,10 @@ function scrollToHash(hash: string) {
     return false;
   }
 
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollMarginTop = Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const top = target.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   window.history.replaceState(null, "", `#${hash}`);
   return true;
 }

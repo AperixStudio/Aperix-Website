@@ -1,0 +1,19 @@
+.hero-v4 {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-v4__unicorn-scene {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-v4__unicorn-scene canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

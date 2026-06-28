@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import SocialProofBar from "@/components/agency/SocialProofBar";
-import HomeStorySection from "@/components/agency/HomeStorySection";
+/** Airport-style split-flap board — cycles studio phrases below hero. @see SOCIAL_PROOF_BOARD_IMPLEMENTATION_BRIEF.md */
+import SocialProofBoard from "@/components/agency/SocialProofBoard";
+import HeroV4 from "@/components/agency/HeroV4";
 // import TierShowcase from "@/components/agency/TierShowcase";
-import LiveSitesSection from "@/components/agency/LiveSitesSection";
+import LiveSitesSectionV2 from "@/components/agency/LiveSitesSectionV2";
 import AboutWallTransitionSection from "@/components/agency/AboutWallTransitionSection";
-import FinalCTA from "@/components/agency/FinalCTA";
+import HomeContactSection from "@/components/agency/HomeContactSection";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
@@ -55,8 +56,8 @@ export default function Home() {
   return (
     <>
       <AgencyNavV2 />
-      <HomeStorySection />
-      <SocialProofBar />
+      <HeroV4 />
+      <SocialProofBoard />
       <main>
         <script
           type="application/ld+json"
@@ -65,9 +66,9 @@ export default function Home() {
         {/* <div className="winding-section winding-section-left">
           <TierShowcase />
         </div> */}
-        <LiveSitesSection />
+        <LiveSitesSectionV2 />
         <AboutWallTransitionSection />
-        <FinalCTA />
+        <HomeContactSection />
         <BackToTop />
       </main>
       <Footer />

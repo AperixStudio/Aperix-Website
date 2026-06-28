@@ -23,7 +23,7 @@ export default function FinalCTA() {
 
         <StaggerItem className="mt-8">
           <Link
-            href="/contact"
+            href="/#contact"
             className={cn(
               "final-cta-section__button inline-flex items-center justify-center rounded-lg px-8 py-4 text-lg font-semibold",
               "transition-[filter,transform] duration-150 hover:opacity-100 active:scale-[0.98]",

@@ -1,3 +1,4 @@
+@import "@fontsource-variable/hubot-sans/wght.css";
 @import "tailwindcss";
 
 /* ============================================================
@@ -178,9 +179,14 @@ html[data-theme="dark"] {
 
   --max-width-450: 112.5rem;
 
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-syne);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-hubot: "Hubot Sans Variable", system-ui, sans-serif;
+  --font-sans: var(--font-hubot);
+  --font-display: var(--font-hubot);
+  --font-mono: var(--font-hubot);
+  /* Legacy aliases — hero + existing CSS still reference these names. */
+  --font-inter: var(--font-hubot);
+  --font-syne: var(--font-hubot);
+  --font-jetbrains-mono: var(--font-hubot);
 }
 
 /* ============================================================
@@ -190,9 +196,20 @@ html[data-theme="dark"] {
 body {
   background-color: var(--agency-atmosphere-base);
   color: var(--agency-ink);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce), (pointer: coarse) {
@@ -317,18 +334,18 @@ html[data-theme="dark"] .site-atmosphere__sheen {
   opacity: 0;
 }
 
-html:has(#home-story) .site-atmosphere {
+html:has(#home-story, #home-hero) .site-atmosphere {
   background: #0c1017;
 }
 
-html:has(#home-story) .site-atmosphere__gradient,
-html:has(#home-story) .site-atmosphere__blobs,
-html:has(#home-story) .site-atmosphere__frost,
-html:has(#home-story) .site-atmosphere__sheen {
+html:has(#home-story, #home-hero) .site-atmosphere__gradient,
+html:has(#home-story, #home-hero) .site-atmosphere__blobs,
+html:has(#home-story, #home-hero) .site-atmosphere__frost,
+html:has(#home-story, #home-hero) .site-atmosphere__sheen {
   display: none;
 }
 
-html:has(#home-story) .site-atmosphere::after {
+html:has(#home-story, #home-hero) .site-atmosphere::after {
   display: none;
 }
 
@@ -576,7 +593,7 @@ html[data-theme="dark"] .agency-header .agency-button-primary:hover {
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
-html:has(#home-story) .agency-header-underlay {
+html:has(#home-story, #home-hero) .agency-header-underlay {
   height: 9rem;
   opacity: 1;
   backdrop-filter: blur(36px) saturate(1.5);
@@ -592,7 +609,7 @@ html:has(#home-story) .agency-header-underlay {
     0 14px 56px rgba(14, 165, 233, 0.14);
 }
 
-html:has(#home-story) .agency-glass-pill {
+html:has(#home-story, #home-hero) .agency-glass-pill {
   border-color: rgba(56, 189, 248, 0.32);
   background: rgba(10, 16, 26, 0.34);
   box-shadow:
@@ -605,25 +622,25 @@ html:has(#home-story) .agency-glass-pill {
   -webkit-backdrop-filter: blur(44px) saturate(1.8);
 }
 
-html:has(#home-story) .agency-glass-pill--soft {
+html:has(#home-story, #home-hero) .agency-glass-pill--soft {
   background: rgba(10, 16, 26, 0.24);
   border-color: rgba(56, 189, 248, 0.24);
 }
 
-html:has(#home-story) .agency-header .text-agency-ink {
+html:has(#home-story, #home-hero) .agency-header .text-agency-ink {
   color: #f8fafc;
 }
 
-html:has(#home-story) .agency-header .agency-nav-link .text-agency-muted {
+html:has(#home-story, #home-hero) .agency-header .agency-nav-link .text-agency-muted {
   color: rgba(186, 230, 253, 0.72);
 }
 
-html:has(#home-story) .agency-header .agency-nav-link:hover .text-agency-ink,
-html:has(#home-story) .agency-header .agency-nav-link:focus-visible .text-agency-ink {
+html:has(#home-story, #home-hero) .agency-header .agency-nav-link:hover .text-agency-ink,
+html:has(#home-story, #home-hero) .agency-header .agency-nav-link:focus-visible .text-agency-ink {
   color: #38bdf8;
 }
 
-html:has(#home-story) .agency-header button[class*="rounded-full"] {
+html:has(#home-story, #home-hero) .agency-header button[class*="rounded-full"] {
   border-color: rgba(56, 189, 248, 0.22);
   background: rgba(12, 18, 28, 0.4);
   color: #f8fafc;
@@ -634,11 +651,11 @@ html:has(#home-story) .agency-header button[class*="rounded-full"] {
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
 }
 
-html:has(#home-story) .agency-header button[class*="rounded-full"] span.rounded-full {
+html:has(#home-story, #home-hero) .agency-header button[class*="rounded-full"] span.rounded-full {
   background-color: #f8fafc;
 }
 
-html:has(#home-story) .agency-header .agency-button-primary {
+html:has(#home-story, #home-hero) .agency-header .agency-button-primary {
   border-color: rgba(56, 189, 248, 0.4);
   background: linear-gradient(
     135deg,
@@ -655,7 +672,7 @@ html:has(#home-story) .agency-header .agency-button-primary {
   -webkit-backdrop-filter: blur(44px) saturate(1.8);
 }
 
-html:has(#home-story) .agency-header .agency-button-primary:hover {
+html:has(#home-story, #home-hero) .agency-header .agency-button-primary:hover {
   filter: none;
   border-color: rgba(56, 189, 248, 0.58);
   background: linear-gradient(

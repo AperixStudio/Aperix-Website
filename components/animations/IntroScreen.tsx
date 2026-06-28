@@ -275,7 +275,7 @@ export default function IntroScreen() {
 
               <div
                 style={{
-                  fontFamily: "var(--font-syne), sans-serif",
+                  fontFamily: "var(--font-display), sans-serif",
                   fontSize: "clamp(2.6rem, 6vw, 3.8rem)",
                   fontWeight: 800,
                   letterSpacing: "0.22em",
@@ -315,7 +315,7 @@ export default function IntroScreen() {
               {/* Status line — counts up, stalls at 90%, stutters */}
               <div
                 style={{
-                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontFamily: "var(--font-sans), sans-serif",
                   fontSize: "clamp(0.6rem,1.3vw,0.75rem)",
                   letterSpacing: "0.14em",
                   color: "rgba(255,255,255,0.85)",
@@ -335,7 +335,7 @@ export default function IntroScreen() {
                 right: 0,
                 textAlign: "center",
                 zIndex: 2,
-                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontFamily: "var(--font-sans), sans-serif",
                 fontSize: "clamp(0.55rem,1.1vw,0.68rem)",
                 letterSpacing: "0.12em",
                 color: "rgba(180,215,255,0.4)",

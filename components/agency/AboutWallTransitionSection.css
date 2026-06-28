@@ -1,7 +1,17 @@
 .about-wall-section {
   position: relative;
   z-index: 2;
-  background: #0c1017;
+  background: transparent;
+}
+
+.about-wall-section__anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  scroll-margin-top: 5.5rem;
+  pointer-events: none;
 }
 
 .about-wall-section--static {
@@ -36,7 +46,7 @@
 .about-wall-panel__inner {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -48,6 +58,72 @@
     radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.14), transparent 42%),
     radial-gradient(circle at 82% 88%, rgba(14, 165, 233, 0.1), transparent 38%),
     linear-gradient(145deg, #0f1520 0%, #0c1017 52%, #080b12 100%);
+}
+
+.about-wall-panel--panel2 {
+  background: transparent;
+}
+
+.about-wall-panel--panel2::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 35%, rgba(8, 11, 18, 0.88) 100%);
+}
+
+.about-wall-panel--panel1 {
+  background: transparent;
+}
+
+.about-wall-panel--panel1::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 35%, rgba(8, 11, 18, 0.88) 100%);
+}
+
+.about-wall-panel1-chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.about-wall-panel1-chrome__coords {
+  position: absolute;
+  top: clamp(1.35rem, 3.5vw, 2.75rem);
+  left: clamp(1.35rem, 3.5vw, 2.75rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.58rem, 1.1vw, 0.72rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(186, 230, 253, 0.62);
+}
+
+.about-wall-panel1-chrome__clock {
+  position: absolute;
+  top: clamp(1.35rem, 3.5vw, 2.75rem);
+  right: clamp(1.35rem, 3.5vw, 2.75rem);
+}
+
+.about-wall-panel__unicorn-field--panel1 {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.about-wall-panel__unicorn-field--panel1 .about-wall-panel__unicorn-scene,
+.about-wall-panel__unicorn-field--panel1 .about-wall-panel__unicorn-scene canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .about-wall-panel__unicorn-field {
@@ -106,8 +182,21 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  background: #121820;
+}
+
+.about-wall-about__photos {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.about-wall-about__photo {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(8, 11, 18, 0.15) 0%, rgba(8, 11, 18, 0.72) 100%),
     repeating-linear-gradient(
       -12deg,
       rgba(255, 255, 255, 0.03) 0,
@@ -119,8 +208,27 @@
     #121820;
 }
 
+.about-wall-about__photo--left {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .about-wall-about__media img {
   object-fit: cover;
+}
+
+.about-wall-about__photo-placeholder {
+  position: absolute;
+  inset: clamp(0.75rem, 2vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px dashed rgba(148, 163, 184, 0.28);
+  border-radius: 0.75rem;
+  color: rgba(148, 163, 184, 0.72);
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .about-wall-about__placeholder {
@@ -237,6 +345,31 @@
 @media (max-width: 767px) {
   .about-wall-panel__title {
     max-width: 100%;
+  }
+
+  .about-wall-panel1-chrome__coords {
+    max-width: 9rem;
+    gap: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+
+  .about-wall-panel1-chrome__coords span:nth-child(2) {
+    display: none;
+  }
+
+  .about-wall-panel1-chrome__coords span {
+    display: block;
+    width: 100%;
+  }
+
+  .about-wall-about__photos {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .about-wall-about__photo--left {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 }
 
