@@ -894,3 +894,22 @@ html {
     animation: none;
   }
 }
+
+/* Homepage dynamic-import placeholders (reserve space, avoid layout shift) */
+.home-section-placeholder {
+  width: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.home-section-placeholder--our-work {
+  min-height: 100vh;
+}
+
+.home-section-placeholder--about {
+  min-height: 100vh;
+}
+
+.home-section-placeholder--contact {
+  min-height: min(36rem, 80vh);
+}

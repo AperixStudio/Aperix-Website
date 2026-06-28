@@ -3,6 +3,10 @@
 import { useAnimate, AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { INTRO_STALL_FRACTION, markGlitchEpoch } from "@/lib/storyBus";
+import {
+  INTRO_BACKGROUND_FAILSAFE_MS,
+  whenIntroBackgroundReady,
+} from "@/lib/introAssets";
 
 export let introHasPlayed = false;
 let doneSubscribers: Array<() => void> = [];
@@ -31,16 +35,17 @@ export function onIntroDone(cb: () => void): () => void {
 
 /* ── Timing ───────────────────────────────────────────────────
    load   — bar fills to 100%, dark sweep climbs to 90%
-   glitch — sweep frozen at 90%, system "crashes"; doubles as a real
-            loading gate: holds until the 3D scene reports ready
-   exit   — fast fade revealing the identical CRT state behind it  */
+   glitch — sweep frozen at 90%; holds until background is ready
+            (min glitch time + max failsafe so intro never traps)
+   exit   — fast fade revealing the page behind it  */
 const HOLD_MS = 200;
-const LOAD_MS = 1400;
-const GLITCH_MIN_MS = 400;
+const LOAD_MS = 2000;
+const GLITCH_MIN_MS = 900;
 const EXIT_MS = 250;
 
 /** Nominal wall-clock estimate (PageReveal failsafe adds its own margin). */
-export const INTRO_FULL_MS = HOLD_MS + LOAD_MS + GLITCH_MIN_MS + EXIT_MS;
+export const INTRO_FULL_MS =
+  HOLD_MS + LOAD_MS + Math.max(GLITCH_MIN_MS, INTRO_BACKGROUND_FAILSAFE_MS) + EXIT_MS;
 
 const STALL_PCT = Math.round(INTRO_STALL_FRACTION * 100);
 const LOGO_SIZE = 96;
@@ -127,7 +132,13 @@ export default function IntroScreen() {
           el.textContent = `${roll < 0.18 ? STALL_PCT - 1 : roll > 0.86 ? STALL_PCT + 1 : STALL_PCT}%`;
         }, 110);
 
-        await new Promise<void>((r) => setTimeout(r, GLITCH_MIN_MS));
+        await Promise.race([
+          Promise.all([
+            new Promise<void>((r) => setTimeout(r, GLITCH_MIN_MS)),
+            whenIntroBackgroundReady(),
+          ]),
+          new Promise<void>((r) => setTimeout(r, INTRO_BACKGROUND_FAILSAFE_MS)),
+        ]);
         if (cancelled) return;
       } finally {
         if (pctTimer) {

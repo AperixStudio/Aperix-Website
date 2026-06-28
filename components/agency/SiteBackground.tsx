@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import UnicornScene from "unicornstudio-react/next";
-import { useMobileViewport } from "@/lib/useMobileViewport";
+import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { signalIntroBackgroundReady } from "@/lib/introAssets";
 import "./SiteBackground.css";
 
 const BG_UNICORN_JSON = "/unicorn/aperixbg_scene.json";
@@ -18,6 +19,10 @@ const BG_RENDER = {
 } as const;
 
 function SiteBackgroundUnicorn() {
+  const handleReady = useCallback(() => {
+    signalIntroBackgroundReady();
+  }, []);
+
   return (
     <UnicornScene
       jsonFilePath={BG_UNICORN_JSON}
@@ -31,15 +36,26 @@ function SiteBackgroundUnicorn() {
       altText=""
       ariaLabel=""
       className="site-bg__scene"
+      onLoad={handleReady}
+      onError={handleReady}
     />
   );
 }
 
-/** Pre-rendered background on mobile — ping-pong loop (forward 10s, reverse 10s). */
+/** Pre-rendered background on mobile/tablet — ping-pong loop (forward 10s, reverse 10s). */
 function SiteBackgroundMobileVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const directionRef = useRef<1 | -1>(1);
   const loopEndRef = useRef(BG_MOBILE_LOOP_SECONDS);
+  const readySignalledRef = useRef(false);
+
+  const signalReadyOnce = useCallback(() => {
+    if (readySignalledRef.current) {
+      return;
+    }
+    readySignalledRef.current = true;
+    signalIntroBackgroundReady();
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -74,7 +90,7 @@ function SiteBackgroundMobileVideo() {
       }
     };
 
-    const onLoaded = () => {
+    const onReady = () => {
       loopEndRef.current = Math.min(
         BG_MOBILE_LOOP_SECONDS,
         Number.isFinite(video.duration) ? video.duration : BG_MOBILE_LOOP_SECONDS,
@@ -85,20 +101,29 @@ function SiteBackgroundMobileVideo() {
       ensurePlaying();
     };
 
-    video.addEventListener("loadedmetadata", onLoaded);
+    video.addEventListener("loadedmetadata", onReady);
+    video.addEventListener("canplaythrough", signalReadyOnce, { once: true });
+    video.addEventListener("error", signalReadyOnce, { once: true });
+    video.addEventListener("canplay", ensurePlaying);
     video.addEventListener("timeupdate", syncLoop);
     video.addEventListener("ended", ensurePlaying);
 
     if (video.readyState >= 1) {
-      onLoaded();
+      onReady();
+    }
+    if (video.readyState >= 4) {
+      signalReadyOnce();
     }
 
     return () => {
-      video.removeEventListener("loadedmetadata", onLoaded);
+      video.removeEventListener("loadedmetadata", onReady);
+      video.removeEventListener("canplaythrough", signalReadyOnce);
+      video.removeEventListener("error", signalReadyOnce);
+      video.removeEventListener("canplay", ensurePlaying);
       video.removeEventListener("timeupdate", syncLoop);
       video.removeEventListener("ended", ensurePlaying);
     };
-  }, []);
+  }, [signalReadyOnce]);
 
   return (
     <video
@@ -115,26 +140,34 @@ function SiteBackgroundMobileVideo() {
 }
 
 export default function SiteBackground() {
-  const { isMobile, ready } = useMobileViewport();
+  const { isMobile: isNarrowViewport, ready } = useNarrowViewport();
   const prefersReduced = useReducedMotion();
 
-  const useMobileVideo = ready && isMobile && !prefersReduced;
-  const useMobileStatic = ready && isMobile && prefersReduced;
+  const useVideoBackground = ready && isNarrowViewport && !prefersReduced;
+  const useStaticBackground = ready && isNarrowViewport && prefersReduced;
+
+  useEffect(() => {
+    if (prefersReduced) {
+      signalIntroBackgroundReady();
+    }
+  }, [prefersReduced]);
 
   return (
     <div className="site-bg" aria-hidden="true">
-      {useMobileVideo ? <SiteBackgroundMobileVideo /> : null}
-      {useMobileStatic ? (
+      {useVideoBackground ? <SiteBackgroundMobileVideo /> : null}
+      {useStaticBackground ? (
         <video
           className="site-bg__video"
           src={BG_MOBILE_VIDEO_SRC}
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-hidden="true"
+          onLoadedData={() => signalIntroBackgroundReady()}
+          onError={() => signalIntroBackgroundReady()}
         />
       ) : null}
-      {!useMobileVideo && !useMobileStatic && ready ? <SiteBackgroundUnicorn /> : null}
+      {!useVideoBackground && !useStaticBackground && ready ? <SiteBackgroundUnicorn /> : null}
     </div>
   );
 }

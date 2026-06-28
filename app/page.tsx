@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 /** Airport-style split-flap board — cycles studio phrases below hero. @see SOCIAL_PROOF_BOARD_IMPLEMENTATION_BRIEF.md */
 import SocialProofBoard from "@/components/agency/SocialProofBoard";
 import HeroV4 from "@/components/agency/HeroV4";
-// import TierShowcase from "@/components/agency/TierShowcase";
-import LiveSitesSectionV2 from "@/components/agency/LiveSitesSectionV2";
-import AboutWallTransitionSection from "@/components/agency/AboutWallTransitionSection";
-import HomeContactSection from "@/components/agency/HomeContactSection";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
+
+const LiveSitesSectionV2 = dynamic(() => import("@/components/agency/LiveSitesSectionV2"), {
+  loading: () => <div className="home-section-placeholder home-section-placeholder--our-work" aria-hidden />,
+});
+
+const AboutWallTransitionSection = dynamic(
+  () => import("@/components/agency/AboutWallTransitionSection"),
+  {
+    loading: () => <div className="home-section-placeholder home-section-placeholder--about" aria-hidden />,
+  },
+);
+
+const HomeContactSection = dynamic(() => import("@/components/agency/HomeContactSection"), {
+  loading: () => <div className="home-section-placeholder home-section-placeholder--contact" aria-hidden />,
+});
 
 const siteUrl = getSiteUrl();
 
@@ -63,9 +75,6 @@ export default function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
         />
-        {/* <div className="winding-section winding-section-left">
-          <TierShowcase />
-        </div> */}
         <LiveSitesSectionV2 />
         <AboutWallTransitionSection />
         <HomeContactSection />
