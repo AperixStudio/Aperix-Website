@@ -320,7 +320,7 @@ export default function HeroV3() {
   const scrollHasStartedRef = useRef(false);
   const staticZero = useMotionValue(0);
   const scrollRef = useRef<HTMLElement>(null);
-  const sectionInView = useInView(scrollRef);
+  const sectionInView = useInView(scrollRef, { initialInView: true });
   const renderActive = sectionInView && !prefersReduced;
 
   const storyStepBlocks = useMemo(

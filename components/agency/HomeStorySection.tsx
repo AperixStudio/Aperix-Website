@@ -114,7 +114,7 @@ export default function HomeStorySection() {
   const [showAct3Scene, setShowAct3Scene] = useState(false);
   const [pauseHeroVideo, setPauseHeroVideo] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
-  const storyInView = useInView(scrollRef);
+  const storyInView = useInView(scrollRef, { initialInView: true });
   const storyScrollVh = isMobile ? HOME_STORY_SCROLL_VH_MOBILE : HOME_STORY_SCROLL_VH;
   const renderActive = storyInView && tabVisible && !prefersReduced;
 

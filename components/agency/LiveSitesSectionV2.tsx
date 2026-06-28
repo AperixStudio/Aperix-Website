@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -21,6 +22,7 @@ import {
 } from "@/lib/liveSitesCarouselConfig";
 import { LIVE_SITES_CARD_THEMES, type LiveSitesCardTheme } from "@/lib/liveSitesCardThemes";
 import { useInView } from "@/lib/useInView";
+import { useMobileViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import "./LiveSitesSectionV2.css";
 
@@ -206,6 +208,8 @@ function LiveSitesCarouselTile({
   onHoverStart,
   onHoverEnd,
   registerTileRef,
+  isFrontTile = false,
+  touchMode = false,
 }: {
   site: LiveSite;
   theme: LiveSitesCardTheme;
@@ -214,9 +218,11 @@ function LiveSitesCarouselTile({
   isActivePreview: boolean;
   hasMounted: boolean;
   onTileClick: (event: MouseEvent<HTMLAnchorElement>) => void;
-  onHoverStart: () => void;
-  onHoverEnd: () => void;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
   registerTileRef: (element: HTMLAnchorElement | null) => void;
+  isFrontTile?: boolean;
+  touchMode?: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasPreviewVideo = "previewVideo" in site && Boolean(site.previewVideo);
@@ -241,9 +247,9 @@ function LiveSitesCarouselTile({
       href={site.href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`live-sites-v2__tile${isSpotlight ? " live-sites-v2__tile--spotlight" : ""}`}
+      className={`live-sites-v2__tile${isSpotlight ? " live-sites-v2__tile--spotlight" : ""}${isFrontTile ? " live-sites-v2__tile--front" : ""}${touchMode ? " live-sites-v2__tile--touch" : ""}`}
       aria-label={`Open ${site.name}`}
-      aria-hidden={!isSpotlight && !isActivePreview}
+      aria-hidden={touchMode ? !isFrontTile : !isSpotlight && !isActivePreview}
       onClick={onTileClick}
       onFocus={onHoverStart}
       onBlur={onHoverEnd}
@@ -321,11 +327,25 @@ type CarouselAnimState = {
   timeInCycle: number;
 };
 
+const TOUCH_CAROUSEL_FRAME_MS = 33;
+
 export default function LiveSitesSectionV2() {
   const prefersReducedMotion = useReducedMotion();
+  const { isMobile } = useMobileViewport();
   const sectionRef = useRef<HTMLElement>(null);
-  const sectionInView = useInView(sectionRef);
+  const sectionInView = useInView(sectionRef, { rootMargin: "120px 0px" });
   const tiles = useMemo(() => [...LIVE_SITES], []);
+  const [coarsePointer, setCoarsePointer] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const update = () => setCoarsePointer(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const touchCarousel = isMobile || coarsePointer;
 
   const [animState, setAnimState] = useState<CarouselAnimState>({
     cycleIndex: 0,
@@ -333,11 +353,7 @@ export default function LiveSitesSectionV2() {
   });
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredTileIndex, setHoveredTileIndex] = useState<number | null>(null);
-  const [mountedFrames, setMountedFrames] = useState<Set<number>>(() => new Set([0]));
-  const [mountedFrameCursor, setMountedFrameCursor] = useState({
-    front: 0,
-    hovered: null as number | null,
-  });
+  const mountedAccumRef = useRef(new Set<number>([0]));
 
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
@@ -347,7 +363,7 @@ export default function LiveSitesSectionV2() {
 
   const isPaused =
     prefersReducedMotion ||
-    hoveredTileIndex !== null ||
+    (!touchCarousel && hoveredTileIndex !== null) ||
     !sectionInView ||
     tiles.length <= 1;
 
@@ -372,22 +388,30 @@ export default function LiveSitesSectionV2() {
 
     let frameId = 0;
     let lastNow = performance.now();
+    let accumulatedDelta = 0;
+    const frameBudgetMs = touchCarousel ? TOUCH_CAROUSEL_FRAME_MS : 0;
 
     const tick = (now: number) => {
       const delta = now - lastNow;
       lastNow = now;
+      accumulatedDelta += delta;
 
-      setAnimState((current) => {
-        let timeInCycle = current.timeInCycle + delta;
-        let cycleIndex = current.cycleIndex;
+      if (frameBudgetMs === 0 || accumulatedDelta >= frameBudgetMs) {
+        const stepDelta = accumulatedDelta;
+        accumulatedDelta = 0;
 
-        while (timeInCycle >= LIVE_SITES_CAROUSEL_STEP_MS) {
-          timeInCycle -= LIVE_SITES_CAROUSEL_STEP_MS;
-          cycleIndex += 1;
-        }
+        setAnimState((current) => {
+          let timeInCycle = current.timeInCycle + stepDelta;
+          let cycleIndex = current.cycleIndex;
 
-        return { cycleIndex, timeInCycle };
-      });
+          while (timeInCycle >= LIVE_SITES_CAROUSEL_STEP_MS) {
+            timeInCycle -= LIVE_SITES_CAROUSEL_STEP_MS;
+            cycleIndex += 1;
+          }
+
+          return { cycleIndex, timeInCycle };
+        });
+      }
 
       frameId = window.requestAnimationFrame(tick);
     };
@@ -395,39 +419,30 @@ export default function LiveSitesSectionV2() {
     frameId = window.requestAnimationFrame(tick);
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [isPaused]);
+  }, [isPaused, touchCarousel]);
 
   const { cycleIndex, timeInCycle } = animState;
   const cycleProgress = prefersReducedMotion ? 0 : getCycleProgress(timeInCycle);
   const frontTileIndex = getFrontTileIndex(tiles.length, cycleIndex, cycleProgress);
-  const activePreviewIndex =
-    hoveredTileIndex !== null && !prefersReducedMotion ? hoveredTileIndex : frontTileIndex;
+  const activePreviewIndex = touchCarousel
+    ? frontTileIndex
+    : hoveredTileIndex !== null && !prefersReducedMotion
+      ? hoveredTileIndex
+      : frontTileIndex;
 
-  if (
-    mountedFrameCursor.front !== frontTileIndex ||
-    mountedFrameCursor.hovered !== hoveredTileIndex
-  ) {
-    setMountedFrameCursor({ front: frontTileIndex, hovered: hoveredTileIndex });
-    setMountedFrames((previous) => {
-      if (
-        previous.has(frontTileIndex) &&
-        (hoveredTileIndex === null || previous.has(hoveredTileIndex))
-      ) {
-        return previous;
-      }
-
-      const next = new Set(previous);
-      next.add(frontTileIndex);
-      if (hoveredTileIndex !== null) {
-        next.add(hoveredTileIndex);
-      }
-      return next;
-    });
-  }
+  const mountedFrames = useMemo(() => {
+    const accumulated = mountedAccumRef.current;
+    const sizeBefore = accumulated.size;
+    accumulated.add(frontTileIndex);
+    if (hoveredTileIndex !== null) {
+      accumulated.add(hoveredTileIndex);
+    }
+    return accumulated.size === sizeBefore ? accumulated : new Set(accumulated);
+  }, [frontTileIndex, hoveredTileIndex]);
 
   const updateHoveredFromPointer = useCallback(
     (clientX: number, clientY: number) => {
-      if (prefersReducedMotion || isDragging) {
+      if (touchCarousel || prefersReducedMotion || isDragging) {
         return;
       }
 
@@ -458,7 +473,7 @@ export default function LiveSitesSectionV2() {
         return current === nextIndex ? current : nextIndex;
       });
     },
-    [cycleIndex, cycleProgress, isDragging, prefersReducedMotion, tiles.length],
+    [cycleIndex, cycleProgress, isDragging, prefersReducedMotion, tiles.length, touchCarousel],
   );
 
   const handlePointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
@@ -535,7 +550,7 @@ export default function LiveSitesSectionV2() {
     <section
       ref={sectionRef}
       id="our-work"
-      className="live-sites-v2"
+      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}`}
       aria-label="Our work"
     >
       <div className="live-sites-v2__inner">
@@ -546,30 +561,38 @@ export default function LiveSitesSectionV2() {
             <span className="live-sites-v2__heading-line">We&apos;ve Shipped</span>
           </h2>
           {!prefersReducedMotion && tiles.length > 1 ? (
-            <p className="live-sites-v2__hint">Hover a card to preview - Click card to visit site</p>
+            <p className="live-sites-v2__hint">
+              {touchCarousel
+                ? "Swipe to browse · Tap a card to visit"
+                : "Hover a card to preview · Click card to visit site"}
+            </p>
           ) : null}
         </div>
 
         <div
           ref={carouselRef}
-          className={`live-sites-v2__carousel${isDragging ? " live-sites-v2__carousel--dragging" : ""}${hoveredTileIndex !== null ? " live-sites-v2__carousel--spotlight-active" : ""}`}
+          className={`live-sites-v2__carousel${isDragging ? " live-sites-v2__carousel--dragging" : ""}${!touchCarousel && hoveredTileIndex !== null ? " live-sites-v2__carousel--spotlight-active" : ""}${touchCarousel ? " live-sites-v2__carousel--touch" : ""}`}
           aria-label="Live website carousel"
           tabIndex={prefersReducedMotion || tiles.length <= 1 ? -1 : 0}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
-          onMouseEnter={(event) => updateHoveredFromPointer(event.clientX, event.clientY)}
-          onMouseMove={(event) => updateHoveredFromPointer(event.clientX, event.clientY)}
-          onMouseLeave={() => setHoveredTileIndex(null)}
+          onMouseEnter={touchCarousel ? undefined : (event) => updateHoveredFromPointer(event.clientX, event.clientY)}
+          onMouseMove={touchCarousel ? undefined : (event) => updateHoveredFromPointer(event.clientX, event.clientY)}
+          onMouseLeave={touchCarousel ? undefined : () => setHoveredTileIndex(null)}
           onKeyDown={handleKeyDown}
         >
           {tiles.map((site, tileIndex) => {
             const basePoint = getTilePoint(tileIndex, tiles.length, cycleIndex, cycleProgress);
-            const isSpotlight = !prefersReducedMotion && hoveredTileIndex === tileIndex;
+            const isSpotlight = !touchCarousel && !prefersReducedMotion && hoveredTileIndex === tileIndex;
             const point = isSpotlight ? getSpotlightPoint(basePoint) : basePoint;
             const isDimmed =
-              hoveredTileIndex !== null && hoveredTileIndex !== tileIndex && !prefersReducedMotion;
+              !touchCarousel &&
+              hoveredTileIndex !== null &&
+              hoveredTileIndex !== tileIndex &&
+              !prefersReducedMotion;
+            const isFrontTile = tileIndex === frontTileIndex;
 
             return (
               <LiveSitesCarouselTile
@@ -585,10 +608,16 @@ export default function LiveSitesSectionV2() {
                 isActivePreview={tileIndex === activePreviewIndex}
                 hasMounted={mountedFrames.has(tileIndex)}
                 onTileClick={handleTileClick}
-                onHoverStart={() => setHoveredTileIndex(tileIndex)}
-                onHoverEnd={() =>
-                  setHoveredTileIndex((current) => (current === tileIndex ? null : current))
+                onHoverStart={
+                  touchCarousel ? undefined : () => setHoveredTileIndex(tileIndex)
                 }
+                onHoverEnd={
+                  touchCarousel
+                    ? undefined
+                    : () => setHoveredTileIndex((current) => (current === tileIndex ? null : current))
+                }
+                isFrontTile={isFrontTile}
+                touchMode={touchCarousel}
                 registerTileRef={(element) => {
                   tileRefs.current[tileIndex] = element;
                 }}

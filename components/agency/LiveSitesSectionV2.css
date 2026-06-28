@@ -129,6 +129,26 @@
   transition: none;
 }
 
+/* Touch / mobile: rAF drives transforms — CSS transitions cause flicker. */
+.live-sites-v2--touch .live-sites-v2__tile,
+.live-sites-v2--touch .live-sites-v2__tile-front {
+  transition: none;
+  will-change: auto;
+}
+
+.live-sites-v2--touch .live-sites-v2__tile--front {
+  pointer-events: auto;
+}
+
+.live-sites-v2--touch .live-sites-v2__tile:hover .live-sites-v2__tile-front {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    38px 54px 110px rgba(0, 0, 0, 0.56),
+    inset 3px 0 0 rgba(255, 255, 255, 0.16),
+    inset 7px 0 0 rgba(0, 0, 0, 0.32),
+    inset 0 3px 0 rgba(255, 255, 255, 0.38);
+}
+
 .live-sites-v2__carousel--spotlight-active .live-sites-v2__tile:not(.live-sites-v2__tile--spotlight) {
   pointer-events: none;
   transition: opacity 180ms ease;
