@@ -17,7 +17,7 @@ const HERO_V4_SDK_URL =
   "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.5/dist/unicornStudio.umd.js";
 const HERO_V4_RENDER = {
   desktop: { scale: 1, dpi: 1.5, fps: 60 as const },
-  mobile: { scale: 1, dpi: 2, fps: 30 as const },
+  mobile: { scale: 1, dpi: 1.25, fps: 60 as const },
 } as const;
 const HERO_V4_APPEAR_DURATION_MS = 1100;
 const HERO_V4_SCROLL_ENGAGE_THRESHOLD = 0.008;
