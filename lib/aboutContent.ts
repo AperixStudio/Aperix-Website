@@ -8,8 +8,8 @@ export const ABOUT_TEAM_PANEL_PHOTOS = {
     alt: "Tom — Aperix Studio",
   },
   right: {
-    src: null,
-    alt: "Team member — Aperix Studio",
+    src: "/HarriosnPhoto.webp",
+    alt: "Harrison — Aperix Studio",
   },
 } as const;
 
