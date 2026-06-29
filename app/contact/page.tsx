@@ -3,30 +3,16 @@ import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import Footer from "@/components/agency/Footer";
 import ContactForm from "@/components/agency/ContactForm";
 import BackToTop from "@/components/agency/BackToTop";
-import { getSiteUrl, SITE_EMAIL, SITE_LOGO_PATH, SITE_NAME, SITE_SOCIAL_LINKS } from "@/lib/site";
+import { buildLocalBusinessSchema } from "@/lib/schema/siteSchema";
+import { buildPageMetadata } from "@/lib/seo/pageMetadata";
+import { getSiteUrl } from "@/lib/site";
 import "./ContactPage.css";
 
 const siteUrl = getSiteUrl();
-const siteLogoUrl = `${siteUrl}${SITE_LOGO_PATH}`;
-
-const localBusinessSchema = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": `${siteUrl}/contact#localbusiness`,
-  name: SITE_NAME,
-  url: siteUrl,
-  logo: siteLogoUrl,
-  email: SITE_EMAIL,
-  sameAs: SITE_SOCIAL_LINKS,
-  areaServed: {
-    "@type": "City",
-    name: "Melbourne",
-  },
-};
 
 const contactPageSchema = {
   "@context": "https://schema.org",
-  "@type": "WebPage",
+  "@type": "ContactPage",
   "@id": `${siteUrl}/contact#webpage`,
   url: `${siteUrl}/contact`,
   name: "Contact Aperix Studio",
@@ -40,33 +26,12 @@ const contactPageSchema = {
   },
 };
 
-/* ────────────────────────────────────────────────────────────
-   /contact — PRD §10
-   Two-column: dark left panel + form right panel
-   ──────────────────────────────────────────────────────────── */
-
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Contact — Aperix Studio",
   description:
     "Contact Aperix Studio about custom web design, development, and support for your Melbourne business.",
-  alternates: {
-    canonical: `${siteUrl}/contact`,
-  },
-  openGraph: {
-    title: "Contact — Aperix Studio",
-    description:
-      "Contact Aperix Studio about custom web design, development, and support for your Melbourne business.",
-    url: `${siteUrl}/contact`,
-    siteName: SITE_NAME,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Contact — Aperix Studio",
-    description:
-      "Contact Aperix Studio about custom web design, development, and support for your Melbourne business.",
-  },
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
@@ -74,12 +39,12 @@ export default function ContactPage() {
       <AgencyNavV2 />
 
       <main
-        role="main"
+        id="main-content"
         className="contact-page overflow-hidden px-4 pt-20 pb-6 sm:px-6 lg:px-8 lg:pt-24 lg:pb-8"
       >
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildLocalBusinessSchema()) }}
         />
         <script
           type="application/ld+json"

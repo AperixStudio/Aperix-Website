@@ -5,11 +5,11 @@ export const ABOUT_HERO_IMAGE_SRC = "/WhoAreWe.jpeg";
 export const ABOUT_TEAM_PANEL_PHOTOS = {
   left: {
     src: "/TomPhoto.webp",
-    alt: "Tom — Aperix Studio",
+    alt: "Tom, co-founder and developer at Aperix Studio in Melbourne",
   },
   right: {
     src: "/HarriosnPhoto.webp",
-    alt: "Harrison — Aperix Studio",
+    alt: "Harrison, co-founder and developer at Aperix Studio in Melbourne",
   },
 } as const;
 

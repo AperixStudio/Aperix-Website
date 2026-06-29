@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import Footer from "@/components/agency/Footer";
 import ServiceHero from "@/components/agency/services/ServiceHero";
@@ -6,59 +7,68 @@ import AddOnTable from "@/components/agency/services/AddOnTable";
 import FAQSection from "@/components/agency/FAQSection";
 import FinalCTA from "@/components/agency/FinalCTA";
 import BackToTop from "@/components/agency/BackToTop";
-import { getSiteUrl, SITE_EMAIL, SITE_LOGO_PATH, SITE_NAME, SITE_SOCIAL_LINKS } from "@/lib/site";
+import { buildOrganizationSchema } from "@/lib/schema/siteSchema";
+import { buildPageMetadata } from "@/lib/seo/pageMetadata";
+import { getSiteUrl } from "@/lib/site";
 import { FAQ_ITEMS, SERVICE_TIERS } from "@/lib/services-content";
 
 const siteUrl = getSiteUrl();
-const siteLogoUrl = `${siteUrl}${SITE_LOGO_PATH}`;
+
+function buildTierOffer(priceLabel: string) {
+  const numeric = priceLabel.replace(/[^\d.]/g, "");
+
+  if (priceLabel.includes("+") && numeric) {
+    return {
+      "@type": "Offer" as const,
+      priceCurrency: "AUD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification" as const,
+        minPrice: numeric,
+        priceCurrency: "AUD",
+      },
+      url: `${siteUrl}/services`,
+    };
+  }
+
+  return {
+    "@type": "Offer" as const,
+    price: numeric,
+    priceCurrency: "AUD",
+    url: `${siteUrl}/services`,
+  };
+}
 
 const serviceSchema = SERVICE_TIERS.map((tier) => ({
-  "@type": "Service",
+  "@type": "Service" as const,
   name: `${tier.name} Website`,
   description: tier.description,
   provider: {
-    "@type": "Organization",
     "@id": `${siteUrl}/#organization`,
-    name: SITE_NAME,
-    url: siteUrl,
   },
   areaServed: {
-    "@type": "City",
+    "@type": "City" as const,
     name: "Melbourne",
   },
-  offers: {
-    "@type": "Offer",
-    price: tier.price.replace(/[^\d.+]/g, ""),
-    priceCurrency: "AUD",
-    url: `${siteUrl}/services`,
-  },
+  offers: buildTierOffer(tier.price),
 }));
 
 const faqSchema = {
-  "@type": "FAQPage",
+  "@type": "FAQPage" as const,
   "@id": `${siteUrl}/services#faq`,
   mainEntity: FAQ_ITEMS.map((item) => ({
-    "@type": "Question",
+    "@type": "Question" as const,
     name: item.question,
     acceptedAnswer: {
-      "@type": "Answer",
+      "@type": "Answer" as const,
       text: item.answer,
     },
   })),
 };
 
-const organizationSchema = {
+const servicesPageSchema = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
-      name: SITE_NAME,
-      url: siteUrl,
-      logo: siteLogoUrl,
-      email: SITE_EMAIL,
-      sameAs: SITE_SOCIAL_LINKS,
-    },
+    buildOrganizationSchema({ includeGeo: true }),
     {
       "@type": "WebPage",
       "@id": `${siteUrl}/services#webpage`,
@@ -67,43 +77,30 @@ const organizationSchema = {
       isPartOf: {
         "@id": `${siteUrl}/#website`,
       },
+      about: {
+        "@id": `${siteUrl}/#organization`,
+      },
     },
     ...serviceSchema,
     faqSchema,
   ],
 };
 
-export const metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Services & Pricing | Aperix Studio",
   description:
     "Custom web development packages for Melbourne businesses. Compare Basic, Growth, Pro, and Enterprise tiers from $499 to $5,999+.",
-  alternates: {
-    canonical: `${siteUrl}/services`,
-  },
-  openGraph: {
-    title: "Services & Pricing | Aperix Studio",
-    description:
-      "Custom web development packages for Melbourne businesses. Compare Basic, Growth, Pro, and Enterprise tiers from $499 to $5,999+.",
-    url: `${siteUrl}/services`,
-    siteName: SITE_NAME,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Services & Pricing | Aperix Studio",
-    description:
-      "Custom web development packages for Melbourne businesses. Compare Basic, Growth, Pro, and Enterprise tiers from $499 to $5,999+.",
-  },
-};
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (
     <>
       <AgencyNavV2 />
-      <main role="main">
+      <main id="main-content">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesPageSchema) }}
         />
         <ServiceHero />
         <TierDetails />

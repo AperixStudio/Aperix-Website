@@ -10,7 +10,7 @@ export default function AboutPageHero() {
         {ABOUT_HERO_IMAGE_SRC ? (
           <Image
             src={ABOUT_HERO_IMAGE_SRC}
-            alt="About Aperix Studio"
+            alt="Aperix Studio team — two developers building custom websites in Melbourne"
             fill
             priority
             sizes="100vw"

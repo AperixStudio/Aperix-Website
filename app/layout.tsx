@@ -1,11 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
 import SiteBackground from "@/components/agency/SiteBackground";
 import CursorFollower from "@/components/animations/CursorFollower";
 import IntroScreen from "@/components/animations/IntroScreen";
 import PageReveal from "@/components/animations/PageReveal";
 import SmoothScroll from "@/components/animations/SmoothScroll";
-import { getSiteUrl, SITE_SOCIAL_LINKS } from "@/lib/site";
+import SkipToContent from "@/components/layout/SkipToContent";
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/schema/siteSchema";
+import { buildPageMetadata } from "@/lib/seo/pageMetadata";
+import { getSiteUrl } from "@/lib/site";
+import { SITE_LOCALITY } from "@/lib/siteBusiness";
 import "./globals.css";
 
 const themeInitScript = `
@@ -20,65 +27,33 @@ const themeInitScript = `
   })();
 `;
 
-// NOTE: The intro cover is now rendered as a JSX element below (with
-// `suppressHydrationWarning`) so the server-rendered HTML matches the
-// initial DOM. IntroScreen.releaseIntroGate() still removes it via direct
-// DOM manipulation when the intro animation finishes. Previously we
-// injected this div via an inline script which produced React error #418
-// (HTML hydration mismatch) because React did not know about the node.
-
-// Hubot Sans is loaded globally via app/globals.css (@fontsource-variable/hubot-sans).
-
 const siteUrl = getSiteUrl();
-const siteLogoUrl = `${siteUrl}/aperix-logo.svg`;
 
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
-      name: "Aperix Studio",
-      url: siteUrl,
-      logo: siteLogoUrl,
-      email: "hello@aperix.com.au",
-      sameAs: SITE_SOCIAL_LINKS,
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${siteUrl}/#website`,
-      name: "Aperix Studio",
-      url: siteUrl,
-      publisher: {
-        "@id": `${siteUrl}/#organization`,
-      },
-    },
+    buildOrganizationSchema({ includeGeo: true }),
+    buildWebSiteSchema(),
   ],
 };
 
-export const metadata: Metadata = {
+const rootMetadata = buildPageMetadata({
   title: "Aperix Studio — Custom Web Development Melbourne",
   description:
     "Hand-coded, bespoke websites and social media management for Melbourne businesses. No templates. No WordPress. Just fast, modern, custom work.",
+  path: "/",
+});
+
+export const metadata: Metadata = {
+  ...rootMetadata,
   metadataBase: new URL(siteUrl),
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: "Aperix Studio — Custom Web Development Melbourne",
-    description:
-      "Hand-coded, bespoke websites and social media management for Melbourne businesses.",
-    url: siteUrl,
-    siteName: "Aperix Studio",
-    locale: "en_AU",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Aperix Studio — Custom Web Development Melbourne",
-    description:
-      "Hand-coded, bespoke websites and social media management for Melbourne businesses.",
-  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3f4f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c1017" },
+  ],
 };
 
 export default function RootLayout({
@@ -87,17 +62,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang={SITE_LOCALITY.htmlLang} data-theme="dark" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        {/* 1. Theme — runs first, no flash */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* 2. Intro cover — rendered server-side so the DOM matches the
-               hydrated tree (avoids React error #418). IntroScreen removes
-               it imperatively when the animation finishes. */}
         <div
           id="aperix-intro-cover"
           aria-hidden="true"
@@ -105,11 +76,11 @@ export default function RootLayout({
             position: "fixed",
             inset: 0,
             zIndex: 9998,
-            background:
-              "linear-gradient(135deg,#07070f 0%,#0a0a18 100%)",
+            background: "linear-gradient(135deg,#07070f 0%,#0a0a18 100%)",
             pointerEvents: "all",
           }}
         />
+        <SkipToContent />
         <IntroScreen />
         <SiteBackground />
         <SiteAtmosphere />

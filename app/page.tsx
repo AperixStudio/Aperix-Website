@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-/** Airport-style split-flap board — cycles studio phrases below hero. @see SOCIAL_PROOF_BOARD_IMPLEMENTATION_BRIEF.md */
 import SocialProofBoard from "@/components/agency/SocialProofBoard";
 import HeroV4 from "@/components/agency/HeroV4";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
+import { buildOrganizationSchema } from "@/lib/schema/siteSchema";
+import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
 
 const LiveSitesSectionV2 = dynamic(() => import("@/components/agency/LiveSitesSectionV2"), {
@@ -29,7 +30,7 @@ const homePageSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${siteUrl}/#webpage`,
-  url: siteUrl,
+  url: `${siteUrl}/`,
   name: `${SITE_NAME} | Custom Web Development Melbourne`,
   description:
     "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
@@ -39,30 +40,17 @@ const homePageSchema = {
   about: {
     "@id": `${siteUrl}/#organization`,
   },
+  mainEntity: {
+    "@id": `${siteUrl}/#organization`,
+  },
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Aperix Studio | Custom Web Development Melbourne",
   description:
     "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
-  alternates: {
-    canonical: `${siteUrl}/`,
-  },
-  openGraph: {
-    title: "Aperix Studio | Custom Web Development Melbourne",
-    description:
-      "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
-    url: siteUrl,
-    siteName: SITE_NAME,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Aperix Studio | Custom Web Development Melbourne",
-    description:
-      "Aperix Studio builds custom websites and software for Melbourne businesses, with clear messaging, fast performance, and ongoing support.",
-  },
-};
+  path: "/",
+});
 
 export default function Home() {
   return (
@@ -70,10 +58,16 @@ export default function Home() {
       <AgencyNavV2 />
       <HeroV4 />
       <SocialProofBoard />
-      <main>
+      <main id="main-content">
+        <h1 className="sr-only">Aperix Studio — Custom Web Development Melbourne</h1>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [buildOrganizationSchema({ includeGeo: true }), homePageSchema],
+            }),
+          }}
         />
         <LiveSitesSectionV2 />
         <AboutWallTransitionSection />

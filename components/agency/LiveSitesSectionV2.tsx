@@ -340,7 +340,7 @@ function LiveSitesCarouselTile({
           ) : hasPreviewImage ? (
             <Image
               src={site.preview}
-              alt=""
+              alt={`Preview of ${site.name} website`}
               className="live-sites-v2__tile-preview-image"
               fill
               sizes="(max-width: 560px) 72vw, (max-width: 900px) 44vw, 21vw"

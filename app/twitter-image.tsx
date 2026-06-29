@@ -6,7 +6,7 @@ export const alt = "Aperix Studio — Custom Web Development Melbourne";
 export const size = OG_IMAGE_SIZE;
 export const contentType = OG_IMAGE_CONTENT_TYPE;
 
-export default function OpenGraphImage() {
+export default function TwitterImage() {
   return new ImageResponse(
     <AperixOgImage
       title="Custom Web Development Melbourne"
