@@ -8,8 +8,32 @@ import { signalIntroBackgroundReady } from "@/lib/introAssets";
 import "./SiteBackground.css";
 
 const BG_UNICORN_JSON = "/unicorn/aperixbg_scene.json";
-const BG_MOBILE_VIDEO_SRC = "/aperixbg_scene.webm";
+const BG_MOBILE_VIDEO_WEBM = "/aperixbg_scene.webm";
+const BG_MOBILE_VIDEO_MP4 = "/aperixbg_scene.mp4";
 const BG_MOBILE_LOOP_SECONDS = 10;
+
+function SiteBackgroundVideoSources() {
+  return (
+    <>
+      <source src={BG_MOBILE_VIDEO_WEBM} type="video/webm" />
+      <source src={BG_MOBILE_VIDEO_MP4} type="video/mp4" />
+    </>
+  );
+}
+
+/** Safari/iOS cannot reverse-play video; Android WebM ping-pong needs negative playbackRate. */
+function canReverseVideoPlayback(video: HTMLVideoElement): boolean {
+  try {
+    const previous = video.playbackRate;
+    video.playbackRate = -1;
+    const supported = video.playbackRate < 0;
+    video.playbackRate = previous;
+    return supported;
+  } catch {
+    return false;
+  }
+}
+
 const BG_SDK_URL =
   "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.5/dist/unicornStudio.umd.js";
 const BG_RENDER = {
@@ -42,10 +66,11 @@ function SiteBackgroundUnicorn() {
   );
 }
 
-/** Pre-rendered background on mobile/tablet — ping-pong loop (forward 10s, reverse 10s). */
+/** Pre-rendered background on mobile/tablet — ping-pong on Android, forward loop on iOS. */
 function SiteBackgroundMobileVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const directionRef = useRef<1 | -1>(1);
+  const pingPongRef = useRef(false);
   const loopEndRef = useRef(BG_MOBILE_LOOP_SECONDS);
   const readySignalledRef = useRef(false);
 
@@ -75,6 +100,14 @@ function SiteBackgroundMobileVideo() {
     const syncLoop = () => {
       const loopEnd = loopEndRef.current;
 
+      if (!pingPongRef.current) {
+        if (video.currentTime >= loopEnd - 0.05) {
+          video.currentTime = 0;
+          ensurePlaying();
+        }
+        return;
+      }
+
       if (directionRef.current === 1 && video.currentTime >= loopEnd - 0.05) {
         directionRef.current = -1;
         video.playbackRate = -1;
@@ -95,6 +128,7 @@ function SiteBackgroundMobileVideo() {
         BG_MOBILE_LOOP_SECONDS,
         Number.isFinite(video.duration) ? video.duration : BG_MOBILE_LOOP_SECONDS,
       );
+      pingPongRef.current = canReverseVideoPlayback(video);
       directionRef.current = 1;
       video.playbackRate = 1;
       video.currentTime = 0;
@@ -102,6 +136,7 @@ function SiteBackgroundMobileVideo() {
     };
 
     video.addEventListener("loadedmetadata", onReady);
+    video.addEventListener("loadeddata", signalReadyOnce, { once: true });
     video.addEventListener("canplaythrough", signalReadyOnce, { once: true });
     video.addEventListener("error", signalReadyOnce, { once: true });
     video.addEventListener("canplay", ensurePlaying);
@@ -135,6 +170,7 @@ function SiteBackgroundMobileVideo() {
 
     return () => {
       video.removeEventListener("loadedmetadata", onReady);
+      video.removeEventListener("loadeddata", signalReadyOnce);
       video.removeEventListener("canplaythrough", signalReadyOnce);
       video.removeEventListener("error", signalReadyOnce);
       video.removeEventListener("canplay", ensurePlaying);
@@ -148,13 +184,14 @@ function SiteBackgroundMobileVideo() {
     <video
       ref={videoRef}
       className="site-bg__video"
-      src={BG_MOBILE_VIDEO_SRC}
       muted
       playsInline
       autoPlay
       preload="auto"
       aria-hidden="true"
-    />
+    >
+      <SiteBackgroundVideoSources />
+    </video>
   );
 }
 
@@ -177,14 +214,15 @@ export default function SiteBackground() {
       {useStaticBackground ? (
         <video
           className="site-bg__video"
-          src={BG_MOBILE_VIDEO_SRC}
           muted
           playsInline
           preload="auto"
           aria-hidden="true"
           onLoadedData={() => signalIntroBackgroundReady()}
           onError={() => signalIntroBackgroundReady()}
-        />
+        >
+          <SiteBackgroundVideoSources />
+        </video>
       ) : null}
       {!useVideoBackground && !useStaticBackground && ready ? <SiteBackgroundUnicorn /> : null}
     </div>
