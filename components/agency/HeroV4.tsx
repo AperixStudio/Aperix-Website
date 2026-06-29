@@ -189,6 +189,10 @@ export default function HeroV4() {
   const appearCompleteRef = useRef(false);
   const appearTimerRef = useRef<number | null>(null);
   const scrollHoldFrameRef = useRef<number | null>(null);
+  const appearPlaybackStartedRef = useRef(false);
+
+  /** Mobile mounts during intro (preload). Desktop mounts only after intro so appear runs fresh. */
+  const mountUnicornScene = ready && !prefersReduced && (isMobile || introDone);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -255,6 +259,33 @@ export default function HeroV4() {
     scrollHoldFrameRef.current = window.requestAnimationFrame(tick);
   }, [applyHeroScroll, holdScrollAtStart]);
 
+  const scheduleAppearComplete = useCallback(() => {
+    if (appearTimerRef.current !== null) {
+      window.clearTimeout(appearTimerRef.current);
+    }
+
+    appearCompleteRef.current = false;
+    appearTimerRef.current = window.setTimeout(() => {
+      appearCompleteRef.current = true;
+      if (!scrollEngagedRef.current) {
+        holdScrollAtStart();
+      } else {
+        requestHeroV4Resize(sceneRef.current);
+        syncHeroScroll(scrollYProgress.get());
+      }
+    }, HERO_V4_APPEAR_DURATION_MS);
+  }, [holdScrollAtStart, scrollYProgress, syncHeroScroll]);
+
+  const beginAppearPlayback = useCallback(() => {
+    if (appearPlaybackStartedRef.current) {
+      return;
+    }
+    appearPlaybackStartedRef.current = true;
+    holdScrollAtStart();
+    startScrollHoldLoop();
+    scheduleAppearComplete();
+  }, [holdScrollAtStart, scheduleAppearComplete, startScrollHoldLoop]);
+
   useLayoutEffect(() => {
     heroInViewRef.current = heroInView;
   }, [heroInView]);
@@ -262,8 +293,40 @@ export default function HeroV4() {
   useLayoutEffect(() => {
     if (prefersReduced) {
       signalIntroHeroReady();
+      return;
     }
-  }, [prefersReduced]);
+
+    if (ready && !isMobile && introDone) {
+      signalIntroHeroReady();
+    }
+  }, [introDone, isMobile, prefersReduced, ready]);
+
+  /** Desktop: warm hero JSON during intro so the loading screen can finish without mounting WebGL. */
+  useEffect(() => {
+    if (!ready || prefersReduced || isMobile || introDone) {
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const preload = async () => {
+      try {
+        await fetch(HERO_V4_UNICORN_JSON, { cache: "force-cache" });
+      } catch {
+        /* still unblock intro on failure */
+      }
+
+      if (!cancelled) {
+        signalIntroHeroReady();
+      }
+    };
+
+    void preload();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [introDone, isMobile, prefersReduced, ready]);
 
   useEffect(() => {
     if (!introDone || !sceneLoaded) {
@@ -337,10 +400,11 @@ export default function HeroV4() {
     }
 
     holdScrollAtStart();
-    startScrollHoldLoop();
     requestHeroV4Resize(sceneRef.current);
     syncHeroScroll(scrollProgressRef.current);
-    signalIntroHeroReady();
+    if (isMobile) {
+      signalIntroHeroReady();
+    }
     setSceneLoaded(true);
 
     const relayout = () => {
@@ -353,23 +417,18 @@ export default function HeroV4() {
     window.setTimeout(relayout, 120);
     window.setTimeout(relayout, 400);
 
-    appearTimerRef.current = window.setTimeout(() => {
-      appearCompleteRef.current = true;
-      if (!scrollEngagedRef.current) {
-        holdScrollAtStart();
-      } else {
-        relayout();
-      }
-    }, HERO_V4_APPEAR_DURATION_MS);
-  }, [holdScrollAtStart, scrollYProgress, startScrollHoldLoop, syncHeroScroll]);
+    beginAppearPlayback();
+  }, [beginAppearPlayback, holdScrollAtStart, isMobile, scrollYProgress, syncHeroScroll]);
 
   const handleSceneError = useCallback(() => {
-    signalIntroHeroReady();
+    if (isMobile) {
+      signalIntroHeroReady();
+    }
     setSceneLoaded(true);
     if (introDone) {
       setSceneVisible(true);
     }
-  }, [introDone]);
+  }, [introDone, isMobile]);
 
   const renderQuality = ready
     ? isMobile
@@ -386,7 +445,7 @@ export default function HeroV4() {
       aria-label="Hero"
     >
       <div className="hero-v4">
-        {ready && !prefersReduced ? (
+        {mountUnicornScene ? (
           <UnicornScene
             jsonFilePath={HERO_V4_UNICORN_JSON}
             sdkUrl={HERO_V4_SDK_URL}
