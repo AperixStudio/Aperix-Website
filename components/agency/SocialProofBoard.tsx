@@ -24,8 +24,8 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 import "./SocialProofBoard.css";
 
 /** Milliseconds between board refreshes (phrases, times, and cities shift together). */
-const CYCLE_MS = 4200;
-const TOUCH_CYCLE_MS = 6500;
+const CYCLE_MS = 4000;
+const TOUCH_CYCLE_MS = 4000;
 
 /** Stagger flip start per row so lines update top → bottom like a real board. */
 const ROW_FLIP_STAGGER_S = 0.1;
