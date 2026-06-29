@@ -401,10 +401,11 @@ export default function LiveSitesSectionV2() {
     timeInCycle: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
-  const [touchStepProgress, setTouchStepProgress] = useState<number | null>(null);
+  const [isStepping, setIsStepping] = useState(false);
   const [hoveredTileIndex, setHoveredTileIndex] = useState<number | null>(null);
-  const touchStepFrameRef = useRef<number | null>(null);
-  const touchStepAnimatingRef = useRef(false);
+  const pendingAdvanceRef = useRef<1 | -1 | null>(null);
+  const stepAnimatingRef = useRef(false);
+  const stepTimerRef = useRef<number | null>(null);
 
   const dragStartX = useRef(0);
   const dragMoved = useRef(false);
@@ -433,58 +434,57 @@ export default function LiveSitesSectionV2() {
         return;
       }
 
-      if (touchStepAnimatingRef.current) {
+      if (stepAnimatingRef.current) {
         return;
       }
 
-      touchStepAnimatingRef.current = true;
-      const fromProgress = direction === -1 ? 1 : 0;
-      const toProgress = direction === -1 ? 0 : 1;
-
-      if (direction === -1) {
-        setAnimState((current) => ({
-          cycleIndex: current.cycleIndex - 1,
-          timeInCycle: 0,
-        }));
-      }
-
-      setTouchStepProgress(fromProgress);
-
-      const start = performance.now();
-
-      const tick = (now: number) => {
-        const elapsed = now - start;
-        const t = Math.min(1, elapsed / TOUCH_STEP_TRANSITION_MS);
-        const eased = easeInOutSine(t);
-        const progress = fromProgress + (toProgress - fromProgress) * eased;
-        setTouchStepProgress(progress);
-
-        if (t < 1) {
-          touchStepFrameRef.current = window.requestAnimationFrame(tick);
-          return;
-        }
-
-        if (direction === 1) {
-          setAnimState((current) => ({
-            cycleIndex: current.cycleIndex + 1,
-            timeInCycle: 0,
-          }));
-        }
-
-        setTouchStepProgress(null);
-        touchStepAnimatingRef.current = false;
-        touchStepFrameRef.current = null;
-      };
-
-      touchStepFrameRef.current = window.requestAnimationFrame(tick);
+      stepAnimatingRef.current = true;
+      pendingAdvanceRef.current = direction;
+      setIsStepping(true);
     },
     [tiles.length, touchCarousel],
   );
 
   useEffect(() => {
+    if (!isStepping || pendingAdvanceRef.current === null) {
+      return undefined;
+    }
+
+    const direction = pendingAdvanceRef.current;
+    pendingAdvanceRef.current = null;
+
+    let innerFrameId = 0;
+    const outerFrameId = window.requestAnimationFrame(() => {
+      innerFrameId = window.requestAnimationFrame(() => {
+        setAnimState((current) => ({
+          cycleIndex: current.cycleIndex + direction,
+          timeInCycle: 0,
+        }));
+
+        if (stepTimerRef.current !== null) {
+          window.clearTimeout(stepTimerRef.current);
+        }
+
+        stepTimerRef.current = window.setTimeout(() => {
+          setIsStepping(false);
+          stepAnimatingRef.current = false;
+          stepTimerRef.current = null;
+        }, TOUCH_STEP_TRANSITION_MS);
+      });
+    });
+
     return () => {
-      if (touchStepFrameRef.current !== null) {
-        window.cancelAnimationFrame(touchStepFrameRef.current);
+      window.cancelAnimationFrame(outerFrameId);
+      if (innerFrameId !== 0) {
+        window.cancelAnimationFrame(innerFrameId);
+      }
+    };
+  }, [isStepping]);
+
+  useEffect(() => {
+    return () => {
+      if (stepTimerRef.current !== null) {
+        window.clearTimeout(stepTimerRef.current);
       }
     };
   }, []);
@@ -522,11 +522,8 @@ export default function LiveSitesSectionV2() {
   }, [isPaused]);
 
   const { cycleIndex, timeInCycle } = animState;
-  const cycleProgress = touchCarousel
-    ? touchStepProgress ?? 0
-    : prefersReducedMotion
-      ? 0
-      : getCycleProgress(timeInCycle);
+  const cycleProgress =
+    touchCarousel || prefersReducedMotion ? 0 : getCycleProgress(timeInCycle);
   const frontTileIndex = getFrontTileIndex(
     tiles.length,
     cycleIndex,
@@ -649,7 +646,7 @@ export default function LiveSitesSectionV2() {
     <section
       ref={sectionRef}
       id="our-work"
-      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}${touchStepProgress !== null ? " live-sites-v2--stepping" : ""}`}
+      className={`live-sites-v2${touchCarousel ? " live-sites-v2--touch" : ""}${isStepping ? " live-sites-v2--stepping" : ""}`}
       aria-label="Our work"
     >
       <div className="live-sites-v2__inner">

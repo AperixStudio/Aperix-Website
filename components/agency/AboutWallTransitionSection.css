@@ -109,12 +109,6 @@
   color: rgba(186, 230, 253, 0.62);
 }
 
-.about-wall-panel1-chrome__clock {
-  position: absolute;
-  top: clamp(1.35rem, 3.5vw, 2.75rem);
-  right: clamp(1.35rem, 3.5vw, 2.75rem);
-}
-
 .about-wall-panel__unicorn-field--panel1 {
   mask-image: none;
   -webkit-mask-image: none;

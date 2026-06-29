@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { INTRO_STALL_FRACTION, markGlitchEpoch } from "@/lib/storyBus";
 import {
   INTRO_BACKGROUND_FAILSAFE_MS,
-  whenIntroBackgroundReady,
+  whenIntroSceneReady,
 } from "@/lib/introAssets";
 
 export let introHasPlayed = false;
@@ -135,7 +135,7 @@ export default function IntroScreen() {
         await Promise.race([
           Promise.all([
             new Promise<void>((r) => setTimeout(r, GLITCH_MIN_MS)),
-            whenIntroBackgroundReady(),
+            whenIntroSceneReady(),
           ]),
           new Promise<void>((r) => setTimeout(r, INTRO_BACKGROUND_FAILSAFE_MS)),
         ]);

@@ -10,7 +10,6 @@ import {
   useTransform,
 } from "framer-motion";
 import UnicornScene from "unicornstudio-react/next";
-import MelbourneFlipClock from "@/components/agency/MelbourneFlipClock";
 import AboutPanel2MergeLanes from "@/components/agency/AboutPanel2MergeLanes";
 import {
   ABOUT_PANEL1_UNICORN_JSON,
@@ -69,7 +68,7 @@ function AboutPanel1UnicornField() {
   );
 }
 
-/** Panel 01 — Unicorn scene + Melbourne clock and coordinates overlay. */
+/** Panel 01 — Unicorn scene + Melbourne coordinates overlay. */
 function AboutPanel1Field() {
   return (
     <>
@@ -80,9 +79,6 @@ function AboutPanel1Field() {
           <span aria-hidden="true">·</span>
           <span>{MELBOURNE_COORDINATES.lngLabel}</span>
         </p>
-        <div className="about-wall-panel1-chrome__clock">
-          <MelbourneFlipClock />
-        </div>
       </div>
     </>
   );

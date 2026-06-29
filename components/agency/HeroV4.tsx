@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import {
   useMotionValueEvent,
   useScroll,
 } from "framer-motion";
 import UnicornScene from "unicornstudio-react/next";
+import { signalIntroHeroReady } from "@/lib/introAssets";
 import { useIntroDone } from "@/lib/useIntroDone";
 import { useInView } from "@/lib/useInView";
 import { useMobileViewport } from "@/lib/useMobileViewport";
@@ -176,6 +177,8 @@ export default function HeroV4() {
   const { isMobile, ready } = useMobileViewport();
   const introDone = useIntroDone();
   const prefersReduced = useReducedMotion();
+  const [sceneVisible, setSceneVisible] = useState(false);
+  const [sceneLoaded, setSceneLoaded] = useState(false);
   const sceneRef = useRef<HeroV4UnicornSceneInstance | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const heroInView = useInView(sectionRef, { initialInView: true });
@@ -257,6 +260,24 @@ export default function HeroV4() {
   }, [heroInView]);
 
   useLayoutEffect(() => {
+    if (prefersReduced) {
+      signalIntroHeroReady();
+    }
+  }, [prefersReduced]);
+
+  useEffect(() => {
+    if (!introDone || !sceneLoaded) {
+      return undefined;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setSceneVisible(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [introDone, sceneLoaded]);
+
+  useLayoutEffect(() => {
     holdScrollAtStart();
   }, [holdScrollAtStart]);
 
@@ -319,6 +340,8 @@ export default function HeroV4() {
     startScrollHoldLoop();
     requestHeroV4Resize(sceneRef.current);
     syncHeroScroll(scrollProgressRef.current);
+    signalIntroHeroReady();
+    setSceneLoaded(true);
 
     const relayout = () => {
       requestHeroV4Resize(sceneRef.current);
@@ -340,6 +363,14 @@ export default function HeroV4() {
     }, HERO_V4_APPEAR_DURATION_MS);
   }, [holdScrollAtStart, scrollYProgress, startScrollHoldLoop, syncHeroScroll]);
 
+  const handleSceneError = useCallback(() => {
+    signalIntroHeroReady();
+    setSceneLoaded(true);
+    if (introDone) {
+      setSceneVisible(true);
+    }
+  }, [introDone]);
+
   const renderQuality = ready
     ? isMobile
       ? HERO_V4_RENDER.mobile
@@ -355,7 +386,7 @@ export default function HeroV4() {
       aria-label="Hero"
     >
       <div className="hero-v4">
-        {ready && !prefersReduced && introDone ? (
+        {ready && !prefersReduced ? (
           <UnicornScene
             jsonFilePath={HERO_V4_UNICORN_JSON}
             sdkUrl={HERO_V4_SDK_URL}
@@ -364,13 +395,14 @@ export default function HeroV4() {
             scale={renderQuality.scale}
             dpi={renderQuality.dpi}
             fps={renderQuality.fps}
-            lazyLoad
+            lazyLoad={false}
             paused={!heroInView}
             altText="3D animation scene"
             ariaLabel="3D animation scene"
-            className="hero-v4__unicorn-scene"
+            className={`hero-v4__unicorn-scene${sceneVisible ? " hero-v4__unicorn-scene--visible" : ""}`}
             sceneRef={sceneRef as unknown as RefObject<{ element: HTMLElement; destroy: () => void } | null>}
             onLoad={handleLoad}
+            onError={handleSceneError}
           />
         ) : null}
       </div>
