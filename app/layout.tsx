@@ -1,8 +1,10 @@
+import "@fontsource-variable/hubot-sans/wght.css";
 import type { Metadata, Viewport } from "next";
 import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
 import SiteBackground from "@/components/agency/SiteBackground";
+import SiteLogoFixed from "@/components/agency/SiteLogoFixed";
 import CursorFollower from "@/components/animations/CursorFollower";
-import IntroScreen from "@/components/animations/IntroScreen";
+import IntroSelector from "@/components/animations/IntroSelector";
 import PageReveal from "@/components/animations/PageReveal";
 import SmoothScroll from "@/components/animations/SmoothScroll";
 import SkipToContent from "@/components/layout/SkipToContent";
@@ -81,7 +83,10 @@ export default function RootLayout({
           }}
         />
         <SkipToContent />
-        <IntroScreen />
+        {/* SiteLogoFixed lives outside PageReveal so it's always in the DOM
+            and measurable — IntroScreenSimple reads its position to fly toward it. */}
+        <SiteLogoFixed />
+        <IntroSelector />
         <SiteBackground />
         <SiteAtmosphere />
         <SmoothScroll />
