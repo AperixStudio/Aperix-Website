@@ -22,11 +22,7 @@ import "./HomeWorkSection.css";
 function WorkCard({ site, side }: { site: LiveSite; side: "left" | "right" }) {
   const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  // Large bottom margin: the entrance fires while the card is still well
-  // below the fold, so scrolling toward it actually shows the spin-in
-  // happening instead of arriving to a blank gap and then a card that's
-  // already (or suddenly) in place.
-  const inView = useInView(cardRef, { rootMargin: "0px 0px 45% 0px", threshold: 0 });
+  const inView = useInView(cardRef, { rootMargin: "10% 0px", threshold: 0.25 });
   const prefersReducedMotion = useReducedMotion();
 
   const previewVideo = "previewVideo" in site ? site.previewVideo : undefined;
