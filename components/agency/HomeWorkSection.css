@@ -29,43 +29,40 @@
    colour-invert what's now showing through. Both driven imperatively by
    WorkCursorLens.tsx — see z-index order below. */
 
+/* The section's opaque fill. An <svg> rather than a plain div so the ribbon
+   can be cut clean out of it via an SVG <mask>, giving a crisp edge that a
+   CSS gradient mask can't. No viewBox — an SVG without one maps its
+   coordinate system 1:1 to its rendered CSS pixel size, matching the raw px
+   coordinates WorkCursorLens.tsx writes into the mask path. */
 .home-work__backdrop {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: var(--work-navy-deep);
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
-.home-work__lens {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
-  /* backdrop-filter is set inline by WorkCursorLens.tsx, not here — the CSS
-     minifier collapses "backdrop-filter" + "-webkit-backdrop-filter" into
-     just the prefixed one when both carry an identical value, which drops
-     support for browsers (Firefox) that only understand the unprefixed
-     property. Setting both via style.* at runtime survives untouched. */
-  transition: opacity 200ms ease;
+.home-work__backdrop-fill {
+  fill: var(--work-navy-deep);
 }
 
-/* Comet tail — glowing dots trailing the lens, brightening whatever they
-   glow over rather than tinting it flat (mix-blend-mode: screen), so they
-   read as light rather than paint. Purely decorative: they don't punch
-   their own holes, they just sit over the (possibly still-opaque) backdrop. */
-.home-work__comet-node {
+
+/* Colour band hugging the outside edge of the cut-out — a wide soft glow
+   behind a tight bright core line, masked by the cut-out itself so it never
+   paints over the reveal. Screen blending makes it read as emitted light
+   rather than flat paint on the navy. */
+.home-work__ribbon {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   z-index: 1;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  opacity: 0;
   mix-blend-mode: screen;
+}
+
+.home-work__ribbon > g > g {
   transition: opacity 200ms ease;
 }
 
@@ -311,7 +308,7 @@
 
   /* WorkCursorLens doesn't mount at all under reduced motion — this is a
      belt-and-braces fallback in case it's ever server-rendered. */
-  .home-work__lens {
+  .home-work__ribbon {
     display: none;
   }
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import HashLink from "@/components/agency/HashLink";
 import "./BubbleNav.css";
 
 const NAV_LINKS = [
@@ -29,13 +29,13 @@ export default function BubbleNav() {
               <li key={`div-${i}`} className="bubble-nav__divider" aria-hidden="true" />
             )}
             <li key={link.href}>
-              <Link
+              <HashLink
                 href={link.href}
                 className="bubble-nav__link"
                 data-text={link.label}
               >
                 {link.label}
-              </Link>
+              </HashLink>
             </li>
           </>
         ))}
