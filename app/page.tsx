@@ -1,5 +1,10 @@
 import BubbleNav from "@/components/agency/BubbleNav";
+import Footer from "@/components/agency/Footer";
+import HomeAboutSection from "@/components/agency/HomeAboutSection";
+import HomeContactSection from "@/components/agency/HomeContactSection";
 import HomeHero from "@/components/agency/HomeHero";
+import HomeWorkSection from "@/components/agency/HomeWorkSection";
+import "./home-fit.css";
 
 // New look — build here.
 // SiteLogoFixed is in layout.tsx (outside PageReveal).
@@ -8,11 +13,14 @@ import HomeHero from "@/components/agency/HomeHero";
 export default function Home() {
   return (
     <>
-      <main id="main-content">
+      <main id="main-content" className="home-page">
         <HomeHero />
-
-        {/* ↓ build your new sections here */}
+        <HomeWorkSection />
+        <HomeAboutSection />
+        <HomeContactSection />
       </main>
+
+      <Footer />
 
       <BubbleNav />
     </>

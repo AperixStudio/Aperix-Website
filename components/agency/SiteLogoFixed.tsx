@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
 const LOGO_SIZE = 44; // px — the nav logo size
-const LOGO_H = Math.round(LOGO_SIZE * (836 / 768));
 
 /**
  * Fixed centred logo at the top of every page.
@@ -17,9 +17,22 @@ const LOGO_H = Math.round(LOGO_SIZE * (836 / 768));
  */
 export default function SiteLogoFixed() {
   const handleClick = (e: React.MouseEvent) => {
-    if (window.location.pathname === "/") {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.location.pathname !== "/") {
+      // Not home yet — let Link navigate normally, it lands hash-free.
+      return;
+    }
+
+    // Already home: scroll manually and skip Link's navigation so the page
+    // doesn't jump. Link's navigation is what would normally clear a
+    // leftover "#section" hash (e.g. left behind after visiting #contact
+    // via HashLink) from the address bar — since we preventDefault() it
+    // below, do that clearing ourselves. Otherwise the hash silently stays
+    // in the URL and a reload jumps straight back to that section instead
+    // of the top of the page.
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   };
 
@@ -35,44 +48,20 @@ export default function SiteLogoFixed() {
       }}
     >
       <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
-        <svg
-          width={LOGO_SIZE}
-          height={LOGO_H}
-          viewBox="0 0 768 836"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+        <AnimatedLogo
+          size={LOGO_SIZE}
+          priority
           style={{
-            display: "block",
             filter: "drop-shadow(0 0 8px rgba(14,165,233,0.4))",
             transition: "filter 0.2s ease",
           }}
           onMouseEnter={(e) =>
-            ((e.currentTarget as SVGSVGElement).style.filter =
-              "drop-shadow(0 0 16px rgba(14,165,233,0.7))")
+            (e.currentTarget.style.filter = "drop-shadow(0 0 16px rgba(14,165,233,0.7))")
           }
           onMouseLeave={(e) =>
-            ((e.currentTarget as SVGSVGElement).style.filter =
-              "drop-shadow(0 0 8px rgba(14,165,233,0.4))")
+            (e.currentTarget.style.filter = "drop-shadow(0 0 8px rgba(14,165,233,0.4))")
           }
-        >
-          <defs>
-            <linearGradient
-              id="logo-nav-grad"
-              x1="384" y1="106" x2="384" y2="730"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0" stopColor="#DFF2FF" />
-              <stop offset="1" stopColor="#BFE5FF" />
-            </linearGradient>
-          </defs>
-          <path d="M384 76L660 236V556L384 716L108 556V236L384 76Z" stroke="#0EA5E9" strokeWidth="28" strokeLinejoin="round" />
-          <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#logo-nav-grad)" />
-          <path d="M384 273L516 349V503L384 579L252 503V349L384 273Z" stroke="rgba(255,255,255,0.85)" strokeWidth="28" strokeLinejoin="round" />
-          <path d="M384 303V548" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-          <path d="M278 364L490 487" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-          <path d="M490 364L278 487" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-          <path d="M291 418H477" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-        </svg>
+        />
       </Link>
     </div>
   );

@@ -1,0 +1,317 @@
+/* ============================================================
+   Our Work — opaque dark blue slab, stacked alternating cards
+   ============================================================ */
+
+.home-work {
+  --work-navy: #071729;
+  --work-navy-deep: #04101d;
+  --work-card: #0c2440;
+  --work-card-edge: rgba(125, 190, 255, 0.16);
+  --work-accent: #0ea5e9;
+  --work-text: #eaf3fb;
+  --work-muted: rgba(214, 232, 248, 0.62);
+
+  position: relative;
+  z-index: 2;
+  /* No background on the section itself — .home-work__backdrop carries the
+     fill instead, so the cursor lens can punch a real hole through to the
+     site's animated background underneath rather than just this section's
+     own flat colour. */
+  color: var(--work-text);
+  padding: clamp(4rem, 9vw, 8rem) 1.5rem clamp(4rem, 9vw, 8rem);
+  overflow: hidden;
+}
+
+/* ---- Cursor lens ----
+   Two layers: a full-bleed flat fill with a cursor-follow hole punched via
+   mask-image (revealing the real fixed site background through the hole),
+   and a circle exactly over that hole with backdrop-filter: invert() to
+   colour-invert what's now showing through. Both driven imperatively by
+   WorkCursorLens.tsx — see z-index order below. */
+
+.home-work__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--work-navy-deep);
+  pointer-events: none;
+}
+
+.home-work__lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  /* backdrop-filter is set inline by WorkCursorLens.tsx, not here — the CSS
+     minifier collapses "backdrop-filter" + "-webkit-backdrop-filter" into
+     just the prefixed one when both carry an identical value, which drops
+     support for browsers (Firefox) that only understand the unprefixed
+     property. Setting both via style.* at runtime survives untouched. */
+  transition: opacity 200ms ease;
+}
+
+/* Comet tail — glowing dots trailing the lens, brightening whatever they
+   glow over rather than tinting it flat (mix-blend-mode: screen), so they
+   read as light rather than paint. Purely decorative: they don't punch
+   their own holes, they just sit over the (possibly still-opaque) backdrop. */
+.home-work__comet-node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 200ms ease;
+}
+
+.home-work__inner {
+  position: relative;
+  z-index: 3;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+/* ---- Header ---- */
+
+.home-work__header {
+  max-width: 40rem;
+  margin: 0 0 clamp(3rem, 6vw, 5rem);
+}
+
+.home-work__eyebrow {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--work-accent);
+}
+
+.home-work__heading {
+  margin: 0 0 1rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.9rem, 4.4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.home-work__lede {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  line-height: 1.7;
+  color: var(--work-muted);
+}
+
+/* ---- Stack ---- */
+
+.home-work__stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 6vw, 5rem);
+}
+
+.home-work__stack-item {
+  display: flex;
+  flex-direction: column;
+  /* Vanishing point for each card's own 3D rotate-in — set on the direct
+     parent so every card gets its own centred perspective. */
+  perspective: 1600px;
+}
+
+.home-work__card {
+  width: min(34rem, 100%);
+  border-radius: 1.25rem;
+  border: 1px solid var(--work-card-edge);
+  background: linear-gradient(160deg, var(--work-card) 0%, #081b31 100%);
+  box-shadow: 0 26px 60px rgba(2, 8, 18, 0.55);
+  overflow: hidden;
+  opacity: 0;
+  backface-visibility: hidden;
+  /* Off-screen, spun flat (Z) and tumbling in through depth (Y), on the
+     side opposite where the card rests — see --work-enter-x /
+     --work-enter-rotate / --work-enter-rotate-y on the --left / --right
+     variants. */
+  transform: translateX(var(--work-enter-x, 70vw)) rotateZ(var(--work-enter-rotate, -300deg))
+    rotateY(var(--work-enter-rotate-y, -65deg));
+  transition: opacity 1050ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1050ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.home-work__card.is-visible {
+  opacity: 1;
+  transform: translateX(0) rotateZ(0deg) rotateY(0deg);
+}
+
+.home-work__card--left {
+  --work-enter-x: 70vw;
+  --work-enter-rotate: -300deg;
+  --work-enter-rotate-y: -65deg;
+  margin-right: auto;
+}
+
+.home-work__card--right {
+  --work-enter-x: -70vw;
+  --work-enter-rotate: 300deg;
+  --work-enter-rotate-y: 65deg;
+  margin-left: auto;
+}
+
+.home-work__card:hover,
+.home-work__card:focus-within {
+  border-color: rgba(14, 165, 233, 0.55);
+  box-shadow: 0 30px 70px rgba(2, 8, 18, 0.65), 0 0 0 1px rgba(14, 165, 233, 0.18);
+}
+
+.home-work__card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-work__card-link:focus-visible {
+  outline: 2px solid var(--work-accent);
+  outline-offset: 3px;
+}
+
+/* ---- Media ---- */
+
+.home-work__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #04101d;
+  overflow: hidden;
+}
+
+.home-work__media-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.home-work__media-placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--work-muted);
+}
+
+/* ---- Body ---- */
+
+.home-work__body {
+  padding: 1.5rem 1.6rem 1.7rem;
+}
+
+.home-work__label {
+  margin: 0 0 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--work-accent);
+}
+
+.home-work__name {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.home-work__location {
+  margin: 0 0 0.9rem;
+  font-size: 0.8rem;
+  color: rgba(214, 232, 248, 0.48);
+}
+
+.home-work__summary {
+  margin: 0 0 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--work-muted);
+}
+
+.home-work__scope {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.3rem;
+  padding: 0;
+  list-style: none;
+}
+
+.home-work__scope-item {
+  padding: 0.26rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 190, 255, 0.18);
+  background: rgba(125, 190, 255, 0.06);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: rgba(214, 232, 248, 0.8);
+}
+
+.home-work__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--work-accent);
+}
+
+.home-work__cta span {
+  transition: transform 250ms ease;
+}
+
+.home-work__card-link:hover .home-work__cta span {
+  transform: translateX(0.3rem);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 860px) {
+  .home-work__card,
+  .home-work__card--left,
+  .home-work__card--right {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-work__card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .home-work__cta span {
+    transition: none;
+  }
+
+  /* WorkCursorLens doesn't mount at all under reduced motion — this is a
+     belt-and-braces fallback in case it's ever server-rendered. */
+  .home-work__lens {
+    display: none;
+  }
+}

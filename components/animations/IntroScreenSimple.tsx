@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introState";
 
@@ -16,7 +16,8 @@ import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introStat
     • STUDIO slides in alongside APERIX.
 
   settling      HOLD_MS + OVERLAY_MS → … + SETTLE_MS
-    "APERIX STUDIO" floats on the live background.
+    "APERIX STUDIO" floats on the live background (fixed center + inner
+    translateY(2.8rem) — same stack as HomeHero).
     releaseIntroGate() + markIntroDone() BOTH fire at the START of this
     phase → PageReveal fades the page in over 500 ms while the intro
     text is still fully visible on top of it.
@@ -173,33 +174,35 @@ export default function IntroScreenSimple() {
         {textOn && (
           <motion.div
             key="intro-text"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.4 } }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.4 } }}
             exit={{ opacity: 0, transition: { duration: INTRO_TEXT_FADE_MS / 1000, ease: "easeOut" } }}
             aria-hidden="true"
             style={{
               position: "fixed", inset: 0, zIndex: 9999,
               display: "flex", alignItems: "center", justifyContent: "center",
-              transform: "translateY(2.8rem)",
               pointerEvents: "none",
             }}
           >
-            <LayoutGroup id="intro-title">
+            {/*
+              Outer motion.div: fixed viewport centering + opacity only (no FM y).
+              Inner div: pure CSS translateY(2.8rem) — mirrors HomeHero exactly so
+              Framer Motion never overwrites the vertical offset.
+            */}
+            <div style={{ transform: "translateY(2.8rem)" }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
-                <motion.span
-                  layout
-                  transition={{ layout: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } }}
+                <span
                   style={{
                     fontFamily: "var(--font-display), sans-serif",
-                    fontSize: "clamp(2.4rem, 5.5vw, 3.6rem)",
-                    fontWeight: 800, letterSpacing: "0.22em",
+                    fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
+                    fontWeight: 800, letterSpacing: "var(--wordmark-track-aperix, 0.22em)",
                     color: "#ffffff", lineHeight: 1,
                     textShadow: "0 0 32px rgba(14,165,233,0.55)",
                     whiteSpace: "nowrap",
                   }}
                 >
                   APERIX
-                </motion.span>
+                </span>
 
                 <AnimatePresence>
                   {studioVisible && (
@@ -209,12 +212,12 @@ export default function IntroScreenSimple() {
                       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                       style={{
                         fontFamily: "var(--font-display), sans-serif",
-                        fontSize: "clamp(2.4rem, 5.5vw, 3.6rem)",
-                        fontWeight: 300, letterSpacing: "0.34em",
+                        fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
+                        fontWeight: 300, letterSpacing: "var(--wordmark-track-studio, 0.34em)",
                         color: "rgba(255,255,255,0.75)", lineHeight: 1,
                         textShadow: "0 0 24px rgba(14,165,233,0.3)",
                         whiteSpace: "nowrap",
-                        paddingLeft: "0.5em", overflow: "hidden",
+                        paddingLeft: "var(--wordmark-gap, 0.5em)", overflow: "hidden",
                       }}
                     >
                       STUDIO
@@ -222,7 +225,7 @@ export default function IntroScreenSimple() {
                   )}
                 </AnimatePresence>
               </div>
-            </LayoutGroup>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
