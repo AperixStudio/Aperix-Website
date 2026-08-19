@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { motion, useAnimationFrame, useMotionValue } from "motion/react";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { useMeasure } from "./use-measure";
 
 export type InfiniteSliderProps = {
@@ -88,8 +88,10 @@ export function InfiniteSlider({
         onHoverStart={durationOnHover ? () => setIsHovered(true) : undefined}
         onHoverEnd={durationOnHover ? () => setIsHovered(false) : undefined}
       >
-        {children}
-        {children}
+        {/* Two copies of the same elements would collide as duplicate keys
+            among siblings; a keyed Fragment per copy scopes them. */}
+        <Fragment key="lead">{children}</Fragment>
+        <Fragment key="loop">{children}</Fragment>
       </motion.div>
     </div>
   );

@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, type RefObject } from "react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import {
+  PIXEL_FADE_CELL,
+  PIXEL_FADE_CELLS,
+  PIXEL_FADE_INSIDE,
+  PIXEL_FADE_ROWS,
+} from "@/lib/pixelFade";
 
 // Radius of the round "blob" head of the reveal once the cursor has settled.
 const LENS_RADIUS_PX = 155;
@@ -50,6 +56,22 @@ const RIBBON_COLOR_STOPS = [
   "#fffbeb",
 ];
 
+// Depth of the elliptical sweep on the slab's top edge. Mirrors the
+// --work-top-curve clamp() in HomeWorkSection.css, which drives the
+// reduced-motion fallback slab; keep the two in step.
+const TOP_CURVE_MIN_PX = 20;
+const TOP_CURVE_VW = 0.025;
+const TOP_CURVE_MAX_PX = 44;
+
+function topCurveFor(width: number): number {
+  return Math.min(
+    TOP_CURVE_MAX_PX,
+    Math.max(TOP_CURVE_MIN_PX, width * TOP_CURVE_VW),
+  );
+}
+
+const SLAB_SHAPE_ID = "home-work-slab-shape";
+const SLAB_MASK_ID = "home-work-slab-mask";
 const HOLE_MASK_ID = "home-work-hole-mask";
 const RIM_MASK_ID = "home-work-rim-mask";
 const GLOW_FILTER_ID = "home-work-glow-blur";
@@ -180,9 +202,15 @@ function quad(a: Point, b: Point, c: Point, d: Point) {
  */
 export default function WorkCursorLens({
   containerRef,
+  slabRef,
 }: {
+  /** Spans both sections — defines the coordinate space and hit area. */
   containerRef: RefObject<HTMLElement | null>;
+  /** The Work section wrapper, whose height sets where the grid begins. */
+  slabRef: RefObject<HTMLElement | null>;
 }) {
+  const slabPathRef = useRef<SVGPathElement>(null);
+  const gridGroupRef = useRef<SVGGElement>(null);
   const holePathRef = useRef<SVGPathElement>(null);
   const holeHeadRef = useRef<SVGCircleElement>(null);
   const rimMaskPathRef = useRef<SVGPathElement>(null);
@@ -204,6 +232,40 @@ export default function WorkCursorLens({
   );
   const rafRef = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
+
+  // Slab geometry. The solid fill runs from the curved top edge down to where
+  // the pixel grid begins, which is PIXEL_FADE_INSIDE above the Work
+  // section's bottom edge — the rest of the grid hangs below, into About.
+  useEffect(() => {
+    const band = containerRef.current;
+    const work = slabRef.current;
+    if (!band || !work || prefersReducedMotion) {
+      return;
+    }
+
+    const layout = () => {
+      const w = band.clientWidth;
+      const gridTop = work.offsetHeight - PIXEL_FADE_INSIDE;
+      const curve = topCurveFor(w);
+
+      // Half-ellipse across the top (sweep 1 bulges upward in SVG's y-down
+      // space), then straight down to where the grid takes over.
+      slabPathRef.current?.setAttribute(
+        "d",
+        `M 0 ${curve.toFixed(1)} A ${(w / 2).toFixed(1)} ${curve.toFixed(1)} 0 0 1 ${w.toFixed(1)} ${curve.toFixed(1)} L ${w.toFixed(1)} ${gridTop.toFixed(1)} L 0 ${gridTop.toFixed(1)} Z`,
+      );
+      gridGroupRef.current?.setAttribute(
+        "transform",
+        `translate(0 ${gridTop.toFixed(1)})`,
+      );
+    };
+
+    layout();
+    const observer = new ResizeObserver(layout);
+    observer.observe(band);
+    observer.observe(work);
+    return () => observer.disconnect();
+  }, [containerRef, slabRef, prefersReducedMotion]);
 
   useEffect(() => {
     const section = containerRef.current;
@@ -244,7 +306,12 @@ export default function WorkCursorLens({
       const inner = buildEdges(vertices, c.r);
       const glow = buildEdges(vertices, c.r + GLOW_SPREAD_PX);
       const core = buildEdges(vertices, c.r + CORE_SPREAD_PX);
-      const innerPath = buildOutlinePath(vertices, inner.left, inner.right, c.r);
+      const innerPath = buildOutlinePath(
+        vertices,
+        inner.left,
+        inner.right,
+        c.r,
+      );
 
       // Same shape drives the hole in the backdrop and the mask that keeps
       // the colour band strictly outside the reveal. The head also goes in
@@ -254,20 +321,30 @@ export default function WorkCursorLens({
       holePathRef.current?.setAttribute("d", innerPath);
       rimMaskPathRef.current?.setAttribute("d", innerPath);
       fillPathRef.current?.setAttribute("d", innerPath);
-      for (const head of [holeHeadRef.current, rimMaskHeadRef.current, fillHeadRef.current]) {
+      for (const head of [
+        holeHeadRef.current,
+        rimMaskHeadRef.current,
+        fillHeadRef.current,
+      ]) {
         head?.setAttribute("cx", c.x.toFixed(1));
         head?.setAttribute("cy", c.y.toFixed(1));
         head?.setAttribute("r", headR);
       }
 
       if (fillGroupRef.current) {
-        fillGroupRef.current.style.opacity = visible ? String(REVEAL_FILL_OPACITY) : "0";
+        fillGroupRef.current.style.opacity = visible
+          ? String(REVEAL_FILL_OPACITY)
+          : "0";
       }
       if (glowGroupRef.current) {
-        glowGroupRef.current.style.opacity = visible ? String(GLOW_OPACITY) : "0";
+        glowGroupRef.current.style.opacity = visible
+          ? String(GLOW_OPACITY)
+          : "0";
       }
       if (coreGroupRef.current) {
-        coreGroupRef.current.style.opacity = visible ? String(CORE_OPACITY) : "0";
+        coreGroupRef.current.style.opacity = visible
+          ? String(CORE_OPACITY)
+          : "0";
       }
 
       // Round caps over the head so the colour band wraps the blob, not just
@@ -276,23 +353,39 @@ export default function WorkCursorLens({
       if (glowHead) {
         glowHead.setAttribute("cx", c.x.toFixed(1));
         glowHead.setAttribute("cy", c.y.toFixed(1));
-        glowHead.setAttribute("r", Math.max(0, c.r + GLOW_SPREAD_PX).toFixed(1));
+        glowHead.setAttribute(
+          "r",
+          Math.max(0, c.r + GLOW_SPREAD_PX).toFixed(1),
+        );
       }
       const coreHead = coreHeadRef.current;
       if (coreHead) {
         coreHead.setAttribute("cx", c.x.toFixed(1));
         coreHead.setAttribute("cy", c.y.toFixed(1));
-        coreHead.setAttribute("r", Math.max(0, c.r + CORE_SPREAD_PX).toFixed(1));
+        coreHead.setAttribute(
+          "r",
+          Math.max(0, c.r + CORE_SPREAD_PX).toFixed(1),
+        );
       }
 
       for (let i = 0; i < RIBBON_LINKS; i += 1) {
         glowSegmentRefs.current[i]?.setAttribute(
           "points",
-          quad(glow.left[i], glow.left[i + 1], glow.right[i + 1], glow.right[i]),
+          quad(
+            glow.left[i],
+            glow.left[i + 1],
+            glow.right[i + 1],
+            glow.right[i],
+          ),
         );
         coreSegmentRefs.current[i]?.setAttribute(
           "points",
-          quad(core.left[i], core.left[i + 1], core.right[i + 1], core.right[i]),
+          quad(
+            core.left[i],
+            core.left[i + 1],
+            core.right[i + 1],
+            core.right[i],
+          ),
         );
       }
 
@@ -351,32 +444,76 @@ export default function WorkCursorLens({
 
   return (
     <>
-      {/* Opaque section fill, with the ribbon cut clean out of it. */}
+      {/* Section fill plus the grid that dissolves it, with the ribbon cut
+          clean out of both. */}
       <svg className="home-work__backdrop" aria-hidden="true">
         <defs>
+          {/* Drawn once, used twice: painted below, and referenced by
+              SLAB_MASK_ID so the colour effects only appear where there is
+              actually slab or grid to reveal. */}
+          <g id={SLAB_SHAPE_ID}>
+            <path
+              ref={slabPathRef}
+              d="M 0 0"
+              className="home-work__backdrop-fill"
+            />
+            <g ref={gridGroupRef} className="home-work__backdrop-grid">
+              {PIXEL_FADE_CELLS.map((cell) => (
+                <rect
+                  key={`${cell.x}-${cell.y}`}
+                  x={cell.x}
+                  y={cell.y}
+                  width={PIXEL_FADE_CELL}
+                  height={PIXEL_FADE_CELL}
+                  opacity={0.4 + 0.6 * (1 - cell.row / (PIXEL_FADE_ROWS - 1))}
+                />
+              ))}
+            </g>
+          </g>
+
           <mask id={HOLE_MASK_ID} maskUnits="userSpaceOnUse">
             <rect x="0" y="0" width="100%" height="100%" fill="#ffffff" />
             <path ref={holePathRef} d="M 0 0" fill="#000000" />
             <circle ref={holeHeadRef} r={0} fill="#000000" />
           </mask>
+
+          {/* Alpha-typed, so the slab's own colour is irrelevant and the
+              grid's per-row opacity carries straight through: the effect
+              thins out exactly as the grid does, which is what makes the
+              hand-off into About read as one continuous surface. */}
+          <mask
+            id={SLAB_MASK_ID}
+            maskUnits="userSpaceOnUse"
+            style={{ maskType: "alpha" }}
+          >
+            <use href={`#${SLAB_SHAPE_ID}`} />
+          </mask>
         </defs>
-        <rect
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          className="home-work__backdrop-fill"
-          mask={`url(#${HOLE_MASK_ID})`}
-        />
+
+        <g mask={`url(#${HOLE_MASK_ID})`}>
+          <use href={`#${SLAB_SHAPE_ID}`} />
+        </g>
       </svg>
 
       {/* Colour band hugging the outside of the cut-out's edge. */}
       <svg className="home-work__ribbon" aria-hidden="true">
         <defs>
-          <filter id={GLOW_FILTER_ID} x="-30%" y="-30%" width="160%" height="160%">
+          <filter
+            id={GLOW_FILTER_ID}
+            x="-30%"
+            y="-30%"
+            width="160%"
+            height="160%"
+          >
             <feGaussianBlur stdDeviation="16" />
           </filter>
-          <filter id={CORE_FILTER_ID} x="-30%" y="-30%" width="160%" height="160%">
+          <filter
+            id={CORE_FILTER_ID}
+            x="-30%"
+            y="-30%"
+            width="160%"
+            height="160%"
+          >
             <feGaussianBlur stdDeviation="2.5" />
           </filter>
           {/* Filters run before masks in SVG, so the band ends up soft on its
@@ -388,43 +525,55 @@ export default function WorkCursorLens({
           </mask>
         </defs>
 
-        {/* Light-blue wash across the revealed background. Sits outside the
+        {/* Everything the lens paints is confined to the slab shape, so the
+            effect fades out through the dissolving grid instead of stopping
+            at the Work section's edge or floating loose over About. */}
+        <g mask={`url(#${SLAB_MASK_ID})`}>
+          {/* Light-blue wash across the revealed background. Sits outside the
             rim mask — that mask exists to keep the colour band *out* of the
             reveal, which is exactly where this belongs. */}
-        <g ref={fillGroupRef} opacity={0}>
-          <path ref={fillPathRef} d="M 0 0" fill={REVEAL_FILL} />
-          <circle ref={fillHeadRef} r={0} fill={REVEAL_FILL} />
-        </g>
-
-        <g mask={`url(#${RIM_MASK_ID})`}>
-          <g ref={glowGroupRef} filter={`url(#${GLOW_FILTER_ID})`} opacity={0}>
-            <circle ref={glowHeadRef} r={0} fill={SEGMENT_COLORS[0]} />
-            {SEGMENT_COLORS.map((color, i) => (
-              <polygon
-                key={`glow-${i}`}
-                ref={(el) => {
-                  glowSegmentRefs.current[i] = el;
-                }}
-                fill={color}
-              />
-            ))}
+          <g ref={fillGroupRef} opacity={0}>
+            <path ref={fillPathRef} d="M 0 0" fill={REVEAL_FILL} />
+            <circle ref={fillHeadRef} r={0} fill={REVEAL_FILL} />
           </g>
 
-          <g ref={coreGroupRef} filter={`url(#${CORE_FILTER_ID})`} opacity={0}>
-            <circle ref={coreHeadRef} r={0} fill="#ffffff" />
-            {SEGMENT_COLORS.map((_, i) => (
-              <polygon
-                key={`core-${i}`}
-                ref={(el) => {
-                  coreSegmentRefs.current[i] = el;
-                }}
-                fill="#ffffff"
-              />
-            ))}
+          <g mask={`url(#${RIM_MASK_ID})`}>
+            <g
+              ref={glowGroupRef}
+              filter={`url(#${GLOW_FILTER_ID})`}
+              opacity={0}
+            >
+              <circle ref={glowHeadRef} r={0} fill={SEGMENT_COLORS[0]} />
+              {SEGMENT_COLORS.map((color, i) => (
+                <polygon
+                  key={`glow-${i}`}
+                  ref={(el) => {
+                    glowSegmentRefs.current[i] = el;
+                  }}
+                  fill={color}
+                />
+              ))}
+            </g>
+
+            <g
+              ref={coreGroupRef}
+              filter={`url(#${CORE_FILTER_ID})`}
+              opacity={0}
+            >
+              <circle ref={coreHeadRef} r={0} fill="#ffffff" />
+              {SEGMENT_COLORS.map((_, i) => (
+                <polygon
+                  key={`core-${i}`}
+                  ref={(el) => {
+                    coreSegmentRefs.current[i] = el;
+                  }}
+                  fill="#ffffff"
+                />
+              ))}
+            </g>
           </g>
         </g>
       </svg>
-
     </>
   );
 }

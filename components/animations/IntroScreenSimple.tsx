@@ -37,7 +37,18 @@ export const INTRO_TEXT_FADE_MS = 400;  // exported so HomeHero can sync its del
 
 const HOLD_MS         = 1100;
 const OVERLAY_MS      = 650;
-const STUDIO_DELAY_MS = 220;
+const STUDIO_DELAY_MS = 180;
+// How long STUDIO takes to wipe open. The settling phase waits for this to
+// finish (see t2 below) — once the page fades in, HomeHero's identically
+// positioned wordmark is on screen too, and a still-forming STUDIO would
+// break the alignment that makes that crossfade invisible.
+const STUDIO_REVEAL_MS = 1000;
+// Beat between the wordmark finishing and the page starting to fade in.
+const STUDIO_HOLD_MS   = 120;
+// Even acceleration in and out. The old ease-out-quint put most of the wipe
+// in the first fifth of its duration, which read as a snap however long the
+// duration was.
+const STUDIO_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 // Sizes
 const LOGO_INTRO_SIZE = 88;
@@ -76,7 +87,10 @@ export default function IntroScreenSimple() {
 
     const t0 = HOLD_MS;
     const t1 = t0 + STUDIO_DELAY_MS;
-    const t2 = t0 + OVERLAY_MS;              // settling begins
+    // Settling waits for whichever finishes last: the overlay/logo flight, or
+    // the STUDIO reveal plus its hold.
+    const t2 =
+      t0 + Math.max(OVERLAY_MS, STUDIO_DELAY_MS + STUDIO_REVEAL_MS + STUDIO_HOLD_MS);
     const t3 = t2 + INTRO_SETTLE_MS;         // textFading begins
 
     at(t0, () => setPhase("overlayFading"));
@@ -175,7 +189,7 @@ export default function IntroScreenSimple() {
           <motion.div
             key="intro-text"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.4 } }}
+            animate={{ opacity: 1, transition: { duration: 0.8, ease: [0.33, 0, 0.2, 1], delay: 0.4 } }}
             exit={{ opacity: 0, transition: { duration: INTRO_TEXT_FADE_MS / 1000, ease: "easeOut" } }}
             aria-hidden="true"
             style={{
@@ -209,7 +223,10 @@ export default function IntroScreenSimple() {
                     <motion.span
                       initial={{ opacity: 0, x: 18, maxWidth: 0 }}
                       animate={{ opacity: 1, x: 0, maxWidth: 400 }}
-                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{
+                        duration: STUDIO_REVEAL_MS / 1000,
+                        ease: STUDIO_EASE,
+                      }}
                       style={{
                         fontFamily: "var(--font-display), sans-serif",
                         fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",

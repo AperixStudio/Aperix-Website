@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
 import { useInView } from "@/lib/useInView";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import WorkCursorLens from "@/components/agency/WorkCursorLens";
 import WorkPixelFade from "@/components/agency/WorkPixelFade";
 import { InfiniteSlider } from "@/components/core/infinite-slider";
 import {
@@ -98,7 +97,15 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
           style={{ borderRadius: "22px" }}
           className="home-work__dialog"
         >
-          <div className="home-work__dialog-media">
+          {/* The preview is the link out to the live site — which is why
+              there is no separate CTA below the copy. */}
+          <a
+            className="home-work__dialog-media"
+            href={site.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Open the live ${site.name} site in a new tab`}
+          >
             {video ? (
               <MorphingDialogVideo
                 src={video}
@@ -112,7 +119,22 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
               />
             ) : null}
             <span className="home-work__dialog-grid" aria-hidden="true" />
-          </div>
+            <span className="home-work__dialog-visit" aria-hidden="true">
+              Visit live site
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </span>
+          </a>
 
           <div className="home-work__dialog-body">
             <MorphingDialogTitle className="home-work__dialog-name">
@@ -130,38 +152,17 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
                 exit: { opacity: 0, scale: 0.96, y: 40 },
               }}
             >
-              <p className="home-work__dialog-summary">{site.summary}</p>
-
+              {/* The standalone summary is dropped: it restates the same
+                  ground these three cover, and cutting it is what lets the
+                  panel fit without scrolling. */}
               <dl className="home-work__dialog-case">
-                <div>
-                  <dt>The problem</dt>
-                  <dd>{site.problem}</dd>
-                </div>
-                <div>
-                  <dt>What we did</dt>
-                  <dd>{site.solution}</dd>
-                </div>
-                <div>
-                  <dt>The result</dt>
-                  <dd>{site.result}</dd>
-                </div>
+                <dt>Problem</dt>
+                <dd>{site.problem}</dd>
+                <dt>What we did</dt>
+                <dd>{site.solution}</dd>
+                <dt>Result</dt>
+                <dd>{site.result}</dd>
               </dl>
-
-              <ul className="home-work__dialog-scope" role="list">
-                {site.scope.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-
-              <a
-                className="home-work__dialog-cta"
-                href={site.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Visit live site
-                <span aria-hidden="true">→</span>
-              </a>
             </MorphingDialogDescription>
           </div>
 
@@ -191,15 +192,15 @@ export default function HomeWorkSection() {
       className="home-work"
       aria-labelledby="home-work-heading"
     >
-      {/* WorkCursorLens paints the slab fill itself, but bails out entirely
-          under reduced motion — this plain div covers that case. */}
+      {/* The band above renders the slab, the pixel grid and the lens for
+          everyone else — the lens bails out under reduced motion, so this is
+          the static stand-in for that case only. */}
       {prefersReducedMotion ? (
-        <div className="home-work__slab" aria-hidden="true" />
-      ) : (
-        <WorkCursorLens containerRef={sectionRef} />
-      )}
-
-      <WorkPixelFade />
+        <>
+          <div className="home-work__slab" aria-hidden="true" />
+          <WorkPixelFade />
+        </>
+      ) : null}
 
       <div className="home-work__inner">
         <header className="home-work__header">

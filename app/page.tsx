@@ -1,6 +1,7 @@
 import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeAboutSection from "@/components/agency/HomeAboutSection";
+import HomeWorkAboutBand from "@/components/agency/HomeWorkAboutBand";
 import HomeContactSection from "@/components/agency/HomeContactSection";
 import HomeHero from "@/components/agency/HomeHero";
 import HomeWorkSection from "@/components/agency/HomeWorkSection";
@@ -15,8 +16,10 @@ export default function Home() {
     <>
       <main id="main-content" className="home-page">
         <HomeHero />
-        <HomeWorkSection />
-        <HomeAboutSection />
+        <HomeWorkAboutBand
+          work={<HomeWorkSection />}
+          about={<HomeAboutSection />}
+        />
         <HomeContactSection />
       </main>
 

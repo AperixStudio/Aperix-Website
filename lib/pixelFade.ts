@@ -11,10 +11,18 @@
  */
 
 export const PIXEL_FADE_CELL = 18;
-export const PIXEL_FADE_ROWS = 24;
+export const PIXEL_FADE_ROWS = 30;
 /** Wide enough to cover ultrawide viewports without tiling seams. */
 export const PIXEL_FADE_COLS = 224;
 export const PIXEL_FADE_HEIGHT = PIXEL_FADE_CELL * PIXEL_FADE_ROWS;
+/**
+ * How much of the grid hangs *below* the Work section, into About. The About
+ * section renders over this part, so the grid reads as a background texture
+ * shared by both rather than an edge belonging to one of them.
+ */
+export const PIXEL_FADE_OVERHANG = 300;
+/** The remainder, which sits inside the Work section under its own content. */
+export const PIXEL_FADE_INSIDE = PIXEL_FADE_HEIGHT - PIXEL_FADE_OVERHANG;
 export const PIXEL_FADE_WIDTH = PIXEL_FADE_CELL * PIXEL_FADE_COLS;
 
 /** Cheap 32-bit integer hash — stable across runtimes, unlike Math.random. */
