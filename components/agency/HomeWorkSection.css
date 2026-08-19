@@ -3,13 +3,26 @@
    ============================================================ */
 
 .home-work {
-  --work-navy: #071729;
-  --work-navy-deep: #04101d;
-  --work-card: #0c2440;
-  --work-card-edge: rgba(125, 190, 255, 0.16);
-  --work-accent: #0ea5e9;
-  --work-text: #eaf3fb;
-  --work-muted: rgba(214, 232, 248, 0.62);
+  /* Lighter blue slab. --work-navy-deep is the slab fill itself (painted by
+     WorkCursorLens); --work-navy backs media wells; --work-card is a step
+     lighter again so tiles lift off the slab. */
+  --work-navy: #113459;
+  --work-navy-deep: #0d2d4c;
+  --work-card: #16416d;
+  --work-card-edge: rgba(158, 206, 255, 0.22);
+  --work-accent: #38bdf8;
+  --work-text: #eef6ff;
+  --work-muted: rgba(221, 237, 255, 0.7);
+
+  /* Shared geometry: how far the dissolving grid reaches up from the bottom
+     edge, and how deep the curve on the top edge cuts. */
+  /* Slab translucency. The lens punches a fully clear hole through the slab,
+     so this is the contrast it has to work against — pushing it much below
+     ~0.8 starts to wash the reveal out. */
+  --work-slab-alpha: 0.88;
+
+  --work-fade-h: 432px;
+  --work-top-curve: clamp(1.25rem, 2.5vw, 2.75rem);
 
   position: relative;
   z-index: 2;
@@ -18,7 +31,7 @@
      site's animated background underneath rather than just this section's
      own flat colour. */
   color: var(--work-text);
-  padding: clamp(4rem, 9vw, 8rem) 1.5rem clamp(4rem, 9vw, 8rem);
+  padding: clamp(5rem, 10vw, 9rem) 1.5rem calc(var(--work-fade-h) + clamp(1rem, 3vw, 3rem));
   overflow: hidden;
 }
 
@@ -34,6 +47,20 @@
    CSS gradient mask can't. No viewBox — an SVG without one maps its
    coordinate system 1:1 to its rendered CSS pixel size, matching the raw px
    coordinates WorkCursorLens.tsx writes into the mask path. */
+.home-work__backdrop,
+.home-work__ribbon,
+.home-work__slab {
+  /* One shape for every slab layer: a wide elliptical dome across the top so
+     the edge sweeps rather than sitting flat, and a flat cut above the
+     bottom where the pixel grid takes over. The elements stay full-size so
+     the raw px coordinates WorkCursorLens writes into its masks still line
+     up — only the paint is clipped. */
+  clip-path: inset(
+    0 0 var(--work-fade-h) 0 round 50% 50% 0 0 /
+      var(--work-top-curve) var(--work-top-curve) 0 0
+  );
+}
+
 .home-work__backdrop {
   position: absolute;
   inset: 0;
@@ -43,8 +70,38 @@
   pointer-events: none;
 }
 
+/* Reduced-motion stand-in for the lens-painted fill. */
+.home-work__slab {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--work-navy-deep);
+  opacity: var(--work-slab-alpha);
+  pointer-events: none;
+}
+
+/* ---- Dissolving grid along the bottom edge ---- */
+
+.home-work__pixel-fade {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  /* Wider than the viewport by design — it simply overflows, which keeps the
+     cells perfectly square instead of scaling them to fit. */
+  max-width: none;
+  pointer-events: none;
+}
+
 .home-work__backdrop-fill {
   fill: var(--work-navy-deep);
+  fill-opacity: var(--work-slab-alpha);
+}
+
+/* The dissolving grid is the same slab, so it carries the same translucency.
+   Group opacity composites with each square's own row-opacity. */
+.home-work__pixel-fade > g {
+  opacity: var(--work-slab-alpha);
 }
 
 
@@ -107,208 +164,370 @@
   color: var(--work-muted);
 }
 
-/* ---- Stack ---- */
 
-.home-work__stack {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(3rem, 6vw, 5rem);
+/* The header sits inside .home-work__inner (max-width, padded); the marquee
+   deliberately does not, so rows run full-bleed off both edges. */
+.home-work__inner {
+  padding: 0 clamp(0rem, 2vw, 2rem);
 }
 
-.home-work__stack-item {
+/* ============================================================
+   Marquee rows
+   ============================================================ */
+
+.home-work__marquee {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  /* Vanishing point for each card's own 3D rotate-in — set on the direct
-     parent so every card gets its own centred perspective. */
-  perspective: 1600px;
+  gap: 1.5rem;
+  /* Pull back out of the section's own side padding so the rows bleed. */
+  margin: 0 calc(-1 * clamp(1rem, 4vw, 3rem));
+  /* Feather both ends so tiles enter and leave rather than being clipped. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
 }
 
-.home-work__card {
-  width: min(34rem, 100%);
-  border-radius: 1.25rem;
-  border: 1px solid var(--work-card-edge);
-  background: linear-gradient(160deg, var(--work-card) 0%, #081b31 100%);
-  box-shadow: 0 26px 60px rgba(2, 8, 18, 0.55);
+/* Reduced-motion fallback: a user-driven scroll strip, same tiles. */
+.home-work__static-rows {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding: 0 clamp(1rem, 4vw, 3rem) 1rem;
+  scroll-snap-type: x mandatory;
+}
+
+.home-work__static-rows > * {
+  scroll-snap-align: center;
+}
+
+/* ============================================================
+   Tile (marquee card / dialog trigger)
+   ============================================================ */
+
+.home-work__tile {
+  display: flex;
+  width: clamp(240px, 26vw, 340px);
+  flex-shrink: 0;
+  flex-direction: column;
   overflow: hidden;
-  opacity: 0;
-  backface-visibility: hidden;
-  /* Off-screen, spun flat (Z) and tumbling in through depth (Y), on the
-     side opposite where the card rests — see --work-enter-x /
-     --work-enter-rotate / --work-enter-rotate-y on the --left / --right
-     variants. */
-  transform: translateX(var(--work-enter-x, 70vw)) rotateZ(var(--work-enter-rotate, -300deg))
-    rotateY(var(--work-enter-rotate-y, -65deg));
-  transition: opacity 1050ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1050ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 300ms ease,
-    box-shadow 300ms ease;
+  background: var(--work-card);
+  border: 1px solid var(--work-card-edge);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
 }
 
-.home-work__card.is-visible {
-  opacity: 1;
-  transform: translateX(0) rotateZ(0deg) rotateY(0deg);
+.home-work__tile:hover,
+.home-work__tile:focus-visible {
+  border-color: rgba(125, 190, 255, 0.42);
+  box-shadow:
+    0 22px 50px -22px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(14, 165, 233, 0.25);
+  transform: translateY(-4px);
 }
 
-.home-work__card--left {
-  --work-enter-x: 70vw;
-  --work-enter-rotate: -300deg;
-  --work-enter-rotate-y: -65deg;
-  margin-right: auto;
-}
-
-.home-work__card--right {
-  --work-enter-x: -70vw;
-  --work-enter-rotate: 300deg;
-  --work-enter-rotate-y: 65deg;
-  margin-left: auto;
-}
-
-.home-work__card:hover,
-.home-work__card:focus-within {
-  border-color: rgba(14, 165, 233, 0.55);
-  box-shadow: 0 30px 70px rgba(2, 8, 18, 0.65), 0 0 0 1px rgba(14, 165, 233, 0.18);
-}
-
-.home-work__card-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-.home-work__card-link:focus-visible {
+.home-work__tile:focus-visible {
   outline: 2px solid var(--work-accent);
   outline-offset: 3px;
 }
 
-/* ---- Media ---- */
-
-.home-work__media {
+.home-work__tile-media {
   position: relative;
   aspect-ratio: 16 / 10;
-  background: #04101d;
+  width: 100%;
   overflow: hidden;
+  background: var(--work-navy);
 }
 
-.home-work__media-el {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.home-work__tile-el {
   height: 100%;
+  width: 100%;
   object-fit: cover;
   object-position: top center;
+  display: block;
 }
 
-.home-work__media-placeholder {
+.home-work__tile-placeholder {
   display: grid;
-  place-items: center;
   height: 100%;
+  place-items: center;
   font-size: 0.8rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--work-muted);
 }
 
-/* ---- Body ---- */
-
-.home-work__body {
-  padding: 1.5rem 1.6rem 1.7rem;
+.home-work__tile-body {
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem 0.8rem;
 }
 
-.home-work__label {
-  margin: 0 0 0.55rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+.home-work__tile-text {
+  min-width: 0;
+}
+
+.home-work__tile-name {
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.25;
+  color: var(--work-text);
+}
+
+.home-work__tile-label {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--work-muted);
+}
+
+.home-work__tile-plus {
+  display: grid;
+  height: 1.5rem;
+  width: 1.5rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 0.5rem;
+  border: 1px solid var(--work-card-edge);
+  color: var(--work-muted);
+  transition:
+    background 200ms ease,
+    color 200ms ease;
+}
+
+.home-work__tile:hover .home-work__tile-plus {
+  background: rgba(14, 165, 233, 0.16);
+  color: var(--work-text);
+}
+
+/* ============================================================
+   Dialog
+   ============================================================ */
+
+/* Scrim: no frosted glass. A deep blue wash with a radial hot-spot behind
+   the dialog, so the page reads as dimmed and lit from behind rather than
+   blurred out. */
+.home-work__scrim {
+  background:
+    radial-gradient(
+      120% 80% at 50% 45%,
+      rgba(45, 116, 180, 0.5) 0%,
+      rgba(8, 26, 46, 0.9) 60%,
+      rgba(4, 14, 26, 0.96) 100%
+    );
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Card: fully solid — a lit panel, not frosted glass. A top-down gradient
+   gives it a light source, a bright hairline reads as a machined edge, and
+   the outer glow bleeds the accent into the scrim. */
+.home-work__dialog {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  flex-direction: column;
+  overflow-y: auto;
+  background: #10365c;
+  border: 1px solid rgba(158, 206, 255, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(125, 211, 252, 0.14),
+    0 30px 70px -20px rgba(3, 14, 28, 0.9),
+    0 0 90px -20px rgba(125, 211, 252, 0.35);
+  color: var(--work-text);
+}
+
+.home-work__dialog-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--work-navy);
+}
+
+.home-work__dialog-el {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Carries the section's pixel-grid motif into the dialog: a scanline grid
+   that fades up off the bottom of the preview, tying the media into the
+   panel instead of ending on a hard crop. */
+.home-work__dialog-grid {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(125, 211, 252, 0.24) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.24) 1px, transparent 1px),
+    linear-gradient(to top, #10365c 0%, rgba(16, 54, 92, 0) 100%);
+  background-size:
+    16px 16px,
+    16px 16px,
+    100% 100%;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+}
+
+.home-work__dialog-body {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.home-work__dialog-name {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.home-work__dialog-label {
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--work-muted);
+}
+
+.home-work__dialog-summary {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(234, 243, 251, 0.85);
+}
+
+.home-work__dialog-case {
+  margin-top: 1.4rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.home-work__dialog-case dt {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--work-accent);
 }
 
-.home-work__name {
-  margin: 0 0 0.3rem;
-  font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
-  font-weight: 700;
-  line-height: 1.2;
-  color: #ffffff;
-}
-
-.home-work__location {
-  margin: 0 0 0.9rem;
-  font-size: 0.8rem;
-  color: rgba(214, 232, 248, 0.48);
-}
-
-.home-work__summary {
-  margin: 0 0 1.1rem;
-  font-size: 0.92rem;
-  line-height: 1.65;
+.home-work__dialog-case dd {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--work-muted);
 }
 
-.home-work__scope {
+.home-work__dialog-scope {
+  margin: 1.4rem 0 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin: 0 0 1.3rem;
-  padding: 0;
   list-style: none;
 }
 
-.home-work__scope-item {
-  padding: 0.26rem 0.65rem;
+.home-work__dialog-scope li {
+  padding: 0.28rem 0.6rem;
   border-radius: 999px;
-  border: 1px solid rgba(125, 190, 255, 0.18);
-  background: rgba(125, 190, 255, 0.06);
+  border: 1px solid var(--work-card-edge);
+  background: rgba(255, 255, 255, 0.08);
   font-size: 0.72rem;
-  letter-spacing: 0.02em;
-  color: rgba(214, 232, 248, 0.8);
+  color: var(--work-muted);
 }
 
-.home-work__cta {
+.home-work__dialog-cta {
+  margin-top: 1.6rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  font-family: var(--font-display), sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--work-accent);
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  background: var(--work-accent);
+  color: #03121f;
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    background 200ms ease,
+    transform 200ms ease;
 }
 
-.home-work__cta span {
-  transition: transform 250ms ease;
+.home-work__dialog-cta:hover {
+  background: #bae6fd;
+  transform: translateX(2px);
 }
 
-.home-work__card-link:hover .home-work__cta span {
-  transform: translateX(0.3rem);
+.home-work__dialog-close {
+  z-index: 2;
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: grid;
+  height: 2rem;
+  width: 2rem;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(11, 40, 70, 0.85);
+  color: #eaf3fb;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.home-work__dialog-close:hover {
+  background: rgba(11, 40, 70, 1);
 }
 
 /* ---- Responsive ---- */
 
 @media (max-width: 860px) {
-  .home-work__card,
-  .home-work__card--left,
-  .home-work__card--right {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-work__card {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  .home-work {
+    --work-top-curve: 1rem;
   }
 
-  .home-work__cta span {
-    transition: none;
+  .home-work__marquee {
+    gap: 1rem;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 5%,
+      #000 95%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 5%,
+      #000 95%,
+      transparent
+    );
   }
 
-  /* WorkCursorLens doesn't mount at all under reduced motion — this is a
-     belt-and-braces fallback in case it's ever server-rendered. */
-  .home-work__ribbon {
-    display: none;
+  .home-work__tile {
+    width: 74vw;
+    max-width: 300px;
   }
 }
