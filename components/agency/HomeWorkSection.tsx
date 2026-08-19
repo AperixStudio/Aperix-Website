@@ -33,12 +33,22 @@ import "./HomeWorkSection.css";
 function mediaFor(site: LiveSite) {
   const video = "previewVideo" in site ? site.previewVideo : undefined;
   const videoMp4 = "previewVideoMp4" in site ? site.previewVideoMp4 : undefined;
+  // Tiles render at ~338px, so the full-size 1920x1080 masters cost ~32x the
+  // pixels they can actually show. These 640px cuts are what the marquee
+  // plays; the dialog still gets the master, since it renders far larger.
+  const tileVideo = "previewVideoTile" in site ? site.previewVideoTile : video;
+  const tileVideoMp4 =
+    "previewVideoTileMp4" in site ? site.previewVideoTileMp4 : videoMp4;
   const image = "preview" in site ? site.preview : undefined;
-  return { video, videoMp4, image };
+  return { video, videoMp4, tileVideo, tileVideoMp4, image };
 }
 
 function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
-  const { video, videoMp4, image } = mediaFor(site);
+  const { video, videoMp4, tileVideo, tileVideoMp4, image } = mediaFor(site);
+  const mediaRef = useRef<HTMLDivElement>(null);
+  // The marquee duplicates its children, so roughly half the tiles sit
+  // off-screen at any moment. Decoding those is pure waste.
+  const onScreen = useInView(mediaRef, { rootMargin: "5% 0px", threshold: 0 });
 
   return (
     <MorphingDialog
@@ -48,12 +58,12 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
         style={{ borderRadius: "14px" }}
         className="home-work__tile"
       >
-        <div className="home-work__tile-media">
-          {video ? (
+        <div className="home-work__tile-media" ref={mediaRef}>
+          {tileVideo ? (
             <MorphingDialogVideo
-              src={video}
-              fallbackSrc={videoMp4}
-              playing={playing}
+              src={tileVideo}
+              fallbackSrc={tileVideoMp4}
+              playing={playing && onScreen}
               className="home-work__tile-el"
             />
           ) : image ? (
