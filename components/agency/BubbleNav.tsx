@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import HashLink from "@/components/agency/HashLink";
 import "./BubbleNav.css";
 
@@ -24,11 +25,11 @@ export default function BubbleNav() {
       {/* Expanded links */}
       <ul className="bubble-nav__links" role="list">
         {NAV_LINKS.map((link, i) => (
-          <>
+          <Fragment key={link.href}>
             {i > 0 && (
-              <li key={`div-${i}`} className="bubble-nav__divider" aria-hidden="true" />
+              <li className="bubble-nav__divider" aria-hidden="true" />
             )}
-            <li key={link.href}>
+            <li>
               <HashLink
                 href={link.href}
                 className="bubble-nav__link"
@@ -37,7 +38,7 @@ export default function BubbleNav() {
                 {link.label}
               </HashLink>
             </li>
-          </>
+          </Fragment>
         ))}
       </ul>
     </nav>

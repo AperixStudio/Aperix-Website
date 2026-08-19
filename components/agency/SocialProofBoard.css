@@ -326,11 +326,20 @@
   }
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .board-flap__tick {
     filter: none !important;
   }
 }
+*/
 
 /* Mobile: plain text rows — no per-character Framer Motion / blur. */
 .social-proof-board--touch .social-proof-board__touch-text {
@@ -366,8 +375,17 @@
   }
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .social-proof-board__row--touch {
     animation: none;
   }
 }
+*/

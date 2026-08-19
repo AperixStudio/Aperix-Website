@@ -211,7 +211,10 @@ h6 {
   font-weight: 600;
 }
 
-@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+/* The reduced-motion half of this query was dropped by product
+   decision; the coarse-pointer defaults below are unrelated to
+   motion preference and must stay. */
+@media (pointer: coarse) {
   :root {
     --agency-pointer-x: 50%;
     --agency-pointer-y: 18%;
@@ -850,6 +853,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -860,6 +871,7 @@ html {
     scroll-behavior: auto !important;
   }
 }
+*/
 
 :focus-visible {
   outline: 2px solid var(--agency-accent);
@@ -887,12 +899,21 @@ html {
   animation: marquee-scroll 40s linear infinite;
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
   .animate-marquee {
     animation: none;
   }
 }
+*/
 
 /* Homepage dynamic-import placeholders (reserve space, avoid layout shift) */
 .home-section-placeholder {

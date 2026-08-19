@@ -31,6 +31,25 @@ const MorphingDialogContext = createContext<MorphingDialogContextType | null>(
   null,
 );
 
+/**
+ * Ref-counted, because every tile owns its own dialog instance: a plain
+ * set-on-open/unset-on-close would have a closing dialog clear the flag out
+ * from under one that is still open.
+ */
+let openDialogCount = 0;
+
+function markDialogOpen() {
+  openDialogCount += 1;
+  document.body.dataset.dialogOpen = "true";
+}
+
+function markDialogClosed() {
+  openDialogCount = Math.max(0, openDialogCount - 1);
+  if (openDialogCount === 0) {
+    delete document.body.dataset.dialogOpen;
+  }
+}
+
 function useMorphingDialog() {
   const context = useContext(MorphingDialogContext);
   if (!context) {
@@ -171,6 +190,7 @@ export function MorphingDialogContent({
     }
 
     document.body.style.overflow = "hidden";
+    markDialogOpen();
     containerRef.current
       ?.querySelector<HTMLElement>(
         "a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])",
@@ -179,6 +199,7 @@ export function MorphingDialogContent({
 
     return () => {
       document.body.style.overflow = "";
+      markDialogClosed();
     };
   }, [isOpen, triggerRef]);
 
@@ -340,7 +361,14 @@ export function MorphingDialogImage({
 }
 
 export type MorphingDialogVideoProps = {
+  /** Preferred source. */
   src: string;
+  /**
+   * Offered after `src` for browsers that cannot play it. Needed for Safari
+   * on iOS, which has no usable WebM support before 17.4 — without an H.264
+   * fallback those tiles render as an empty box on iPhones.
+   */
+  fallbackSrc?: string;
   poster?: string;
   className?: string;
   style?: React.CSSProperties;
@@ -348,12 +376,19 @@ export type MorphingDialogVideoProps = {
   playing?: boolean;
 };
 
+function sourceTypeFor(url: string): string | undefined {
+  if (url.endsWith(".webm")) return "video/webm";
+  if (url.endsWith(".mp4")) return "video/mp4";
+  return undefined;
+}
+
 /**
  * Video counterpart to MorphingDialogImage — shares the same layoutId, so a
  * looping preview in the trigger morphs into the one in the open dialog.
  */
 export function MorphingDialogVideo({
   src,
+  fallbackSrc,
   poster,
   className,
   style,
@@ -373,10 +408,15 @@ export function MorphingDialogVideo({
     }
   }, [playing]);
 
+  // Swapping between <source> children needs an explicit load() — unlike the
+  // src attribute, changing them does not re-trigger source selection.
+  useEffect(() => {
+    videoRef.current?.load();
+  }, [src, fallbackSrc]);
+
   return (
     <motion.video
       ref={videoRef}
-      src={src}
       poster={poster}
       className={cn(className)}
       layoutId={`dialog-img-${uniqueId}`}
@@ -386,7 +426,12 @@ export function MorphingDialogVideo({
       playsInline
       preload="metadata"
       aria-hidden="true"
-    />
+    >
+      <source src={src} type={sourceTypeFor(src)} />
+      {fallbackSrc ? (
+        <source src={fallbackSrc} type={sourceTypeFor(fallbackSrc)} />
+      ) : null}
+    </motion.video>
   );
 }
 

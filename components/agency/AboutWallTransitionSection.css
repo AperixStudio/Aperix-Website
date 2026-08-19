@@ -367,6 +367,14 @@
   }
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .about-wall-track {
     width: 100vw;
@@ -376,3 +384,4 @@
     display: none;
   }
 }
+*/

@@ -32,12 +32,13 @@ import "./HomeWorkSection.css";
 
 function mediaFor(site: LiveSite) {
   const video = "previewVideo" in site ? site.previewVideo : undefined;
+  const videoMp4 = "previewVideoMp4" in site ? site.previewVideoMp4 : undefined;
   const image = "preview" in site ? site.preview : undefined;
-  return { video, image };
+  return { video, videoMp4, image };
 }
 
 function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
-  const { video, image } = mediaFor(site);
+  const { video, videoMp4, image } = mediaFor(site);
 
   return (
     <MorphingDialog
@@ -51,6 +52,7 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
           {video ? (
             <MorphingDialogVideo
               src={video}
+              fallbackSrc={videoMp4}
               playing={playing}
               className="home-work__tile-el"
             />
@@ -109,6 +111,7 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
             {video ? (
               <MorphingDialogVideo
                 src={video}
+                fallbackSrc={videoMp4}
                 className="home-work__dialog-el"
               />
             ) : image ? (

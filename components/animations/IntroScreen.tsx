@@ -407,9 +407,11 @@ export default function IntroScreen() {
               );
               animation: ixSlices 0.9s steps(1) infinite;
             }
+            /* Reduced-motion accommodation disabled by product decision.
+               Uncomment to restore.
             @media (prefers-reduced-motion: reduce) {
               .ix-glitch-frame, .ix-glitch-rgb, .ix-glitch-slices { animation: none !important; }
-            }
+            } */
           `}</style>
         </motion.div>
       )}

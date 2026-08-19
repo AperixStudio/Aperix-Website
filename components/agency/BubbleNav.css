@@ -179,9 +179,30 @@
   80% { transform: translate(-2px, 0); clip-path: inset(30% 0 30% 0); }
 }
 
+/* An open case-study dialog owns the screen — the pill would otherwise float
+   over the panel, since it sits above the dialog in the stacking order.
+   Flag is set by MorphingDialogContent. */
+body[data-dialog-open] .bubble-nav {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
+}
+
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .bubble-nav__label { animation: none; }
   .bubble-nav__link::before,
   .bubble-nav__link::after { display: none; }
   .bubble-nav { transition: width 0.2s ease; }
 }
+*/
