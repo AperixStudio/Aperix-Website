@@ -602,3 +602,21 @@
   max-width: 34rem;
   text-align: center;
 }
+
+/* The narrow ring gives the headline less room to sit in, so it comes down a
+   step to match. */
+@media (max-width: 1023px) {
+  .home-work__header-wrap .home-work__heading {
+    font-size: clamp(1.1rem, 4.8vw, 1.7rem);
+    max-width: 18ch;
+  }
+
+  .home-work__header-wrap .home-work__eyebrow {
+    margin-bottom: 0.5rem;
+    font-size: 0.62rem;
+  }
+
+  .home-work__header-wrap::before {
+    inset: -85% -30%;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import AnimatedLogo from "@/components/agency/AnimatedLogo";
 import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introState";
 
 /*
@@ -158,26 +159,14 @@ export default function IntroScreenSimple() {
                   : { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.15 }
               }
             >
-              <svg
-                width={LOGO_INTRO_SIZE} height={LOGO_INTRO_H}
-                viewBox="0 0 768 836" fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{ filter: "drop-shadow(0 0 20px rgba(14,165,233,0.55))", display: "block" }}
-              >
-                <defs>
-                  <linearGradient id="ixs-grad" x1="384" y1="106" x2="384" y2="730" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#DFF2FF" />
-                    <stop offset="1" stopColor="#BFE5FF" />
-                  </linearGradient>
-                </defs>
-                <path d="M384 76L660 236V556L384 716L108 556V236L384 76Z" stroke="#0EA5E9" strokeWidth="28" strokeLinejoin="round" />
-                <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#ixs-grad)" />
-                <path d="M384 273L516 349V503L384 579L252 503V349L384 273Z" stroke="rgba(255,255,255,0.85)" strokeWidth="28" strokeLinejoin="round" />
-                <path d="M384 303V548" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-                <path d="M278 364L490 487" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-                <path d="M490 364L278 487" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-                <path d="M291 418H477" stroke="#CFCFCF" strokeWidth="24" strokeLinecap="round" />
-              </svg>
+              {/* The same rotating mark as SiteLogoFixed and the footer, so
+                  the logo that flies up to the nav is the logo that lands
+                  there — not a still lookalike that swaps at the last frame. */}
+              <AnimatedLogo
+                size={LOGO_INTRO_SIZE}
+                priority
+                style={{ filter: "drop-shadow(0 0 20px rgba(14,165,233,0.55))" }}
+              />
             </motion.div>
           </motion.div>
         )}

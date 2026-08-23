@@ -6,15 +6,15 @@ import {
   fitOrbit,
   orbitTileFrameAt,
   orbitTilePsi,
-  WORK_ORBIT_DURATION_S,
-  WORK_ORBIT_FRAME,
-  WORK_ORBIT_RING,
+  type OrbitPreset,
 } from "@/lib/workOrbit";
 import "./WorkOrbit.css";
 
 export type WorkOrbitItem = { key: string; node: ReactNode };
 
 type WorkOrbitProps = {
+  /** Ring geometry, card count and pace — see WORK_ORBIT_WIDE / _NARROW. */
+  preset: OrbitPreset;
   items: WorkOrbitItem[];
   /** Sits at the ring's centre, with half the cards passing in front of it. */
   center: ReactNode;
@@ -35,11 +35,13 @@ type WorkOrbitProps = {
  * frame — the ring never re-renders React.
  */
 export default function WorkOrbit({
+  preset,
   items,
   center,
   playing,
   still = false,
 }: WorkOrbitProps) {
+  const { frame, ring, durationS } = preset;
   const stageRef = useRef<HTMLDivElement>(null);
   const slotsRef = useRef<(HTMLDivElement | null)[]>([]);
   // Survives pause/resume so the ring picks up where it stopped.
@@ -50,8 +52,8 @@ export default function WorkOrbit({
     const stage = stageRef.current;
     if (!stage) return undefined;
 
-    const basis = createOrbitBasis(WORK_ORBIT_RING.axis, WORK_ORBIT_RING.ratio);
-    let fit = fitOrbit(stage.clientWidth, stage.clientHeight);
+    const basis = createOrbitBasis(ring.axis, ring.ratio);
+    let fit = fitOrbit(stage.clientWidth, stage.clientHeight, frame);
 
     const draw = () => {
       const spin = progressRef.current * Math.PI * 2;
@@ -59,35 +61,29 @@ export default function WorkOrbit({
       for (let i = 0; i < slots.length; i += 1) {
         const el = slots[i];
         if (!el) continue;
-        const psi = orbitTilePsi(WORK_ORBIT_RING, i, slots.length, spin);
-        const frame = orbitTileFrameAt(basis, WORK_ORBIT_RING, fit, psi);
-        if (!frame.visible) {
+        const psi = orbitTilePsi(ring, i, slots.length, spin);
+        const placed = orbitTileFrameAt(basis, ring, fit, psi);
+        if (!placed.visible) {
           el.style.visibility = "hidden";
           continue;
         }
-        const m = frame.matrix;
+        const m = placed.matrix;
         el.style.visibility = "visible";
         el.style.transform = `matrix(${m[0]},${m[1]},${m[2]},${m[3]},${m[4]},${m[5]})`;
         // Centre of the stage is z-index 500, so the far half of the ring
         // lands behind the headline and the near half in front of it.
-        el.style.zIndex = String(Math.round(500 + frame.depth * 400));
-        el.style.setProperty("--orbit-depth", (frame.depth * 0.5 + 0.5).toFixed(3));
-        el.style.opacity = frame.edge.toFixed(3);
-        el.dataset.facing = frame.facing ? "front" : "back";
-        el.dataset.mirrored = frame.mirrored ? "true" : "false";
+        el.style.zIndex = String(Math.round(500 + placed.depth * 400));
+        el.style.setProperty("--orbit-depth", (placed.depth * 0.5 + 0.5).toFixed(3));
+        el.style.opacity = placed.edge.toFixed(3);
+        el.dataset.facing = placed.facing ? "front" : "back";
+        el.dataset.mirrored = placed.mirrored ? "true" : "false";
       }
     };
 
     const measure = () => {
-      fit = fitOrbit(stage.clientWidth, stage.clientHeight);
-      stage.style.setProperty(
-        "--orbit-tile-w",
-        `${WORK_ORBIT_RING.tileW * fit.k}px`,
-      );
-      stage.style.setProperty(
-        "--orbit-tile-h",
-        `${WORK_ORBIT_RING.tileH * fit.k}px`,
-      );
+      fit = fitOrbit(stage.clientWidth, stage.clientHeight, frame);
+      stage.style.setProperty("--orbit-tile-w", `${ring.tileW * fit.k}px`);
+      stage.style.setProperty("--orbit-tile-h", `${ring.tileH * fit.k}px`);
       draw();
     };
 
@@ -110,7 +106,7 @@ export default function WorkOrbit({
       const target = holdRef.current ? 0 : 1;
       speed += (target - speed) * Math.min(1, dt * 5);
       progressRef.current =
-        (progressRef.current + (dt * speed) / WORK_ORBIT_DURATION_S) % 1;
+        (progressRef.current + (dt * speed) / durationS) % 1;
       draw();
       raf = requestAnimationFrame(tick);
     };
@@ -120,7 +116,7 @@ export default function WorkOrbit({
       cancelAnimationFrame(raf);
       observer.disconnect();
     };
-  }, [items.length, playing, still]);
+  }, [durationS, frame, items.length, playing, ring, still]);
 
   // The ring holds still while someone is reading a card, keeping a focus ring
   // or an opening dialog anchored to a target that is not sliding away.
@@ -174,7 +170,7 @@ export default function WorkOrbit({
     <div
       ref={stageRef}
       className="work-orbit"
-      style={{ aspectRatio: `${WORK_ORBIT_FRAME.w} / ${WORK_ORBIT_FRAME.h}` }}
+      style={{ aspectRatio: `${frame.w} / ${frame.h}` }}
     >
       <div className="work-orbit__centre">{center}</div>
 

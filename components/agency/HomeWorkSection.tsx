@@ -6,8 +6,8 @@ import { useInView } from "@/lib/useInView";
 import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import WorkOrbit, { type WorkOrbitItem } from "@/components/agency/WorkOrbit";
+import { WORK_ORBIT_NARROW, WORK_ORBIT_WIDE } from "@/lib/workOrbit";
 import WorkPixelFade from "@/components/agency/WorkPixelFade";
-import { InfiniteSlider } from "@/components/core/infinite-slider";
 import {
   MorphingDialog,
   MorphingDialogTrigger,
@@ -25,11 +25,14 @@ import "./HomeWorkSection.css";
 /**
  * Our Work — opaque dark blue slab.
  *
- * Wide viewports get the orbit: a tilted ring of live-site cards turning
+ * Every viewport gets the orbit: a tilted ring of live-site cards turning
  * through perspective around the headline, with the far half of the ring
- * passing behind the type and the near half sweeping in front of it. Narrow
- * ones keep the two counter-running marquee rows, which stay far easier to
- * read and to touch on a phone.
+ * passing behind the type and the near half sweeping in front of it. A phone
+ * runs the same ring re-proportioned rather than shrunk — half the cards, each
+ * much larger against the frame — so the previews stay worth looking at.
+ *
+ * The two counter-running marquee rows survive as the reduced-motion
+ * fallback, where a ring that never turns would say nothing.
  *
  * Either way the cards are the same thing — a looping capture of a site we
  * shipped, still running as it does today — and either way clicking one
@@ -193,23 +196,21 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
   );
 }
 
-/** Row two starts two projects in, so the rows never sit in step. */
-const ROW_TWO = [...LIVE_SITES.slice(2), ...LIVE_SITES.slice(0, 2)];
-
 /**
- * The ring carries every project twice. With an even tile count that puts a
- * project and its repeat exactly opposite each other, so the same site is
- * never visible twice on the near face.
+ * The wide ring carries every project twice. With an even card count that puts
+ * a project and its repeat exactly opposite each other, so the same site is
+ * never visible twice on the near face. The narrow ring has room for one lap,
+ * so it carries each project once.
  */
-const ORBIT_SITES = [...LIVE_SITES, ...LIVE_SITES];
+const ORBIT_SITES_WIDE = [...LIVE_SITES, ...LIVE_SITES];
+const ORBIT_SITES_NARROW = [...LIVE_SITES];
 
 export default function HomeWorkSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { isMobile: isNarrow } = useNarrowViewport();
-  // Every layout duplicates its cards, so a full row is ~20 <video> elements
-  // and a full ring is 10. Keep them all paused until the section is actually
-  // on screen.
+  // A full wide ring is 10 <video> elements. Keep them all paused until the
+  // section is actually on screen.
   const sectionInView = useInView(sectionRef, { rootMargin: "15% 0px", threshold: 0 });
   const playing = sectionInView && !prefersReducedMotion;
 
@@ -230,11 +231,13 @@ export default function HomeWorkSection() {
       <h2 id="home-work-heading" className="home-work__heading">
         Recent projects we&apos;ve shipped
       </h2>
-      {isNarrow ? lede : null}
+      {prefersReducedMotion ? lede : null}
     </header>
   );
 
-  const orbitItems: WorkOrbitItem[] = ORBIT_SITES.map((site, index) => ({
+  const preset = isNarrow ? WORK_ORBIT_NARROW : WORK_ORBIT_WIDE;
+  const orbitSites = isNarrow ? ORBIT_SITES_NARROW : ORBIT_SITES_WIDE;
+  const orbitItems: WorkOrbitItem[] = orbitSites.map((site, index) => ({
     key: `${site.name}-${index}`,
     node: <WorkTile site={site} playing={playing} />,
   }));
@@ -243,57 +246,37 @@ export default function HomeWorkSection() {
     <section
       ref={sectionRef}
       id="our-work"
-      className={`home-work${isNarrow ? "" : " home-work--orbit"}`}
+      className={`home-work${prefersReducedMotion ? "" : " home-work--orbit"}`}
       aria-labelledby="home-work-heading"
     >
-      {/* The band above renders the slab, the pixel grid and the lens for
-          everyone else — the lens bails out under reduced motion, so this is
-          the static stand-in for that case only. */}
       {prefersReducedMotion ? (
         <>
+          {/* The band above renders the slab, the pixel grid and the lens for
+              everyone else — the lens bails out under reduced motion, so this
+              is the static stand-in for that case only. */}
           <div className="home-work__slab" aria-hidden="true" />
           <WorkPixelFade />
-        </>
-      ) : null}
 
-      {isNarrow ? (
-        <>
           <div className="home-work__inner">{header}</div>
 
+          {/* A ring that never turns would say nothing, so reduced motion gets
+              the same cards as a plain strip the reader drives themselves. */}
           <div className="home-work__marquee">
-            {prefersReducedMotion ? (
-              // No auto-scroll for reduced motion — the same tiles, laid out
-              // as a plain horizontally scrollable strip the user drives
-              // themselves.
-              <div className="home-work__static-rows">
-                {LIVE_SITES.map((site) => (
-                  <WorkTile key={site.name} site={site} playing={playing} />
-                ))}
-              </div>
-            ) : (
-              <>
-                <InfiniteSlider gap={24} duration={45} durationOnHover={140}>
-                  {LIVE_SITES.map((site) => (
-                    <WorkTile key={site.name} site={site} playing={playing} />
-                  ))}
-                </InfiniteSlider>
-
-                <InfiniteSlider gap={24} duration={52} durationOnHover={160} reverse>
-                  {ROW_TWO.map((site) => (
-                    <WorkTile key={site.name} site={site} playing={playing} />
-                  ))}
-                </InfiniteSlider>
-              </>
-            )}
+            <div className="home-work__static-rows">
+              {LIVE_SITES.map((site) => (
+                <WorkTile key={site.name} site={site} playing={playing} />
+              ))}
+            </div>
           </div>
         </>
       ) : (
         <>
           <WorkOrbit
+            preset={preset}
             items={orbitItems}
             center={<div className="home-work__header-wrap">{header}</div>}
             playing={playing}
-            still={prefersReducedMotion}
+            still={false}
           />
 
           <div className="home-work__caption">{lede}</div>

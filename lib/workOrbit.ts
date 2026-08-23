@@ -36,28 +36,74 @@ export type OrbitRing = {
   direction: number;
 };
 
-/**
- * Design frame every length above is measured in. The reference uses
- * 2962x2160 because it fills a viewport; ours is tighter so the cards land at
- * a size a website preview is actually readable at.
- */
-export const WORK_ORBIT_FRAME = { w: 1800, h: 1150 } as const;
+export type OrbitFrame = { w: number; h: number };
 
-export const WORK_ORBIT_RING: OrbitRing = {
-  cx: 900,
-  cy: 575,
-  a: 560,
-  ratio: 0.492,
-  axis: 25.5,
-  tileW: 330,
-  tileH: 272,
-  dist: 7,
-  phase: 93,
-  direction: 1,
+export type OrbitPreset = {
+  /** Design frame every length in `ring` is measured in. */
+  frame: OrbitFrame;
+  ring: OrbitRing;
+  /** Cards on the ring. */
+  count: number;
+  /** Seconds for one full revolution — also the loop length. */
+  durationS: number;
 };
 
-/** Seconds for one full revolution — also the loop length. */
-export const WORK_ORBIT_DURATION_S = 30;
+/**
+ * Wide viewports.
+ *
+ * The reference's frame is 2962x2160 because it fills a viewport; ours is
+ * tighter so the cards land at a size a website preview is actually readable
+ * at. Ten cards carry the five projects twice, which puts each project
+ * opposite its own repeat.
+ */
+export const WORK_ORBIT_WIDE: OrbitPreset = {
+  frame: { w: 1800, h: 1150 },
+  ring: {
+    cx: 900,
+    cy: 575,
+    a: 560,
+    ratio: 0.492,
+    axis: 25.5,
+    tileW: 330,
+    tileH: 272,
+    dist: 7,
+    phase: 93,
+    direction: 1,
+  },
+  count: 10,
+  durationS: 30,
+};
+
+/**
+ * Narrow viewports.
+ *
+ * Same ring, re-proportioned rather than merely scaled down: half the cards,
+ * each far larger against the frame, so a phone shows a preview at a size
+ * worth looking at instead of ten thumbnails. The ring is wider than the
+ * frame on purpose — the cards it pushes past the edges are the ones already
+ * turning edge-on, which the edge fade is taking out anyway.
+ */
+export const WORK_ORBIT_NARROW: OrbitPreset = {
+  frame: { w: 860, h: 1000 },
+  ring: {
+    cx: 430,
+    cy: 500,
+    a: 380,
+    // Opened up from the wide ring's 0.492 (a 60.5deg tilt) to a 44deg one.
+    // The clear band the headline sits in is the ellipse's semi-minor axis
+    // less half a card; at the wide ring's tilt, five cards this large close
+    // that band to nothing and the type has cards across it at all times.
+    ratio: 0.72,
+    axis: 25.5,
+    tileW: 400,
+    tileH: 300,
+    dist: 6,
+    phase: 93,
+    direction: 1,
+  },
+  count: 5,
+  durationS: 22,
+};
 
 export type OrbitBasis = { u: Vec3; v: Vec3; axis: Vec3 };
 
@@ -92,14 +138,18 @@ export type OrbitFit = {
  * does: scale to whichever of width/height binds first so the ring never
  * crops, and centre the remainder.
  */
-export function fitOrbit(width: number, height: number): OrbitFit {
-  const aspect = WORK_ORBIT_FRAME.w / WORK_ORBIT_FRAME.h;
+export function fitOrbit(
+  width: number,
+  height: number,
+  frame: OrbitFrame,
+): OrbitFit {
+  const aspect = frame.w / frame.h;
   const s = Math.min(width, height * aspect);
-  const k = s / WORK_ORBIT_FRAME.w;
+  const k = s / frame.w;
   return {
     k,
-    ox: (width - WORK_ORBIT_FRAME.w * k) / 2,
-    oy: (height - WORK_ORBIT_FRAME.h * k) / 2,
+    ox: (width - frame.w * k) / 2,
+    oy: (height - frame.h * k) / 2,
   };
 }
 

@@ -109,3 +109,21 @@
 .work-orbit .home-work__tile-label {
   font-size: clamp(0.6rem, 0.8vw, 0.72rem);
 }
+
+/* ---- Narrow ---- */
+
+/* Half as many cards, each much larger against the frame, so the headline has
+   to give up the width the wide ring could spare it. */
+@media (max-width: 1023px) {
+  .work-orbit {
+    max-height: none;
+  }
+
+  .work-orbit__centre {
+    width: min(22rem, 90%);
+  }
+
+  .work-orbit .home-work__tile-body {
+    padding: 0.45rem 0.6rem 0.55rem;
+  }
+}
