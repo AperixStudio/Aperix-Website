@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { onIntroDone } from "@/lib/introState";
 import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/IntroScreenSimple";
+import "./HomeHero.css";
 
 /*
   Position contract with IntroScreenSimple
@@ -16,121 +17,177 @@ import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/Int
   browser resolves both to exactly the same pixel offset — no
   framer-motion rem-parsing involved.
 
-  Framer-motion only touches the title wrapper, which starts at
-  y:0 (no extra offset) and animates to y:-moveUpPx when canMove,
-  producing a final visual position of 2.8rem − 6.8rem = −4rem
-  from viewport centre.
+  Framer-motion only touches the title wrapper, which starts at x:0 / y:0
+  (no extra offset, i.e. exactly the intro's position) and animates to the
+  editorial resting place once the crossfade is over. Nothing about the
+  resting layout is allowed to disturb that starting state, which is why the
+  wordmark is overlaid on the grid rather than laid out inside it.
 */
 
 const HERO_MOVE_DELAY_MS = INTRO_SETTLE_MS + INTRO_TEXT_FADE_MS; // 700 + 400 ms
-// Intro crossfade start (must match IntroScreenSimple inner translateY)
-const HERO_TITLE_INTRO_OFFSET_REM = 2.8;
-// Final resting position above viewport centre (negative = higher on screen)
-const HERO_TITLE_FINAL_OFFSET_REM =-18.4;
-const HERO_TITLE_MOVE_REM =
-  HERO_TITLE_INTRO_OFFSET_REM - HERO_TITLE_FINAL_OFFSET_REM; // 6.8rem travel
 // Match the intro STUDIO slide — same ease curve and similar pacing
 const HERO_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const HERO_MOVE_DURATION_S = 0.95;
 const HERO_COPY_DURATION_S = 0.55;
 
-/** Breathing room kept between the fixed site logo and the top of the wordmark. */
-const LOGO_CLEARANCE_REM = 1.1;
-/** Cap-height of the wordmark as a fraction of its font-size (Hubot Sans, uppercase). */
-const WORDMARK_CAP_RATIO = 0.72;
-/** Fallback logo box when SiteLogoFixed has not painted yet: top 1.5rem + 48px tall. */
-const LOGO_FALLBACK_BOTTOM_PX = 24 + 48;
+type Travel = { x: number; y: number };
 
-function getRemPx() {
-  if (typeof window === "undefined") return 16;
-  return parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-}
+const NO_TRAVEL: Travel = { x: 0, y: 0 };
+
+const WORDMARK_APERIX: CSSProperties = {
+  fontFamily: "var(--font-display), sans-serif",
+  fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
+  fontWeight: 800,
+  letterSpacing: "var(--wordmark-track-aperix, 0.22em)",
+  color: "#ffffff",
+  textShadow: "0 0 32px rgba(14,165,233,0.55)",
+  whiteSpace: "nowrap",
+};
+
+const WORDMARK_STUDIO: CSSProperties = {
+  fontFamily: "var(--font-display), sans-serif",
+  fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
+  fontWeight: 300,
+  letterSpacing: "var(--wordmark-track-studio, 0.34em)",
+  color: "rgba(255,255,255,0.75)",
+  textShadow: "0 0 24px rgba(14,165,233,0.3)",
+  whiteSpace: "nowrap",
+  paddingLeft: "var(--wordmark-gap, 0.5em)",
+};
+
+const WORDMARK_BOX: CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  gap: 0,
+  margin: 0,
+  lineHeight: 4,
+};
 
 /**
- * How far the wordmark may travel upward.
+ * The stand-in's box, trimmed to the glyphs.
  *
- * The design target is a flat HERO_TITLE_MOVE_REM, which is what tall
- * viewports get. On a short screen that constant would carry the wordmark
- * off the top of the viewport and through the fixed logo, so the travel is
- * additionally capped at "just below the logo". Recomputed on resize and
- * orientation change, so it is correct at any screen size rather than only
- * at the sizes we happened to test.
+ * The flying copy keeps its very tall line box, because that box is half of
+ * what makes the intro crossfade land — but reserving 230px of leading in the
+ * grid would blow a hole between the wordmark and the rule under it. Both
+ * boxes are symmetric about the glyphs, so the flight is measured centre to
+ * centre and the two line-heights never have to agree.
  */
-function computeMoveUpPx(titleEl: HTMLElement | null): number {
-  if (typeof window === "undefined") return HERO_TITLE_MOVE_REM * 16;
+const WORDMARK_BOX_TIGHT: CSSProperties = { ...WORDMARK_BOX, lineHeight: 1 };
 
-  const rem = getRemPx();
-  const desired = HERO_TITLE_MOVE_REM * rem;
-
-  // Untransformed visual centre: section is centred in the viewport and the
-  // wrapper adds HERO_TITLE_INTRO_OFFSET_REM. Line-height is symmetric, so
-  // the box centre is the glyph centre.
-  const naturalCentre =
-    window.innerHeight / 2 + HERO_TITLE_INTRO_OFFSET_REM * rem;
-
-  const logoRect = document.getElementById("site-logo-fixed")?.getBoundingClientRect();
-  const logoBottom = logoRect?.height ? logoRect.bottom : LOGO_FALLBACK_BOTTOM_PX;
-
-  // The wordmark size lives on the spans — the <h1> itself inherits 16px.
-  const glyphEl = titleEl?.querySelector("span") ?? titleEl;
-  const fontSize = glyphEl
-    ? parseFloat(getComputedStyle(glyphEl).fontSize) || rem * 2.4
-    : rem * 2.4;
-  const capHalf = (fontSize * WORDMARK_CAP_RATIO) / 2;
-
-  // Highest the glyph centre may sit without touching the logo.
-  const minCentre = logoBottom + LOGO_CLEARANCE_REM * rem + capHalf;
-  const maxTravel = naturalCentre - minCentre;
-
-  return Math.max(0, Math.min(desired, maxTravel));
+/** The wordmark's glyphs, shared by the flying copy and the hidden stand-in. */
+function WordmarkGlyphs({ interactive }: { interactive?: boolean }) {
+  const hit: CSSProperties = interactive ? { pointerEvents: "auto" } : {};
+  return (
+    <>
+      <span style={{ ...WORDMARK_APERIX, ...hit }}>APERIX</span>
+      <span style={{ ...WORDMARK_STUDIO, ...hit }}>STUDIO</span>
+    </>
+  );
 }
 
 export default function HomeHero() {
   const [canMove, setCanMove] = useState(false);
+  const [moved, setMoved] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
-  const [moveUpPx, setMoveUpPx] = useState(() => HERO_TITLE_MOVE_REM * getRemPx());
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [travel, setTravel] = useState<Travel>(NO_TRAVEL);
+
+  const wordmarkRef = useRef<HTMLParagraphElement>(null);
+  const slotRef = useRef<HTMLParagraphElement>(null);
+  const moverRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  /**
+   * How far the wordmark has to fly to land on its slot in the grid.
+   *
+   * Measured rather than computed: the grid owns the resting position, so a
+   * change to its columns or padding moves the target without needing a
+   * matching constant here.
+   *
+   * The flying copy's rect already includes however much of the flight is
+   * applied, so the mover's own matrix is subtracted back out to recover the
+   * untransformed origin. Reading the live matrix rather than remembering
+   * what we asked for is what makes this correct mid-animation as well as at
+   * rest — measuring against a stale idea of the offset is how this ends up
+   * adding one flight's worth of travel per remeasure.
+   */
+  const measure = useCallback((): Travel => {
+    const flying = wordmarkRef.current;
+    const slot = slotRef.current;
+    const mover = moverRef.current;
+    if (!flying || !slot || !mover) return NO_TRAVEL;
+
+    const raw = getComputedStyle(mover).transform;
+    const applied = raw && raw !== "none" ? new DOMMatrixReadOnly(raw) : null;
+    const dx = applied?.e ?? 0;
+    const dy = applied?.f ?? 0;
+
+    const from = flying.getBoundingClientRect();
+    const to = slot.getBoundingClientRect();
+    return {
+      // Left edges align directly; the two boxes differ only in leading.
+      x: to.left - (from.left - dx),
+      // Centres, so the stand-in's tighter line box does not shift the target.
+      y:
+        to.top + to.height / 2 - (from.top - dy + from.height / 2),
+    };
+  }, []);
+
+  const remeasure = useCallback(() => {
+    setTravel(measure());
+  }, [measure]);
 
   useEffect(() => {
     const unsub = onIntroDone(() => {
       timerRef.current = setTimeout(() => {
         // Re-measure immediately before the move: at mount the logo SVG and
         // the webfont may not have settled, and a stale reading here is what
-        // decides whether the wordmark clears the logo.
-        setMoveUpPx(computeMoveUpPx(titleRef.current));
+        // decides where the wordmark comes to rest.
+        remeasure();
         setCanMove(true);
       }, HERO_MOVE_DELAY_MS);
     });
-    return () => { unsub(); clearTimeout(timerRef.current); };
-  }, []);
+    return () => {
+      unsub();
+      clearTimeout(timerRef.current);
+    };
+  }, [remeasure]);
 
   // Keep the resting position correct for the live viewport, not just for the
   // size the page happened to load at (rotation, browser-chrome collapse,
   // desktop window resize, text-size preference changes).
   useEffect(() => {
-    const measure = () => setMoveUpPx(computeMoveUpPx(titleRef.current));
+    // After paint, so the grid has been laid out and the target is real.
+    const raf = requestAnimationFrame(remeasure);
+    window.addEventListener("resize", remeasure);
+    window.addEventListener("orientationchange", remeasure);
 
-    measure();
-    window.addEventListener("resize", measure);
-    window.addEventListener("orientationchange", measure);
+    // The wordmark is set in a webfont at a fluid size; both settle after
+    // first paint, and both move the target.
+    void document.fonts?.ready.then(remeasure).catch(() => {});
 
     const observer =
-      typeof ResizeObserver !== "undefined" && titleRef.current
-        ? new ResizeObserver(measure)
+      typeof ResizeObserver !== "undefined" && slotRef.current
+        ? new ResizeObserver(remeasure)
         : null;
-    if (titleRef.current) observer?.observe(titleRef.current);
+    if (slotRef.current) observer?.observe(slotRef.current);
 
     return () => {
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("orientationchange", measure);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", remeasure);
+      window.removeEventListener("orientationchange", remeasure);
       observer?.disconnect();
     };
-  }, []);
+  }, [remeasure]);
+
+  const copyIn = {
+    initial: { opacity: 0, y: 16 },
+    animate: showCopy ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 },
+  };
 
   return (
     <section
       id="home-hero"
+      className="home-hero"
       style={{
         position: "relative",
         minHeight: "100dvh",
@@ -142,17 +199,81 @@ export default function HomeHero() {
         zIndex: 1,
       }}
     >
+      {/* ── The editorial composition ─────────────────────────── */}
+      <div className="home-hero__grid">
+        {/* Reserves the wordmark's box and marks where it has to land. */}
+        <p ref={slotRef} className="home-hero__mark" style={WORDMARK_BOX_TIGHT} aria-hidden="true">
+          <WordmarkGlyphs />
+        </p>
+
+        <motion.hr
+          className="home-hero__rule"
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={showCopy ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
+          transition={{ duration: 0.7, ease: HERO_EASE }}
+        />
+
+        <motion.h1
+          className="home-hero__lead"
+          {...copyIn}
+          transition={{ duration: HERO_COPY_DURATION_S, ease: HERO_EASE }}
+        >
+          A two-man team inspired by top creators and advancing technology,
+          providing Melbourne with the finest care in web development and
+          software solutions.
+        </motion.h1>
+
+        <motion.p
+          className="home-hero__sub"
+          {...copyIn}
+          transition={{ duration: HERO_COPY_DURATION_S, ease: HERO_EASE, delay: 0.14 }}
+        >
+          Driven by the desire to provide AI-supported, customised projects, we
+          give you the structure and strategy to build{" "}
+          <span className="home-hero__you">your</span> iconic brand and business.
+        </motion.p>
+      </div>
+
+      <motion.div
+        className="home-hero__base"
+        aria-hidden="true"
+        initial={{ opacity: 0 }}
+        animate={showCopy ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.8, ease: HERO_EASE, delay: 0.28 }}
+      >
+        <span className="home-hero__base-line" />
+        <svg
+          className="home-hero__cue"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 5v14M6 13l6 6 6-6" />
+        </svg>
+      </motion.div>
+
       {/*
         Outer div: pure CSS translateY(2.8rem) — identical to the intro
         overlay's wrapper. Browser resolves both the same way, so the
         text sits at exactly the same pixel row when the crossfade happens.
       */}
-      <div style={{ transform: "translateY(2.8rem)", width: "100%" }}>
-        {/*
-          Title wrapper only — description is absolutely positioned so it
-          never reflows the flex layout while the title is moving up.
-        */}
+      <div
+        style={{
+          transform: "translateY(2.8rem)",
+          width: "100%",
+          // The wordmark's line box is deliberately tall; left as-is it would
+          // sit over the copy and swallow selection. The glyph spans opt back
+          // in, so the wordmark itself is still selectable.
+          pointerEvents: "none",
+        }}
+      >
         <motion.div
+          ref={moverRef}
           style={{
             display: "flex",
             justifyContent: "center",
@@ -162,110 +283,24 @@ export default function HomeHero() {
             padding: "0 var(--wordmark-gutter, 1.5rem)",
             position: "relative",
           }}
-          animate={{ y: canMove ? -moveUpPx : 0 }}
-          transition={{ duration: HERO_MOVE_DURATION_S, ease: HERO_EASE }}
+          animate={{
+            x: canMove ? travel.x : 0,
+            y: canMove ? travel.y : 0,
+          }}
+          // Once it has landed, later measurements are corrections for a
+          // resize — they must apply instantly rather than gliding across.
+          transition={
+            moved ? { duration: 0 } : { duration: HERO_MOVE_DURATION_S, ease: HERO_EASE }
+          }
           onAnimationComplete={() => {
-            if (canMove) setShowCopy(true);
+            if (!canMove) return;
+            setMoved(true);
+            setShowCopy(true);
           }}
         >
-          <h1
-            ref={titleRef}
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 0,
-              margin: 0,
-              lineHeight: 4,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-display), sans-serif",
-                fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
-                fontWeight: 800,
-                letterSpacing: "var(--wordmark-track-aperix, 0.22em)",
-                color: "#ffffff",
-                textShadow: "0 0 32px rgba(14,165,233,0.55)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              APERIX
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-display), sans-serif",
-                fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
-                fontWeight: 300,
-                letterSpacing: "var(--wordmark-track-studio, 0.34em)",
-                color: "rgba(255,255,255,0.75)",
-                textShadow: "0 0 24px rgba(14,165,233,0.3)",
-                whiteSpace: "nowrap",
-                paddingLeft: "var(--wordmark-gap, 0.5em)",
-              }}
-            >
-              STUDIO
-            </span>
-          </h1>
-
-          {showCopy && (
-            <div
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: "50%",
-                transform: "translateX(-50%)",
-                marginTop: "2rem",
-                width: "min(40rem, calc(100vw - 3rem))",
-                textAlign: "center",
-              }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: HERO_COPY_DURATION_S, ease: HERO_EASE }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                }}
-              >
-              <p
-                style={{
-                  fontFamily: "var(--font-display), sans-serif",
-                  fontSize: "clamp(0.85rem, 1.6vw, 1rem)",
-                  fontWeight: 400,
-                  lineHeight: 1.75,
-                  letterSpacing: "0.04em",
-                  color: "rgba(255,255,255,0.65)",
-                  margin: 0,
-                }}
-              >
-                A two-man team inspired by top creators and advancing technology,
-                providing Melbourne with the finest care in web development and
-                software solutions.
-              </p>
-
-              <p
-                style={{
-                  fontFamily: "var(--font-display), sans-serif",
-                  fontSize: "clamp(0.85rem, 1.6vw, 1rem)",
-                  fontWeight: 400,
-                  lineHeight: 1.75,
-                  letterSpacing: "0.04em",
-                  color: "rgba(255,255,255,0.65)",
-                  margin: 0,
-                }}
-              >
-                Driven by the desire to provide AI-supported, customised
-                projects, we give you the structure and strategy to build{" "}
-                <span style={{ color: "rgba(255,255,255,0.72)", fontWeight: 600 }}>
-                  your
-                </span>{" "}
-                iconic brand and business.
-              </p>
-              </motion.div>
-            </div>
-          )}
+          <p ref={wordmarkRef} style={WORDMARK_BOX}>
+            <WordmarkGlyphs interactive />
+          </p>
         </motion.div>
       </div>
     </section>

@@ -542,3 +542,63 @@
     max-width: 300px;
   }
 }
+
+/* ============================================================
+   Orbit layout (wide viewports)
+   ============================================================ */
+
+/* The ring frames itself with its own empty space, so the section does not
+   need the marquee's generous top gap as well. */
+.home-work--orbit {
+  padding-top: clamp(2.5rem, 5vw, 5rem);
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* Centred at the heart of the ring rather than stacked above it. */
+.home-work__header-wrap {
+  position: relative;
+}
+
+/* A pool of the slab colour so the headline still reads over whichever card
+   is passing behind it. Cards on the near side of the ring cross in front of
+   the type — that crossing is the whole effect — but the far side must never
+   compete with it. */
+.home-work__header-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -95% -34%;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(13, 45, 76, 0.97) 0%,
+    rgba(13, 45, 76, 0.9) 34%,
+    rgba(13, 45, 76, 0.55) 58%,
+    rgba(13, 45, 76, 0) 78%
+  );
+  pointer-events: none;
+}
+
+.home-work__header-wrap .home-work__header {
+  max-width: none;
+  margin: 0;
+  text-align: center;
+}
+
+/* Held well inside the ring so the cards frame the type rather than cut
+   across every line of it. */
+.home-work__header-wrap .home-work__heading {
+  font-size: clamp(1.6rem, 2.6vw, 2.5rem);
+  margin-inline: auto;
+  max-width: 15ch;
+  text-shadow: 0 2px 18px rgba(6, 24, 43, 0.85);
+}
+
+/* The lede, sitting under the ring. */
+.home-work__caption {
+  position: relative;
+  z-index: 3;
+  margin: clamp(0.5rem, 2vw, 1.5rem) auto 0;
+  max-width: 34rem;
+  text-align: center;
+}

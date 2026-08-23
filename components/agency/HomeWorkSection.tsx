@@ -3,7 +3,9 @@
 import { useRef } from "react";
 import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
 import { useInView } from "@/lib/useInView";
+import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import WorkOrbit, { type WorkOrbitItem } from "@/components/agency/WorkOrbit";
 import WorkPixelFade from "@/components/agency/WorkPixelFade";
 import { InfiniteSlider } from "@/components/core/infinite-slider";
 import {
@@ -23,11 +25,16 @@ import "./HomeWorkSection.css";
 /**
  * Our Work — opaque dark blue slab.
  *
- * Two horizontal marquee rows running in opposite directions carry the live
- * sites past the viewer. Both rows show all five projects; the second row
- * starts from a different offset so the two never line up. Hovering a row
- * slows it down, and clicking a tile morphs it open into a full case-study
- * dialog rather than jumping straight off-site.
+ * Wide viewports get the orbit: a tilted ring of live-site cards turning
+ * through perspective around the headline, with the far half of the ring
+ * passing behind the type and the near half sweeping in front of it. Narrow
+ * ones keep the two counter-running marquee rows, which stay far easier to
+ * read and to touch on a phone.
+ *
+ * Either way the cards are the same thing — a looping capture of a site we
+ * shipped, still running as it does today — and either way clicking one
+ * morphs it open into the full case study rather than jumping straight
+ * off-site.
  */
 
 function mediaFor(site: LiveSite) {
@@ -189,20 +196,54 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
 /** Row two starts two projects in, so the rows never sit in step. */
 const ROW_TWO = [...LIVE_SITES.slice(2), ...LIVE_SITES.slice(0, 2)];
 
+/**
+ * The ring carries every project twice. With an even tile count that puts a
+ * project and its repeat exactly opposite each other, so the same site is
+ * never visible twice on the near face.
+ */
+const ORBIT_SITES = [...LIVE_SITES, ...LIVE_SITES];
+
 export default function HomeWorkSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  // The two rows duplicate their children for the seamless loop, so a full
-  // marquee is ~20 <video> elements. Keep them all paused until the section
-  // is actually on screen.
+  const { isMobile: isNarrow } = useNarrowViewport();
+  // Every layout duplicates its cards, so a full row is ~20 <video> elements
+  // and a full ring is 10. Keep them all paused until the section is actually
+  // on screen.
   const sectionInView = useInView(sectionRef, { rootMargin: "15% 0px", threshold: 0 });
   const playing = sectionInView && !prefersReducedMotion;
+
+  const lede = (
+    <p className="home-work__lede">
+      Every site here is live and running in production. Open any one to see
+      the full story.
+    </p>
+  );
+
+  // The ring's centre carries the eyebrow and the headline only. The lede sits
+  // under the stage instead: at the ring's midline it would spend half its
+  // time behind whichever card is sweeping past the near side, and a line of
+  // body copy survives that far less well than a headline does.
+  const header = (
+    <header className="home-work__header">
+      <p className="home-work__eyebrow">Live work</p>
+      <h2 id="home-work-heading" className="home-work__heading">
+        Recent projects we&apos;ve shipped
+      </h2>
+      {isNarrow ? lede : null}
+    </header>
+  );
+
+  const orbitItems: WorkOrbitItem[] = ORBIT_SITES.map((site, index) => ({
+    key: `${site.name}-${index}`,
+    node: <WorkTile site={site} playing={playing} />,
+  }));
 
   return (
     <section
       ref={sectionRef}
       id="our-work"
-      className="home-work"
+      className={`home-work${isNarrow ? "" : " home-work--orbit"}`}
       aria-labelledby="home-work-heading"
     >
       {/* The band above renders the slab, the pixel grid and the lens for
@@ -215,44 +256,49 @@ export default function HomeWorkSection() {
         </>
       ) : null}
 
-      <div className="home-work__inner">
-        <header className="home-work__header">
-          <p className="home-work__eyebrow">Live work</p>
-          <h2 id="home-work-heading" className="home-work__heading">
-            Recent projects we&apos;ve shipped
-          </h2>
-          <p className="home-work__lede">
-            Every site below is live and running in production. Tap any one to
-            see the full story.
-          </p>
-        </header>
-      </div>
+      {isNarrow ? (
+        <>
+          <div className="home-work__inner">{header}</div>
 
-      <div className="home-work__marquee">
-        {prefersReducedMotion ? (
-          // No auto-scroll for reduced motion — the same tiles, laid out as a
-          // plain horizontally scrollable strip the user drives themselves.
-          <div className="home-work__static-rows">
-            {LIVE_SITES.map((site) => (
-              <WorkTile key={site.name} site={site} playing={playing} />
-            ))}
+          <div className="home-work__marquee">
+            {prefersReducedMotion ? (
+              // No auto-scroll for reduced motion — the same tiles, laid out
+              // as a plain horizontally scrollable strip the user drives
+              // themselves.
+              <div className="home-work__static-rows">
+                {LIVE_SITES.map((site) => (
+                  <WorkTile key={site.name} site={site} playing={playing} />
+                ))}
+              </div>
+            ) : (
+              <>
+                <InfiniteSlider gap={24} duration={45} durationOnHover={140}>
+                  {LIVE_SITES.map((site) => (
+                    <WorkTile key={site.name} site={site} playing={playing} />
+                  ))}
+                </InfiniteSlider>
+
+                <InfiniteSlider gap={24} duration={52} durationOnHover={160} reverse>
+                  {ROW_TWO.map((site) => (
+                    <WorkTile key={site.name} site={site} playing={playing} />
+                  ))}
+                </InfiniteSlider>
+              </>
+            )}
           </div>
-        ) : (
-          <>
-            <InfiniteSlider gap={24} duration={45} durationOnHover={140}>
-              {LIVE_SITES.map((site) => (
-                <WorkTile key={site.name} site={site} playing={playing} />
-              ))}
-            </InfiniteSlider>
+        </>
+      ) : (
+        <>
+          <WorkOrbit
+            items={orbitItems}
+            center={<div className="home-work__header-wrap">{header}</div>}
+            playing={playing}
+            still={prefersReducedMotion}
+          />
 
-            <InfiniteSlider gap={24} duration={52} durationOnHover={160} reverse>
-              {ROW_TWO.map((site) => (
-                <WorkTile key={site.name} site={site} playing={playing} />
-              ))}
-            </InfiniteSlider>
-          </>
-        )}
-      </div>
+          <div className="home-work__caption">{lede}</div>
+        </>
+      )}
     </section>
   );
 }
