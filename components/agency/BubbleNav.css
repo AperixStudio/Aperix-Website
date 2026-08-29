@@ -49,8 +49,27 @@
     box-shadow 0.25s ease;
 }
 
-.bubble-nav-shell:hover .bubble-nav,
-.bubble-nav-shell:focus-within .bubble-nav {
+/* Hover-to-open: scoped to devices with a real hover-capable pointer. A
+   touchscreen can fire a synthetic ":hover" on tap to satisfy this rule, and
+   the click that follows would then land wherever the newly-wide pill
+   relaid itself under that same fingertip — usually a link, firing it in
+   the same touch that only meant to open the menu. Excluding those devices
+   here removes the ambiguity outright, rather than trying to out-time it;
+   `.is-open` below is their explicit, JS-driven equivalent. */
+@media (hover: hover) {
+  .bubble-nav-shell:hover .bubble-nav {
+    width: 22rem;
+    box-shadow:
+      0 0 0 1px rgba(14, 165, 233, 0.4),
+      0 8px 40px rgba(14, 165, 233, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Keyboard focus and touch-tap (`.is-open`, set in BubbleNav.tsx) — both
+   apply everywhere, since neither depends on hover capability. */
+.bubble-nav-shell:focus-within .bubble-nav,
+.bubble-nav-shell.is-open .bubble-nav {
   width: 22rem;
   box-shadow:
     0 0 0 1px rgba(14, 165, 233, 0.4),
@@ -80,8 +99,15 @@
   animation: bnGlitchRgb 3.2s steps(1) infinite;
 }
 
-.bubble-nav-shell:hover .bubble-nav__label,
-.bubble-nav-shell:focus-within .bubble-nav__label {
+@media (hover: hover) {
+  .bubble-nav-shell:hover .bubble-nav__label {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.bubble-nav-shell:focus-within .bubble-nav__label,
+.bubble-nav-shell.is-open .bubble-nav__label {
   opacity: 0;
   pointer-events: none;
 }
@@ -98,8 +124,18 @@
   white-space: nowrap;
 }
 
-.bubble-nav-shell:hover .bubble-nav__links,
-.bubble-nav-shell:focus-within .bubble-nav__links {
+/* This is the gate that actually prevents the touch mis-tap: while none of
+   these match, the links have no hit-target at all, so a first tap on the
+   collapsed pill can only ever land on its background. */
+@media (hover: hover) {
+  .bubble-nav-shell:hover .bubble-nav__links {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.bubble-nav-shell:focus-within .bubble-nav__links,
+.bubble-nav-shell.is-open .bubble-nav__links {
   opacity: 1;
   pointer-events: auto;
 }
@@ -139,8 +175,17 @@
     border-color 0.15s ease;
 }
 
-.bubble-nav-shell:hover .bubble-nav__top,
-.bubble-nav-shell:focus-within .bubble-nav__top {
+@media (hover: hover) {
+  .bubble-nav-shell:hover .bubble-nav__top {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.15s;
+    pointer-events: auto;
+  }
+}
+
+.bubble-nav-shell:focus-within .bubble-nav__top,
+.bubble-nav-shell.is-open .bubble-nav__top {
   opacity: 1;
   transform: translateY(0);
   transition-delay: 0.15s;

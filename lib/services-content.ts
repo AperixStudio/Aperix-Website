@@ -153,12 +153,12 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "How long does a project take?",
     answer:
-      "It depends on scope. A focused website might take a few weeks once content is ready; builds with custom features, integrations, or a CMS usually take longer. When you get in touch, we'll reply with a clear timeline — not a vague package estimate.",
+      "It depends on scope. A focused website might take a few weeks once content is ready; builds with custom features, integrations, or a CMS usually take longer. When you get in touch, we'll reply with a clear timeline, not a vague package estimate.",
   },
   {
     question: "How does pricing work?",
     answer:
-      "Every project is scoped individually. We look at what you need — pages, functionality, content structure, and timeline — and send back a fixed quote with the next steps. Tell us what you're trying to achieve through the contact form and we'll shape the rest from there.",
+      "Every project is scoped individually. We look at what you need, from pages and functionality to content structure and timeline, then send back a fixed quote with the next steps. Tell us what you're trying to achieve through the contact form and we'll shape the rest from there.",
   },
   {
     question: "What do I need to provide?",
@@ -168,7 +168,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "What kind of work do you take on?",
     answer:
-      "Custom websites, web apps, and SaaS products — from landing pages and multi-service business sites to e-commerce, campaign pages, and software builds. We're a two-person team in Melbourne and work on projects of different sizes, as long as they're worth doing properly.",
+      "Custom websites, web apps, and SaaS products, from landing pages and multi-service business sites to e-commerce, campaign pages, and software builds. We're a two-person team in Melbourne and work on projects of different sizes, as long as they're worth doing properly.",
   },
   {
     question: "Do you use WordPress?",

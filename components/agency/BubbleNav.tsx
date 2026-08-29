@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import HashLink from "@/components/agency/HashLink";
 import "./BubbleNav.css";
 
@@ -26,11 +26,63 @@ function scrollToTop() {
  * overflow:hidden — needed so the width transition doesn't clip it — while
  * still counting as "still hovering the widget" when the pointer is over the
  * gap between the two.
+ *
+ * Opening is hover-driven on a real pointer, but on a touchscreen there is no
+ * hover: a tap on the collapsed pill triggers a browser's synthetic ":hover"
+ * to satisfy the CSS, and the click that immediately follows lands wherever
+ * the now-wider pill re-laid itself out under that same fingertip — usually
+ * straight onto a link, firing it in the same touch that only meant to open
+ * the menu. `open` state below replaces that guesswork on touch devices with
+ * an explicit two-tap flow: pointer-events keep every link (and the chevron)
+ * unhittable until `is-open` is set, so a first tap can only ever land on the
+ * pill itself. The hover CSS is scoped to `(hover: hover)` so it never fires
+ * this way on a touchscreen to begin with — see BubbleNav.css.
  */
 export default function BubbleNav() {
+  const [open, setOpen] = useState(false);
+  const shellRef = useRef<HTMLDivElement>(null);
+
+  const openPill = useCallback(
+    (event: React.MouseEvent) => {
+      // Once open, the pill's own background is never what a tap lands on —
+      // that area is a link, a divider, or the gap around one — so this only
+      // ever fires for the tap that opens it.
+      if (open) return;
+      event.preventDefault();
+      setOpen(true);
+    },
+    [open],
+  );
+
+  const closePill = useCallback(() => setOpen(false), []);
+
+  // Tapping outside, or Escape, closes it again. Mouse users never set `open`
+  // in the first place (they close by moving the pointer away), so this only
+  // does anything once a touch tap has opened it.
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!shellRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   return (
-    <div className="bubble-nav-shell">
-      <nav className="bubble-nav" aria-label="Site navigation">
+    <div
+      ref={shellRef}
+      className={`bubble-nav-shell${open ? " is-open" : ""}`}
+    >
+      <nav className="bubble-nav" aria-label="Site navigation" onClick={openPill}>
         {/* Collapsed state label */}
         <span className="bubble-nav__label" aria-hidden="true">
           TABS
@@ -48,6 +100,7 @@ export default function BubbleNav() {
                   href={link.href}
                   className="bubble-nav__link"
                   data-text={link.label}
+                  onClick={closePill}
                 >
                   {link.label}
                 </HashLink>
