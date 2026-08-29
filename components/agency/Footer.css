@@ -1,0 +1,37 @@
+/* ============================================================
+   Footer — layout clearance for the floating BubbleNav pill
+   ============================================================
+   This file is imported by Footer.tsx, so the rules below only ship on
+   pages that actually render the footer. On those pages the fixed
+   BubbleNav pill is lifted clear of the footer bar instead of sitting
+   on top of it.
+
+   Footer bar height: py-5 (2.5rem) + logo (1.75rem) ≈ 4.25rem.
+   --bubble-nav-bottom adds a 1.75rem breathing gap on top of that.
+*/
+
+body {
+  --bubble-nav-bottom: 6rem;
+}
+
+/* Mobile: the pill reads as floating too high, so it drops a step. Measured
+   floor — the mobile footer bar is ~74px tall, so anything under ~4.6rem has
+   the pill overlapping it once the page is scrolled to the bottom. */
+@media (max-width: 640px) {
+  body {
+    --bubble-nav-bottom: 5rem;
+  }
+}
+
+/* Keep the last section clear of the pill's resting position too. */
+.site-footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* No outline on the footer bar — .agency-glass-pill's 1px border and the
+   pill drop-shadow both read as a hard edge across the page. */
+.site-footer.agency-glass-pill {
+  border: 0;
+  box-shadow: none;
+}

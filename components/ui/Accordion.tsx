@@ -21,14 +21,14 @@ import { cn } from "@/lib/utils";
    Accordion Component
    PRD §4.2.7 — FAQ accordion with smooth height transition
    using Framer Motion AnimatePresence + motion.div height:"auto"
-   Respects prefers-reduced-motion via useReducedMotion.
+   Reduced-motion accommodation is disabled site-wide (see useReducedMotion).
    ──────────────────────────────────────────────────────────── */
 
 /* ── reduced-motion hook (PRD §3.4) ────────────────────────── */
 function useReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  return mq.matches;
+  // Reduced-motion accommodation disabled by product decision — matches
+  // lib/useReducedMotion.ts. Restore the matchMedia check to bring it back.
+  return false;
 }
 
 /* ── Shared context ─────────────────────────────────────────── */

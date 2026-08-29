@@ -1,4 +1,3 @@
-@import "@fontsource-variable/hubot-sans/wght.css";
 @import "tailwindcss";
 
 /* ============================================================
@@ -212,7 +211,10 @@ h6 {
   font-weight: 600;
 }
 
-@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+/* The reduced-motion half of this query was dropped by product
+   decision; the coarse-pointer defaults below are unrelated to
+   motion preference and must stay. */
+@media (pointer: coarse) {
   :root {
     --agency-pointer-x: 50%;
     --agency-pointer-y: 18%;
@@ -851,6 +853,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -861,6 +871,7 @@ html {
     scroll-behavior: auto !important;
   }
 }
+*/
 
 :focus-visible {
   outline: 2px solid var(--agency-accent);
@@ -888,12 +899,21 @@ html {
   animation: marquee-scroll 40s linear infinite;
 }
 
+/* ---------------------------------------------------------------
+   Reduced-motion accommodation disabled by product decision.
+   The block below is intentionally commented out so the animation
+   runs for everyone, including users who set
+   prefers-reduced-motion: reduce. Uncomment to restore.
+   See lib/useReducedMotion.ts for the matching JS-side override.
+   --------------------------------------------------------------- */
+/*
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
   .animate-marquee {
     animation: none;
   }
 }
+*/
 
 /* Homepage dynamic-import placeholders (reserve space, avoid layout shift) */
 .home-section-placeholder {
@@ -948,4 +968,40 @@ html {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ============================================================
+   APERIX STUDIO wordmark — shared by IntroScreenSimple + HomeHero
+   ============================================================
+   Both copies of the wordmark must render at identical metrics so the
+   intro→hero crossfade is seamless, so the type scale lives here rather
+   than in either component.
+
+   The desktop values below are the original inline styles, unchanged.
+   Only the <=640px block is new: at the old 2.4rem floor with 0.22em /
+   0.34em tracking the wordmark measured ~434px and ran off both edges
+   of a phone screen.
+*/
+
+:root {
+  /* Desktop — byte-for-byte the original inline values. */
+  --wordmark-size: clamp(2.4rem, 5.5vw, 3.6rem);
+  --wordmark-track-aperix: 0.22em;
+  --wordmark-track-studio: 0.34em;
+  --wordmark-gap: 0.5em;
+  --wordmark-gutter: 1.5rem;
+}
+
+/* Mobile only. "APERIX STUDIO" measures ~10.8× its own font-size once
+   tracking is included, so the size below is picked to land the wordmark
+   at ~90% of the viewport: 31px / 337px wide on a 375px screen. The
+   gutter shrinks to match so the nowrap line never hits the padding. */
+@media (max-width: 640px) {
+  :root {
+    --wordmark-size: clamp(1.3rem, 8.33vw, 2.4rem);
+    --wordmark-track-aperix: 0.14em;
+    --wordmark-track-studio: 0.2em;
+    --wordmark-gap: 0.34em;
+    --wordmark-gutter: 0.5rem;
+  }
 }

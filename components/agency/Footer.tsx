@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import "./Footer.css";
 
 /* ── legal links ───────────────────────────────────────── */
 const legalLinks = [
@@ -343,18 +344,12 @@ export default function Footer() {
   }
 
   return (
-    <footer role="contentinfo" className="agency-glass-pill rounded-none border-x-0">
+    <footer role="contentinfo" className="site-footer agency-glass-pill rounded-none border-x-0">
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
 
         {/* Left — logo */}
         <Link href="/" aria-label="Aperix home">
-          <Image
-            src="/aperix-logo.svg"
-            alt="Aperix"
-            width={28}
-            height={36}
-            className="h-7 w-auto opacity-70 transition hover:opacity-100"
-          />
+          <AnimatedLogo size={28} className="h-7 w-auto opacity-70 transition hover:opacity-100" />
         </Link>
 
         {/* Centre — copyright */}

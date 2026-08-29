@@ -7,31 +7,15 @@ import {
   INTRO_BACKGROUND_FAILSAFE_MS,
   whenIntroSceneReady,
 } from "@/lib/introAssets";
+import {
+  introHasPlayed,
+  releaseIntroGate,
+  markIntroDone,
+  onIntroDone,
+} from "@/lib/introState";
 
-export let introHasPlayed = false;
-let doneSubscribers: Array<() => void> = [];
-
-function releaseIntroGate() {
-  const cover = document.getElementById("aperix-intro-cover");
-  if (cover) {
-    cover.style.transition = "opacity 0.25s ease";
-    cover.style.opacity = "0";
-    setTimeout(() => cover.remove(), 280);
-  }
-  document.documentElement.removeAttribute("data-aperix-intro");
-  document.getElementById("aperix-intro-gate")?.remove();
-}
-
-export function onIntroDone(cb: () => void): () => void {
-  if (introHasPlayed) {
-    cb();
-    return () => {};
-  }
-  doneSubscribers.push(cb);
-  return () => {
-    doneSubscribers = doneSubscribers.filter((fn) => fn !== cb);
-  };
-}
+// Re-export for backward compatibility — all existing imports keep working.
+export { introHasPlayed, onIntroDone } from "@/lib/introState";
 
 /* ── Timing ───────────────────────────────────────────────────
    load   — bar fills to 100%, dark sweep climbs to 90%
@@ -66,10 +50,8 @@ export default function IntroScreen() {
     }
 
     if (window.location.pathname.startsWith("/dev")) {
-      introHasPlayed = true;
+      markIntroDone();
       releaseIntroGate();
-      doneSubscribers.forEach((cb) => cb());
-      doneSubscribers = [];
       return;
     }
 
@@ -84,9 +66,7 @@ export default function IntroScreen() {
       }
       setVisible(false);
       releaseIntroGate();
-      introHasPlayed = true;
-      doneSubscribers.forEach((fn) => fn());
-      doneSubscribers = [];
+      markIntroDone();
     };
 
     const run = async () => {
@@ -427,9 +407,11 @@ export default function IntroScreen() {
               );
               animation: ixSlices 0.9s steps(1) infinite;
             }
+            /* Reduced-motion accommodation disabled by product decision.
+               Uncomment to restore.
             @media (prefers-reduced-motion: reduce) {
               .ix-glitch-frame, .ix-glitch-rgb, .ix-glitch-slices { animation: none !important; }
-            }
+            } */
           `}</style>
         </motion.div>
       )}

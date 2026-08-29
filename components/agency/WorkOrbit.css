@@ -1,0 +1,129 @@
+/* ============================================================
+   Work orbit — tilted ring of live-site cards in perspective
+   ============================================================ */
+
+.work-orbit {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-height: min(88vh, 900px);
+  /* aspect-ratio comes from the component so it stays tied to the design
+     frame the geometry is measured in. */
+  margin: 0 auto;
+  /* Cards deliberately run past the frame's sides as they swing wide. */
+  overflow: hidden;
+}
+
+/* ---- Headline at the ring's centre ---- */
+
+.work-orbit__centre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 500;
+  width: min(34rem, 56%);
+  transform: translate(-50%, -50%);
+  /* Cards pass over and under this; nothing here should swallow their
+     hover. Anything interactive inside opts back in. */
+  pointer-events: none;
+}
+
+.work-orbit__centre a,
+.work-orbit__centre button {
+  pointer-events: auto;
+}
+
+/* ---- Cards ---- */
+
+.work-orbit__slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--orbit-tile-w, 0px);
+  height: var(--orbit-tile-h, 0px);
+  /* Puts the card's centre on the stage origin, so the matrix's translation
+     is simply where the ring wants that centre to be. */
+  margin-left: calc(var(--orbit-tile-w, 0px) / -2);
+  margin-top: calc(var(--orbit-tile-h, 0px) / -2);
+  /* Hidden until the first measured frame, otherwise every card would flash
+     stacked in the top-left corner. */
+  visibility: hidden;
+  transform-origin: center;
+  will-change: transform;
+  /* Depth cue: far side of the ring sits back in the haze. */
+  filter: brightness(calc(0.52 + 0.48 * var(--orbit-depth, 1)));
+}
+
+.work-orbit__card {
+  height: 100%;
+  width: 100%;
+  border-radius: 14px;
+  /* The perspective basis mirrors a card once it turns away from us. Flipping
+     the contents back keeps the site legible instead of showing it in
+     reverse, which the reference never has to solve because its tiles are
+     abstract gradients. */
+  transform: none;
+  box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.95);
+}
+
+.work-orbit__slot[data-mirrored="true"] .work-orbit__card {
+  transform: scaleX(-1);
+}
+
+.work-orbit__slot[data-facing="back"] .work-orbit__card {
+  opacity: 0.82;
+}
+
+/* ---- The tile itself, retuned for the ring ---- */
+
+/* Cards are sized by the ring, not by their own content. */
+.work-orbit .home-work__tile {
+  height: 100%;
+  width: 100%;
+}
+
+/* The lift-on-hover from the marquee would fight the ring's matrix. */
+.work-orbit .home-work__tile:hover,
+.work-orbit .home-work__tile:focus-visible {
+  transform: none;
+}
+
+/* Media takes whatever height the body does not, so the card fills the slot
+   at any scale rather than driving its own aspect ratio. */
+.work-orbit .home-work__tile-media {
+  aspect-ratio: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The ring shrinks with the viewport; the labels track it so a card reads the
+   same at every size. */
+.work-orbit .home-work__tile-body {
+  padding: 0.55rem 0.7rem 0.65rem;
+}
+
+.work-orbit .home-work__tile-name {
+  font-size: clamp(0.72rem, 1vw, 0.95rem);
+}
+
+.work-orbit .home-work__tile-label {
+  font-size: clamp(0.6rem, 0.8vw, 0.72rem);
+}
+
+/* ---- Narrow ---- */
+
+/* Half as many cards, each much larger against the frame, so the headline has
+   to give up the width the wide ring could spare it. */
+@media (max-width: 1023px) {
+  .work-orbit {
+    max-height: none;
+  }
+
+  .work-orbit__centre {
+    width: min(22rem, 90%);
+  }
+
+  .work-orbit .home-work__tile-body {
+    padding: 0.45rem 0.6rem 0.55rem;
+  }
+}

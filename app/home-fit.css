@@ -1,0 +1,38 @@
+/* ============================================================
+   Home (new look) — viewport fitting
+   ============================================================
+   Scoped to .home-page so /current and the standalone /contact and
+   /about routes are untouched.
+
+   Every panel is at least one screen tall and vertically centres its own
+   content, so a short device never lands on a half-empty section. 100dvh
+   (not svh/vh) tracks mobile browser chrome as it collapses, so the panel
+   always matches what is actually visible.
+*/
+
+.home-page #about {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-page #contact > * {
+  width: 100%;
+}
+
+/* Our Work is far taller than a screen already; it only needs its first
+   card to clear the fold rather than a min-height. */
+.home-page #our-work {
+  scroll-margin-top: 0;
+}
+
+/* Short landscape phones: 100dvh panels would otherwise force the padding
+   to eat the whole panel, so relax the vertical padding instead of the
+   content. */
+@media (max-height: 560px) {
+  .home-page #about {
+    padding-top: clamp(2rem, 8dvh, 4rem);
+    padding-bottom: clamp(2rem, 8dvh, 4rem);
+  }
+}

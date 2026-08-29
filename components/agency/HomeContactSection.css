@@ -6,6 +6,7 @@
 
 .home-contact-section.contact-page {
   min-height: auto;
+  padding-bottom: clamp(1rem, 2.5vh, 1.5rem);
 }
 
 .home-contact-section__shell {
