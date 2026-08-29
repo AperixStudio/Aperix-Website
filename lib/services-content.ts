@@ -148,31 +148,41 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Do I own my website after you build it?",
     answer:
-      "Yes. You own the code, the design, and the domain once the project is complete. We can manage hosting and support, but the site is yours to keep or move.",
+      "Yes. You own the code, the design, and the domain once the project is complete. We can manage hosting and support, but the site is yours to keep or move at any time.",
   },
   {
-    question: "How long does a build take?",
+    question: "How long does a project take?",
     answer:
-      "Basic sites usually take 3–7 business days once content is ready. Growth sites take about 2–3 weeks, Pro sites usually take 4–6 weeks, and Enterprise builds are scoped individually.",
+      "It depends on scope. A focused website might take a few weeks once content is ready; builds with custom features, integrations, or a CMS usually take longer. When you get in touch, we'll reply with a clear timeline — not a vague package estimate.",
+  },
+  {
+    question: "How does pricing work?",
+    answer:
+      "Every project is scoped individually. We look at what you need — pages, functionality, content structure, and timeline — and send back a fixed quote with the next steps. Tell us what you're trying to achieve through the contact form and we'll shape the rest from there.",
   },
   {
     question: "What do I need to provide?",
     answer:
-      "Usually your logo, any brand colours or references, photos if you have them, and the key details about your services. We handle the structure, design, and build.",
+      "Usually your logo, any brand colours or references, photos if you have them, and the key details about your services or product. We handle the structure, design, and build. If you're not sure where to start, describe the outcome you want and we'll help fill in the gaps.",
   },
   {
-    question: "What’s included in the monthly retainer?",
+    question: "What kind of work do you take on?",
     answer:
-      "The care plans cover hosting, security updates, uptime monitoring, SSL, and general maintenance. Higher tiers can also include content changes, reporting, and faster support.",
+      "Custom websites, web apps, and SaaS products — from landing pages and multi-service business sites to e-commerce, campaign pages, and software builds. We're a two-person team in Melbourne and work on projects of different sizes, as long as they're worth doing properly.",
   },
   {
-    question: "Do you do WordPress?",
+    question: "Do you use WordPress?",
     answer:
-      "Not for this kind of work. We build in Next.js for speed, structure, and maintainability, and we use Sanity CMS when editable content is needed.",
+      "Not for this kind of work. We build in Next.js for speed, structure, and maintainability, and use Sanity CMS when you need to edit content yourself.",
   },
   {
     question: "Can we meet in person in Melbourne?",
     answer:
-      "Yes. We’re Melbourne-based and happy to meet in person if that’s easier. Most work happens remotely, but a face-to-face first meeting is always an option.",
+      "Yes. We're Melbourne-based and happy to meet face-to-face if that's easier. Most work happens remotely, but an in-person kick-off is always an option.",
+  },
+  {
+    question: "Do you work with clients outside Melbourne?",
+    answer:
+      "Yes. We're based in Melbourne but work with clients across Australia and internationally. Video calls work fine for briefs, reviews, and handover.",
   },
 ];

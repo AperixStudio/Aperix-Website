@@ -6,7 +6,7 @@ export default function HomeContactSection() {
   return (
     <section
       id="contact"
-      className="home-contact-section contact-page px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      className="home-contact-section contact-page px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24 lg:pb-8"
       aria-labelledby="home-contact-heading"
     >
       <div className="home-contact-section__shell contact-page__shell mx-auto max-w-6xl">

@@ -34,35 +34,34 @@ const HERO_FLOAT_DELAY_MS = 900;
 
 type Drift = { x: number[]; y: number[]; duration: number };
 
-/**
- * Once everything has landed the blocks drift, each on its own track.
- *
- * The periods are deliberately coprime-ish and none of them divide into
- * another, so the four never come back into step — the moment they do, the
- * whole hero reads as one sliding sheet instead of four things breathing
- * independently. Every track opens and closes on 0 so the loop is seamless
- * without a repeatType that would run it backwards.
- */
-const MARK_DRIFT: Drift = {
-  x: [0, 7, -5, 3, 0],
-  y: [0, -9, -4, -11, 0],
-  duration: 14,
-};
+/** Smooth rounded easing — each segment flows into the next like water. */
+const WATER_EASE: [number, number, number, number] = [0.42, 0, 0.58, 1];
 
-const DRIFT: Record<"mark" | "rule" | "lead" | "sub", Drift> = {
-  mark: MARK_DRIFT,
-  // The rule reads as the wordmark's underline, so it rides the same track.
-  // On one of its own it drifts out of register with the glyphs above it,
-  // which looks like a misalignment rather than like the pair breathing.
-  rule: MARK_DRIFT,
-  lead: { x: [0, -6, 5, -3, 0], y: [0, -7, -12, -4, 0], duration: 19 },
-  sub: { x: [0, 6, -4, 8, 0], y: [0, -11, -4, -8, 0], duration: 23 },
+/**
+ * The two copy blocks drift on independent organic loops once revealed.
+ * The wordmark and its rule stay fixed — only the paragraphs breathe.
+ *
+ * Periods are deliberately coprime so the pair never lock back into step.
+ * Every track opens and closes on 0 for a seamless loop.
+ */
+const DRIFT: Record<"lead" | "sub", Drift> = {
+  lead: {
+    x: [0, 18, 30, 14, -18, -32, -16, 10, 24, 0],
+    y: [0, -14, -28, -38, -24, -8, 12, 28, 16, 0],
+    duration: 26,
+  },
+  sub: {
+    x: [0, -16, -28, -20, 8, 26, 32, 12, -22, 0],
+    y: [0, -20, -10, 16, 30, 20, -6, -26, -14, 0],
+    duration: 31,
+  },
 };
 
 function driftTransition(drift: Drift) {
+  const segments = drift.x.length - 1;
   return {
     duration: drift.duration,
-    ease: "easeInOut" as const,
+    ease: Array.from({ length: segments }, () => WATER_EASE),
     repeat: Infinity,
     repeatType: "loop" as const,
   };
@@ -228,7 +227,7 @@ export default function HomeHero() {
   }, [showCopy]);
 
   /** Reveal, then drift — the two never overlap, so they never conflict. */
-  const copyMotion = (key: "rule" | "lead" | "sub", settled: object) => {
+  const copyMotion = (key: "lead" | "sub", settled: object) => {
     const drift = DRIFT[key];
     return floating
       ? { animate: { ...settled, opacity: 1, x: drift.x, y: drift.y },
@@ -261,15 +260,13 @@ export default function HomeHero() {
 
         <motion.hr
           className="home-hero__rule"
-          initial={{ scaleX: 0, opacity: 0, x: 0, y: 0 }}
-          {...(floating
-            ? copyMotion("rule", { scaleX: 1 })
-            : {
-                animate: showCopy
-                  ? { scaleX: 1, opacity: 1, x: 0, y: 0 }
-                  : { scaleX: 0, opacity: 0, x: 0, y: 0 },
-                transition: { duration: 0.7, ease: HERO_EASE },
-              })}
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={
+            showCopy
+              ? { scaleX: 1, opacity: 1 }
+              : { scaleX: 0, opacity: 0 }
+          }
+          transition={{ duration: 0.7, ease: HERO_EASE }}
         />
 
         <motion.h1
@@ -342,25 +339,14 @@ export default function HomeHero() {
             padding: "0 var(--wordmark-gutter, 1.5rem)",
             position: "relative",
           }}
-          // The drift is expressed as an offset from wherever the flight left
-          // the wordmark, so a resize that moves the landing point carries the
-          // whole track with it rather than dragging the wordmark off station.
-          animate={
-            floating
-              ? {
-                  x: DRIFT.mark.x.map((d) => d + travel.x),
-                  y: DRIFT.mark.y.map((d) => d + travel.y),
-                }
-              : { x: canMove ? travel.x : 0, y: canMove ? travel.y : 0 }
-          }
+          // The wordmark lands and stays put — only the copy blocks drift.
+          animate={{ x: canMove ? travel.x : 0, y: canMove ? travel.y : 0 }}
           // Once it has landed, later measurements are corrections for a
           // resize — they must apply instantly rather than gliding across.
           transition={
-            floating
-              ? driftTransition(DRIFT.mark)
-              : moved
-                ? { duration: 0 }
-                : { duration: HERO_MOVE_DURATION_S, ease: HERO_EASE }
+            moved
+              ? { duration: 0 }
+              : { duration: HERO_MOVE_DURATION_S, ease: HERO_EASE }
           }
           onAnimationComplete={() => {
             if (!canMove) return;

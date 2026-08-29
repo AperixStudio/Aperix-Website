@@ -3,6 +3,7 @@ import Footer from "@/components/agency/Footer";
 import HomeAboutSection from "@/components/agency/HomeAboutSection";
 import HomeWorkAboutBand from "@/components/agency/HomeWorkAboutBand";
 import HomeContactSection from "@/components/agency/HomeContactSection";
+import HomeFAQSection from "@/components/agency/HomeFAQSection";
 import HomeHero from "@/components/agency/HomeHero";
 import HomeWorkSection from "@/components/agency/HomeWorkSection";
 import "./home-fit.css";
@@ -21,6 +22,7 @@ export default function Home() {
           about={<HomeAboutSection />}
         />
         <HomeContactSection />
+        <HomeFAQSection />
       </main>
 
       <Footer />
