@@ -173,7 +173,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Do you use WordPress?",
     answer:
-      "Not for this kind of work. We build in Next.js for speed, structure, and maintainability, and use Sanity CMS when you need to edit content yourself.",
+      "Not for this kind of work. You get a fully custom site instead of a template, so there's no limit on what we can build together.",
   },
   {
     question: "Can we meet in person in Melbourne?",

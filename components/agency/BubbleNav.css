@@ -1,6 +1,8 @@
 /* ── BubbleNav ─────────────────────────────────────────────── */
 
-.bubble-nav {
+/* Owns the fixed placement and the hover/focus-within triggers for both the
+   pill and the back-to-top chevron above it — see BubbleNav.tsx. */
+.bubble-nav-shell {
   position: fixed;
   /* Raised on pages that render the site footer — see Footer.css. */
   bottom: var(--bubble-nav-bottom, 2rem);
@@ -8,12 +10,23 @@
   transform: translateX(-50%);
   z-index: 200;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.bubble-nav {
   /* Glass pill */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0;
   overflow: hidden;
+
+  /* Second in DOM/tab order (after the chevron) but first visually — see
+     the chevron's `order` below. */
+  order: 1;
 
   height: 3rem;
   /* collapsed → only wide enough for TABS label */
@@ -36,8 +49,8 @@
     box-shadow 0.25s ease;
 }
 
-.bubble-nav:hover,
-.bubble-nav:focus-within {
+.bubble-nav-shell:hover .bubble-nav,
+.bubble-nav-shell:focus-within .bubble-nav {
   width: 22rem;
   box-shadow:
     0 0 0 1px rgba(14, 165, 233, 0.4),
@@ -67,8 +80,8 @@
   animation: bnGlitchRgb 3.2s steps(1) infinite;
 }
 
-.bubble-nav:hover .bubble-nav__label,
-.bubble-nav:focus-within .bubble-nav__label {
+.bubble-nav-shell:hover .bubble-nav__label,
+.bubble-nav-shell:focus-within .bubble-nav__label {
   opacity: 0;
   pointer-events: none;
 }
@@ -85,10 +98,64 @@
   white-space: nowrap;
 }
 
-.bubble-nav:hover .bubble-nav__links,
-.bubble-nav:focus-within .bubble-nav__links {
+.bubble-nav-shell:hover .bubble-nav__links,
+.bubble-nav-shell:focus-within .bubble-nav__links {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* ── Back-to-top chevron ────────────────────────────────────── */
+
+/* Sits above the pill (order: -1 puts it before the pill's order: 1 in the
+   shell's column flow) but after it in the DOM, so a keyboard user reaches
+   it last — past the real nav links, as the bonus action. Hidden and
+   unhittable until the shell expands, the same as the links themselves;
+   tabbing onto it while still invisible is what reveals it, exactly as
+   landing on a link does. */
+.bubble-nav__top {
+  order: -1;
+  display: grid;
+  place-items: center;
+
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(12, 16, 23, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: rgba(255, 255, 255, 0.75);
+
+  opacity: 0;
+  transform: translateY(0.35rem);
+  pointer-events: none;
+  cursor: pointer;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.bubble-nav-shell:hover .bubble-nav__top,
+.bubble-nav-shell:focus-within .bubble-nav__top {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+  pointer-events: auto;
+}
+
+.bubble-nav__top:hover,
+.bubble-nav__top:focus-visible {
+  color: #ffffff;
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+.bubble-nav__top:focus-visible {
+  outline: 2px solid rgba(14, 165, 233, 0.7);
+  outline-offset: 2px;
 }
 
 .bubble-nav__link {
@@ -182,7 +249,7 @@
 /* An open case-study dialog owns the screen — the pill would otherwise float
    over the panel, since it sits above the dialog in the stacking order.
    Flag is set by MorphingDialogContent. */
-body[data-dialog-open] .bubble-nav {
+body[data-dialog-open] .bubble-nav-shell {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -204,5 +271,6 @@ body[data-dialog-open] .bubble-nav {
   .bubble-nav__link::before,
   .bubble-nav__link::after { display: none; }
   .bubble-nav { transition: width 0.2s ease; }
+  .bubble-nav__top { transition: opacity 0.15s ease; }
 }
 */
