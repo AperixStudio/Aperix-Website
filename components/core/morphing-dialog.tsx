@@ -397,22 +397,35 @@ export function MorphingDialogVideo({
   const { uniqueId } = useMorphingDialog();
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Which sources the element has already been told to load. Null until the
+  // first run, which is what distinguishes "mounted" from "sources swapped".
+  const loadedFor = useRef<string | null>(null);
+
+  // Loading and playing have to stay in one effect, in this order. Split
+  // across two, the load() ran second on mount and reset the element out from
+  // under the play() that had just started — which is why an opened case
+  // study sat frozen on its first frame: its `playing` never changes, so
+  // play() was never attempted again. A tile got away with it only because
+  // scrolling into view flips `playing` and re-fires it.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    // Swapping between <source> children needs an explicit load() — unlike
+    // the src attribute, changing them does not re-trigger source selection.
+    // Skipped on mount, where the element is picking its source anyway.
+    const sources = `${src}|${fallbackSrc ?? ""}`;
+    if (loadedFor.current !== null && loadedFor.current !== sources) {
+      video.load();
+    }
+    loadedFor.current = sources;
 
     if (playing) {
       void video.play().catch(() => {});
     } else {
       video.pause();
     }
-  }, [playing]);
-
-  // Swapping between <source> children needs an explicit load() — unlike the
-  // src attribute, changing them does not re-trigger source selection.
-  useEffect(() => {
-    videoRef.current?.load();
-  }, [src, fallbackSrc]);
+  }, [src, fallbackSrc, playing]);
 
   return (
     <motion.video
