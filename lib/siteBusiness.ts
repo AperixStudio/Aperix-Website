@@ -34,7 +34,7 @@ export const SITE_TEAM = [
 export const SITE_SITEMAP_IMAGES = [
   {
     pagePath: "/",
-    loc: "/aperix-logo.svg",
+    loc: "/arrowhead-mark.svg",
     title: "Aperix Studio logo",
     caption: "Aperix Studio — custom web development Melbourne",
   },

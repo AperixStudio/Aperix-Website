@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, type CSSProperties } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "motion/react";
@@ -9,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import MelbourneFlipClock from "@/components/agency/MelbourneFlipClock";
 import HashLink from "@/components/agency/HashLink";
+import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
@@ -137,25 +137,9 @@ export default function AgencyNavV2() {
               className="group flex min-w-0 items-center gap-2"
               aria-label="Aperix — home"
             >
-              <motion.span
-                className="relative shrink-0 overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90"
-                animate={prefersReduced ? undefined : { rotate: 360 }}
-                transition={
-                  prefersReduced
-                    ? undefined
-                    : { duration: 5, ease: "linear", repeat: Infinity }
-                }
-              >
-                <Image
-                  src="/aperix-logo.svg"
-                  alt=""
-                  width={34}
-                  height={37}
-                  priority
-                  aria-hidden="true"
-                  className="h-[2.15rem] w-auto"
-                />
-              </motion.span>
+              <span className="relative shrink-0 overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
+                <AnimatedLogo size={352} priority className="h-88 w-auto" />
+              </span>
               <span className="truncate font-bold tracking-tight text-agency-ink">
                 <WiggleText label="Aperix" />
               </span>

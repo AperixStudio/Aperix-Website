@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, type CSSProperties } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import ThemeToggle from "@/components/agency/ThemeToggle";
+import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
 /* ────────────────────────────────────────────────────────────
    AgencyNav — PRD §4.2.1
@@ -88,15 +88,7 @@ export default function AgencyNav() {
             aria-label="Aperix — home"
           >
             <span className="relative overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
-              <Image
-                src="/aperix-logo.svg"
-                alt=""
-                width={34}
-                height={37}
-                priority
-                aria-hidden="true"
-                className="h-[2.15rem] w-auto"
-              />
+              <AnimatedLogo size={352} priority className="h-88 w-auto" />
             </span>
 
             {/* Wordmark */}

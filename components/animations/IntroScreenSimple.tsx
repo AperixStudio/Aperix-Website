@@ -14,7 +14,8 @@ import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introStat
   overlayFading HOLD_MS → HOLD_MS + OVERLAY_MS
     • Dark overlay fades to transparent.
     • Logo flies from centre up to SiteLogoFixed position, stays opaque.
-    • STUDIO slides in alongside APERIX.
+    • STUDIO slides in alongside APERIX — starts at the same instant (t0)
+      as the logo's fly-up, so the wordmark completes as the mark moves.
 
   settling      HOLD_MS + OVERLAY_MS → … + SETTLE_MS
     "APERIX STUDIO" floats on the live background (fixed center + inner
@@ -36,9 +37,14 @@ import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introStat
 export const INTRO_SETTLE_MS   = 700;   // exported so HomeHero can sync its delay
 export const INTRO_TEXT_FADE_MS = 400;  // exported so HomeHero can sync its delay
 
-const HOLD_MS         = 1100;
+// Long enough to watch the 3D mark finish assembling (last limb lands at
+// ~2.2s into its own build) with a beat to admire it fully formed, before
+// it starts flying up to the nav position.
+const HOLD_MS         = 2800;
 const OVERLAY_MS      = 650;
-const STUDIO_DELAY_MS = 180;
+// Fires at t0, in lockstep with the logo starting its fly-up to the nav
+// position — STUDIO wipes open at the exact moment the logo starts moving.
+const STUDIO_DELAY_MS = 0;
 // How long STUDIO takes to wipe open. The settling phase waits for this to
 // finish (see t2 below) — once the page fades in, HomeHero's identically
 // positioned wordmark is on screen too, and a still-forming STUDIO would
@@ -52,11 +58,16 @@ const STUDIO_HOLD_MS   = 120;
 const STUDIO_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 // Sizes
-const LOGO_INTRO_SIZE = 88;
-const LOGO_NAV_SIZE   = 44;
-const LOGO_INTRO_H    = Math.round(LOGO_INTRO_SIZE * (836 / 768));
-const LOGO_NAV_H      = Math.round(LOGO_NAV_SIZE   * (836 / 768));
+const LOGO_INTRO_SIZE = 1056;
+const LOGO_NAV_SIZE   = 352; // matches SiteLogoFixed's LOGO_SIZE — the fly-to target
+// arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
+const LOGO_INTRO_H    = Math.round(LOGO_INTRO_SIZE * (668.5 / 921.75));
+const LOGO_NAV_H      = Math.round(LOGO_NAV_SIZE   * (668.5 / 921.75));
 const NAV_SCALE       = LOGO_NAV_SIZE / LOGO_INTRO_SIZE;
+// How far above true centre the intro logo sits (and where its position is
+// measured from for the fly-to-nav calc below) — raised a little more to
+// give the much larger mark room above the "APERIX STUDIO" wordmark.
+const LOGO_RAISE_REM  = 5.5;
 
 type Phase = "holding" | "overlayFading" | "settling" | "textFading";
 
@@ -68,7 +79,7 @@ export default function IntroScreenSimple() {
   // ── Measure the nav logo position once on mount ────────────────
   useEffect(() => {
     const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const introCentreFromTop = window.innerHeight / 2 - 3.8 * remPx;
+    const introCentreFromTop = window.innerHeight / 2 - LOGO_RAISE_REM * remPx;
     const navEl = document.getElementById("site-logo-fixed");
     const navCentreFromTop = navEl
       ? navEl.getBoundingClientRect().top + navEl.getBoundingClientRect().height / 2
@@ -142,7 +153,7 @@ export default function IntroScreenSimple() {
             style={{
               position: "fixed", inset: 0, zIndex: 9999,
               display: "flex", alignItems: "center", justifyContent: "center",
-              transform: "translateY(-3.8rem)",
+              transform: `translateY(-${LOGO_RAISE_REM}rem)`,
               pointerEvents: "none",
             }}
           >

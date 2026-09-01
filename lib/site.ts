@@ -2,7 +2,7 @@ const DEFAULT_SITE_URL = "https://aperix.com.au";
 
 export const SITE_NAME = "Aperix Studio";
 export const SITE_EMAIL = "hello@aperix.com.au";
-export const SITE_LOGO_PATH = "/aperix-logo.svg";
+export const SITE_LOGO_PATH = "/arrowhead-mark.svg";
 export const SITE_SOCIAL_LINKS = [
   "https://linkedin.com/company/aperixstudio",
   "https://instagram.com/aperixstudio",
