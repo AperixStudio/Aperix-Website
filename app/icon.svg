@@ -1,17 +1,7 @@
-<svg width="512" height="512" viewBox="0 0 768 836" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="aperix-fill" x1="384" y1="106" x2="384" y2="730" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#DFF2FF"/>
-      <stop offset="1" stop-color="#BFE5FF"/>
-    </linearGradient>
-  </defs>
-  <path d="M384 76L660 236V556L384 716L108 556V236L384 76Z" stroke="#0EA5E9" stroke-width="28" stroke-linejoin="round"/>
-  <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#aperix-fill)"/>
-  <path d="M384 273L516 349V503L384 579L252 503V349L384 273Z" stroke="#050505" stroke-width="28" stroke-linejoin="round"/>
-  <g stroke="#CFCFCF" stroke-width="24" stroke-linecap="round">
-    <path d="M384 303V548"/>
-    <path d="M278 364L490 487"/>
-    <path d="M490 364L278 487"/>
-    <path d="M291 418H477"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(46,103.65) scale(0.4557)" fill="#00A2E8">
+    <path d="M639.75 209.25 L443.25 0.00 L166.00 289.50 L304.50 266.75 L402.25 100.75 L489.00 187.50 L381.25 253.75 Z"/>
+    <path d="M319.00 314.25 L660.50 407.75 L921.75 668.50 L712.50 343.00 Z"/>
+    <path d="M0.00 292.25 L170.25 510.75 L279.75 316.50 L270.50 310.00 L149.25 306.00 L126.50 333.00 L114.25 337.00 Z"/>
   </g>
 </svg>

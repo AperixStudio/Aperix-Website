@@ -24,35 +24,15 @@ export function AperixOgImage({ title, subtitle }: AperixOgImageProps): ReactNod
     >
       <svg
         width="96"
-        height="105"
-        viewBox="0 0 768 836"
+        height="70"
+        viewBox="0 0 921.75 668.50"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <defs>
-          <linearGradient id="og-fill" x1="384" y1="106" x2="384" y2="730" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#DFF2FF" />
-            <stop offset="1" stopColor="#BFE5FF" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M384 76L660 236V556L384 716L108 556V236L384 76Z"
-          stroke="#4db8f0"
-          strokeWidth="28"
-          strokeLinejoin="round"
-        />
-        <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#og-fill)" />
-        <path
-          d="M384 273L516 349V503L384 579L252 503V349L384 273Z"
-          stroke="#1a1a2e"
-          strokeWidth="28"
-          strokeLinejoin="round"
-        />
-        <g stroke="#b0c8e0" strokeWidth="24" strokeLinecap="round">
-          <path d="M384 303V548" />
-          <path d="M278 364L490 487" />
-          <path d="M490 364L278 487" />
-          <path d="M291 418H477" />
+        <g fill="#4db8f0">
+          <path d="M639.75 209.25 L443.25 0.00 L166.00 289.50 L304.50 266.75 L402.25 100.75 L489.00 187.50 L381.25 253.75 Z"/>
+          <path d="M319.00 314.25 L660.50 407.75 L921.75 668.50 L712.50 343.00 Z"/>
+          <path d="M0.00 292.25 L170.25 510.75 L279.75 316.50 L270.50 310.00 L149.25 306.00 L126.50 333.00 L114.25 337.00 Z"/>
         </g>
       </svg>
 

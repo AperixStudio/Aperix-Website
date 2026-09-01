@@ -349,7 +349,7 @@ export default function Footer() {
 
         {/* Left — logo */}
         <Link href="/" aria-label="Aperix home">
-          <AnimatedLogo size={28} className="h-7 w-auto opacity-70 transition hover:opacity-100" />
+          <AnimatedLogo size={112} className="h-28 w-auto opacity-70 transition hover:opacity-100" />
         </Link>
 
         {/* Centre — copyright */}

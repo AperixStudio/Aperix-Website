@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: SITE_LOCALITY.htmlLang,
     icons: [
       {
-        src: "/aperix-logo.svg",
+        src: "/arrowhead-mark.svg",
         sizes: "any",
         type: "image/svg+xml",
         purpose: "any",

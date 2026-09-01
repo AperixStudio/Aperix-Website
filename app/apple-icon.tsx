@@ -18,26 +18,12 @@ export default function AppleIcon() {
           background: "#0c1017",
         }}
       >
-        <svg width="140" height="153" viewBox="0 0 768 836" fill="none">
-          <defs>
-            <linearGradient id="apple-fill" x1="384" y1="106" x2="384" y2="730" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stopColor="#DFF2FF" />
-              <stop offset="1" stopColor="#BFE5FF" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M384 76L660 236V556L384 716L108 556V236L384 76Z"
-            stroke="#0EA5E9"
-            strokeWidth="28"
-            strokeLinejoin="round"
-          />
-          <path d="M384 141L604 269V523L384 651L164 523V269L384 141Z" fill="url(#apple-fill)" />
-          <path
-            d="M384 273L516 349V503L384 579L252 503V349L384 273Z"
-            stroke="#050505"
-            strokeWidth="28"
-            strokeLinejoin="round"
-          />
+        <svg width="150" height="109" viewBox="0 0 921.75 668.50" fill="none">
+          <g fill="#00A2E8">
+            <path d="M639.75 209.25 L443.25 0.00 L166.00 289.50 L304.50 266.75 L402.25 100.75 L489.00 187.50 L381.25 253.75 Z"/>
+            <path d="M319.00 314.25 L660.50 407.75 L921.75 668.50 L712.50 343.00 Z"/>
+            <path d="M0.00 292.25 L170.25 510.75 L279.75 316.50 L270.50 310.00 L149.25 306.00 L126.50 333.00 L114.25 337.00 Z"/>
+          </g>
         </svg>
       </div>
     ),
