@@ -34,8 +34,8 @@
   width: 100%;
   max-width: 92rem;
   margin-inline: auto;
-  /* Top padding clears the fixed centre logo at every height. */
-  padding: clamp(5rem, 11vh, 7.5rem) clamp(1.5rem, 5vw, 4.5rem)
+  /* Extra headroom below the fixed centre logo. */
+  padding: clamp(5.75rem, 12vh, 8rem) clamp(1.5rem, 5vw, 4.5rem)
     clamp(4.5rem, 9vh, 6.5rem);
   /* The flying wordmark sits above this layer; nothing here should intercept
      it, but the copy itself stays selectable. */
@@ -155,13 +155,14 @@
     /* The indent alone carries the step on one column, so the gap between
        the two paragraphs does not need to be a full screen-third as well. */
     grid-template-rows:
-      minmax(0, 0.4fr)
+      minmax(0, 0.55fr)
       auto
       auto
       auto
       minmax(0, 0.5fr)
       auto
       minmax(0, 0.45fr);
+    padding-top: clamp(6rem, 13vh, 7.5rem);
   }
 
   .home-hero__mark {

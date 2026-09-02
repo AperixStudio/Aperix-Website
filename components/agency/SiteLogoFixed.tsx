@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import "./SiteLogoFixed.css";
 
 const LOGO_SIZE = 352; // px — the nav logo size
 
@@ -36,13 +37,18 @@ export default function SiteLogoFixed() {
       raf = 0;
       const el = wrapRef.current;
       if (!el) return;
+
+      const baseScale =
+        Number.parseFloat(getComputedStyle(el).getPropertyValue("--site-logo-scale")) || 1;
+
       if (!isMobile) {
-        el.style.transform = "translateX(-50%)";
+        el.style.transform = `translateX(-50%) scale(${baseScale})`;
         return;
       }
+
       const t = Math.min(1, window.scrollY / SHRINK_RANGE_PX);
-      const scale = 1 - t * (1 - MIN_SCALE);
-      el.style.transform = `translateX(-50%) scale(${scale})`;
+      const scrollScale = 1 - t * (1 - MIN_SCALE);
+      el.style.transform = `translateX(-50%) scale(${baseScale * scrollScale})`;
     };
 
     const onScroll = () => {
@@ -86,18 +92,7 @@ export default function SiteLogoFixed() {
   };
 
   return (
-    <div
-      id="site-logo-fixed"
-      ref={wrapRef}
-      style={{
-        position: "fixed",
-        top: "1.5rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        transformOrigin: "top center",
-        zIndex: 200,
-      }}
-    >
+    <div id="site-logo-fixed" ref={wrapRef}>
       <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
         <AnimatedLogo
           size={LOGO_SIZE}

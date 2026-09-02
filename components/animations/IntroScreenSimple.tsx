@@ -60,14 +60,47 @@ const STUDIO_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
 // Sizes
 const LOGO_INTRO_SIZE = 1056;
 const LOGO_NAV_SIZE   = 352; // matches SiteLogoFixed's LOGO_SIZE — the fly-to target
+const MOBILE_BREAKPOINT_PX = 767;
+/** Max share of viewport width the intro mark may occupy on phones. */
+const MOBILE_INTRO_VW = 0.88;
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
-const LOGO_INTRO_H    = Math.round(LOGO_INTRO_SIZE * (668.5 / 921.75));
-const LOGO_NAV_H      = Math.round(LOGO_NAV_SIZE   * (668.5 / 921.75));
+const LOGO_ASPECT = 668.5 / 921.75;
+const LOGO_INTRO_H    = Math.round(LOGO_INTRO_SIZE * LOGO_ASPECT);
+const LOGO_NAV_H      = Math.round(LOGO_NAV_SIZE   * LOGO_ASPECT);
 const NAV_SCALE       = LOGO_NAV_SIZE / LOGO_INTRO_SIZE;
 // How far above true centre the intro logo sits (and where its position is
 // measured from for the fly-to-nav calc below) — raised a little more to
 // give the much larger mark room above the "APERIX STUDIO" wordmark.
 const LOGO_RAISE_REM  = 5.5;
+
+function readIntroLogoSize() {
+  if (typeof window === "undefined") {
+    return LOGO_INTRO_SIZE;
+  }
+
+  if (window.innerWidth > MOBILE_BREAKPOINT_PX) {
+    return LOGO_INTRO_SIZE;
+  }
+
+  return Math.min(LOGO_INTRO_SIZE, Math.floor(window.innerWidth * MOBILE_INTRO_VW));
+}
+
+function readFlyEndScale(introSize: number) {
+  if (typeof window === "undefined") {
+    return NAV_SCALE;
+  }
+
+  if (window.innerWidth > MOBILE_BREAKPOINT_PX) {
+    return NAV_SCALE;
+  }
+
+  const navEl = document.getElementById("site-logo-fixed");
+  if (navEl) {
+    return navEl.getBoundingClientRect().width / introSize;
+  }
+
+  return LOGO_NAV_SIZE / introSize;
+}
 
 type Phase = "holding" | "overlayFading" | "settling" | "textFading";
 
@@ -75,9 +108,17 @@ export default function IntroScreenSimple() {
   const [phase, setPhase]          = useState<Phase>("holding");
   const [studioVisible, setStudio] = useState(false);
   const [flyToY, setFlyToY]        = useState<number>(-400);
+  const [introLogoSize, setIntroLogoSize] = useState(readIntroLogoSize);
+  const [flyEndScale, setFlyEndScale] = useState(() => readFlyEndScale(readIntroLogoSize()));
 
   // ── Measure the nav logo position once on mount ────────────────
   useEffect(() => {
+    const introSize = readIntroLogoSize();
+    const endScale = readFlyEndScale(introSize);
+
+    setIntroLogoSize(introSize);
+    setFlyEndScale(endScale);
+
     const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const introCentreFromTop = window.innerHeight / 2 - LOGO_RAISE_REM * remPx;
     const navEl = document.getElementById("site-logo-fixed");
@@ -161,7 +202,7 @@ export default function IntroScreenSimple() {
               initial={{ opacity: 0, y: 10 }}
               animate={
                 isFlying
-                  ? { opacity: 1, y: flyToY, scale: NAV_SCALE }
+                  ? { opacity: 1, y: flyToY, scale: flyEndScale }
                   : { opacity: 1, y: 0,      scale: 1 }
               }
               transition={
@@ -174,7 +215,7 @@ export default function IntroScreenSimple() {
                   the logo that flies up to the nav is the logo that lands
                   there — not a still lookalike that swaps at the last frame. */}
               <AnimatedLogo
-                size={LOGO_INTRO_SIZE}
+                size={introLogoSize}
                 priority
                 style={{ filter: "drop-shadow(0 0 20px rgba(14,165,233,0.55))" }}
               />

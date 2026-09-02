@@ -1,0 +1,22 @@
+#site-logo-fixed {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) scale(var(--site-logo-scale, 0.9));
+  transform-origin: top center;
+  z-index: 200;
+  --site-logo-scale: 0.9;
+}
+
+@media (min-width: 768px) {
+  #site-logo-fixed {
+    /* Desktop — tuck tighter to the top edge. */
+    top: clamp(0rem, 0.35vh, 0.2rem);
+  }
+}
+
+@media (max-width: 767px) {
+  #site-logo-fixed {
+    top: clamp(0.15rem, 0.55vh, 0.35rem);
+    --site-logo-scale: 0.76;
+  }
+}
