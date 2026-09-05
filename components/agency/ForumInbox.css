@@ -1,0 +1,120 @@
+/* ── Forum inbox — "liquid glass" treatment ──────────────────────
+   A frosted, refractive panel rather than a flat card: heavy blur +
+   saturation, a hairline bright edge instead of a solid border, a soft
+   specular sheen drifting across the top-left corner, and a floating pill
+   highlight for the selected post instead of a flat fill. */
+
+.forum-glass-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.forum-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(10, 16, 26, 0.16) 100%
+  );
+  /* Safari doesn't read url() filter references inside backdrop-filter, so
+     this blur-only value is what it gets — a plain frosted panel, no warp. */
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  /* Chromium does read it: the backdrop is pushed through the SVG
+     displacement filter (actual pixel-bending refraction) before the
+     residual blur + saturation settle it back into "glass" rather than
+     "smeared noise". */
+  backdrop-filter: url(#forum-liquid-glass) blur(3px) saturate(1.8) brightness(1.05);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(56, 189, 248, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(56, 189, 248, 0.06);
+}
+
+/* Specular sheen — a soft light source parked in the top-left corner, the
+   way a real curved sheet of glass catches ambient light unevenly rather
+   than tinting flat and uniform. */
+.forum-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    130% 65% at 12% -12%,
+    rgba(255, 255, 255, 0.16),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.forum-panel__list {
+  scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+  .forum-panel__divider {
+    border-right: 1px solid rgba(255, 255, 255, 0.09);
+  }
+}
+
+.forum-post-btn {
+  position: relative;
+  margin: 0.3rem 0.55rem;
+  border-radius: 1rem;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.forum-post-btn + .forum-post-btn {
+  margin-top: 0;
+}
+
+.forum-post-row + .forum-post-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.forum-post-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* The selected post reads as its own small floating glass capsule rather
+   than a flat highlight fill — a bright hairline edge + a faint blue glow,
+   echoing the TABS pill and header nav treatment elsewhere on the site. */
+.forum-post-btn[aria-current="true"] {
+  background: rgba(56, 189, 248, 0.1);
+  box-shadow:
+    inset 0 0 0 1px rgba(56, 189, 248, 0.38),
+    0 4px 20px rgba(14, 165, 233, 0.16);
+}
+
+.forum-post-btn[aria-current="true"]:hover {
+  background: rgba(56, 189, 248, 0.13);
+}
+
+.forum-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.12);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: url(#forum-liquid-glass) blur(4px) saturate(1.6);
+}
+
+.forum-back-btn {
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem 0.35rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: url(#forum-liquid-glass) blur(4px) saturate(1.6);
+}

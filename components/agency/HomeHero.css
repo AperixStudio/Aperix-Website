@@ -101,6 +101,15 @@
   text-shadow: 0 0 18px rgba(14, 165, 233, 0.55);
 }
 
+/* AI receptionist teaser — top right, below the wordmark, clear of both
+   paragraphs: right of the lead (which stops at column 8) and above the
+   step-down second paragraph (which starts at row 6). */
+.home-hero__ai-demo {
+  grid-area: 4 / 9 / 6 / 13;
+  align-self: start;
+  justify-self: end;
+}
+
 /* ---- Baseline ---- */
 
 .home-hero__base {
@@ -179,6 +188,14 @@
   /* One column, but the indent keeps the step across the page. */
   .home-hero__sub {
     grid-area: 6 / 2 / 7 / 13;
+  }
+
+  /* No spare real estate in the collapsed single-column hero for a third
+     block without it colliding with the two paragraphs — hidden below this
+     breakpoint for now rather than cramming it in. Worth a dedicated mobile
+     placement later if this teaser earns its keep. */
+  .home-hero__ai-demo {
+    display: none;
   }
 }
 

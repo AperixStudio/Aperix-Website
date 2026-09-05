@@ -6,7 +6,9 @@ import "./BubbleNav.css";
 
 const NAV_LINKS = [
   { label: "Our Work", href: "/#our-work" },
-  { label: "About",    href: "/#about"     },
+  { label: "Services", href: "/services"  },
+  { label: "About",    href: "/#about"    },
+  { label: "Forum",    href: "/forum"     },
   { label: "Contact",  href: "/#contact"  },
 ];
 

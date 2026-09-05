@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { motion } from "framer-motion";
 import { onIntroDone } from "@/lib/introState";
 import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/IntroScreenSimple";
+import HeroReceptionistOrb from "@/components/agency/HeroReceptionistOrb";
 import "./HomeHero.css";
 
 /*
@@ -288,6 +289,8 @@ export default function HomeHero() {
           give you the structure and strategy to build{" "}
           <span className="home-hero__you">your</span> iconic brand and business.
         </motion.p>
+
+        <HeroReceptionistOrb show={showCopy} />
       </div>
 
       <motion.div
