@@ -158,13 +158,6 @@ export default function SVGParticles({
       return pointerActive || forceRevealedRef.current;
     }
 
-    function snapParticlesToFormed() {
-      for (const p of particles) {
-        p.x = p.baseX;
-        p.y = p.baseY;
-      }
-    }
-
     let particles: {
       x: number;
       y: number;
@@ -186,6 +179,7 @@ export default function SVGParticles({
     }[] = [];
 
     let textImageData: ImageData | null = null;
+    let validPixels: { x: number; y: number }[] = [];
 
     function createTextImage() {
       if (!ctx || !canvas) return 0;
@@ -228,44 +222,46 @@ export default function SVGParticles({
       textImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      validPixels = [];
+      const data = textImageData.data;
+      const stride = 3;
+      for (let y = 0; y < canvas.height; y += stride) {
+        for (let x = 0; x < canvas.width; x += stride) {
+          if (data[(y * canvas.width + x) * 4 + 3] > 128) {
+            validPixels.push({ x, y });
+          }
+        }
+      }
+
       return scale;
     }
 
     function createParticle() {
-      if (!ctx || !canvas || !textImageData) return null;
+      if (!ctx || !canvas || validPixels.length === 0) return null;
 
-      const data = textImageData.data;
-
-      const spawnAttempts = Math.max(100, Math.floor(400 * particleDensity));
-      for (let attempt = 0; attempt < spawnAttempts; attempt++) {
-        const x = Math.floor(Math.random() * canvas.width);
-        const y = Math.floor(Math.random() * canvas.height);
-
-        if (data[(y * canvas.width + x) * 4 + 3] > 128) {
-          const sizeSpan = particleSizeMax - particleSizeMin;
-          return {
-            x,
-            y,
-            baseX: x,
-            baseY: y,
-            blobX: x,
-            blobY: y,
-            orbitA: 0,
-            orbitB: 0,
-            orbitTilt: 0,
-            orbitPhase: 0,
-            orbitSpeed: 0,
-            wobble: Math.random() * Math.PI * 2,
-            size: Math.random() * sizeSpan + particleSizeMin,
-            life: Math.random() * 100 + 50,
-            vx: 0,
-            vy: 0,
-            phase: Math.random() * Math.PI * 2,
-          };
-        }
-      }
-
-      return null;
+      const point = validPixels[Math.floor(Math.random() * validPixels.length)];
+      const x = point.x;
+      const y = point.y;
+      const sizeSpan = particleSizeMax - particleSizeMin;
+      return {
+        x,
+        y,
+        baseX: x,
+        baseY: y,
+        blobX: x,
+        blobY: y,
+        orbitA: 0,
+        orbitB: 0,
+        orbitTilt: 0,
+        orbitPhase: 0,
+        orbitSpeed: 0,
+        wobble: Math.random() * Math.PI * 2,
+        size: Math.random() * sizeSpan + particleSizeMin,
+        life: Math.random() * 100 + 50,
+        vx: 0,
+        vy: 0,
+        phase: Math.random() * Math.PI * 2,
+      };
     }
 
     function blobRadii() {
@@ -372,20 +368,26 @@ export default function SVGParticles({
       return blobOffset(p.blobX, p.blobY, p.phase, now);
     }
 
+    function targetParticleCountForCanvas() {
+      if (!canvas) return 0;
+      const areaScale = Math.sqrt(
+        (canvas.width * canvas.height) / (1920 * 1080),
+      );
+      const raw = Math.floor(7000 * particleDensity * areaScale);
+      const cap = canvas.width < 420 ? 1400 : 3200;
+      return Math.max(0, Math.min(cap, raw));
+    }
+
     function createInitialParticles() {
       if (!ctx || !canvas) return;
 
-      const baseParticleCount = 7000 * particleDensity;
-      const particleCount = Math.floor(
-        baseParticleCount *
-          Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)),
-      );
+      const particleCount = targetParticleCountForCanvas();
       for (let i = 0; i < particleCount; i++) {
         const particle = createParticle();
         if (particle) particles.push(particle);
+        else break;
       }
-      if (revealOnHover && !isFormed()) assignBlobPositions();
-      if (isFormed()) snapParticlesToFormed();
+      if (revealOnHover) assignBlobPositions();
     }
 
     let animationFrameId: number;
@@ -426,6 +428,21 @@ export default function SVGParticles({
       };
     }
 
+    let formAmount = isFormed() ? 1 : 0;
+
+    function hexToRgb(hex: string) {
+      const h = hex.replace("#", "");
+      if (h.length !== 6) return { r: 255, g: 255, b: 255 };
+      return {
+        r: parseInt(h.slice(0, 2), 16),
+        g: parseInt(h.slice(2, 4), 16),
+        b: parseInt(h.slice(4, 6), 16),
+      };
+    }
+
+    const blobRgb = hexToRgb(scatteredColor);
+    const phoneRgb = hexToRgb(particleColor);
+
     function animate(now: number) {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -435,6 +452,9 @@ export default function SVGParticles({
       const { x: mouseX, y: mouseY } = mousePositionRef.current;
       const maxDistance = 240;
 
+      const morphSpeed = Math.min(formReturnSpeed, blobFollowSpeed);
+      formAmount += ((isFormed() ? 1 : 0) - formAmount) * morphSpeed;
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const dx = mouseX - p.x;
@@ -442,23 +462,28 @@ export default function SVGParticles({
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (revealOnHover) {
-          const formed = isFormed();
-          const target = formed
-            ? { x: p.baseX, y: p.baseY }
-            : blobTarget(p, now);
-          const follow = formed ? 1 : blobFollowSpeed;
+          const blob = blobTarget(p, now);
+          const target = {
+            x: blob.x + (p.baseX - blob.x) * formAmount,
+            y: blob.y + (p.baseY - blob.y) * formAmount,
+          };
+          const follow = 0.38;
 
           p.x += (target.x - p.x) * follow;
           p.y += (target.y - p.y) * follow;
 
-          const alpha = formed ? 1 : cloudAlpha(p.x, p.y, now);
+          const alpha =
+            cloudAlpha(p.x, p.y, now) * (1 - formAmount) + formAmount;
           if (alpha <= 0.03) {
             ctx.globalAlpha = 1;
             continue;
           }
 
           ctx.globalAlpha = alpha;
-          ctx.fillStyle = formed ? particleColor : scatteredColor;
+          const r = blobRgb.r + (phoneRgb.r - blobRgb.r) * formAmount;
+          const g = blobRgb.g + (phoneRgb.g - blobRgb.g) * formAmount;
+          const b = blobRgb.b + (phoneRgb.b - blobRgb.b) * formAmount;
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
         } else {
         const pointerActive =
           isMouseInsideRef.current || isTouchingRef.current;
@@ -532,14 +557,16 @@ export default function SVGParticles({
         }
       }
 
-      const baseParticleCount = 7000 * particleDensity;
-      const targetParticleCount = Math.floor(
-        baseParticleCount *
-          Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)),
-      );
-      while (particles.length < targetParticleCount) {
-        const newParticle = createParticle();
-        if (newParticle) {
+      if (enableParticleDeath) {
+        const targetParticleCount = targetParticleCountForCanvas();
+        let guard = 0;
+        while (
+          particles.length < targetParticleCount &&
+          guard < targetParticleCount
+        ) {
+          guard += 1;
+          const newParticle = createParticle();
+          if (!newParticle) break;
           if (revealOnHover) seedBlobPosition(newParticle, particles.length);
           particles.push(newParticle);
         }

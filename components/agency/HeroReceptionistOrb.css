@@ -86,18 +86,6 @@
   display: block;
 }
 
-.hero-orb__stage.is-idle:not(:hover):not(:focus-within) .hero-orb__particles-mount {
-  overflow: hidden;
-  -webkit-mask-image: radial-gradient(circle, #000 36%, transparent 72%);
-  mask-image: radial-gradient(circle, #000 36%, transparent 72%);
-}
-
-.hero-orb__stage.is-preview .hero-orb__particles-mount {
-  overflow: visible;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-
 .hero-orb__overlay {
   position: absolute;
   left: 0;

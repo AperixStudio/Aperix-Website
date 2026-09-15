@@ -94,7 +94,7 @@ const HeroOrbParticles = memo(function HeroOrbParticles({
           scatteredColor="#2d6488"
           particleColor="#8ec5e8"
           backgroundColor="transparent"
-          particleDensity={compact ? 3.5 : 4}
+          particleDensity={compact ? 1.6 : 2.4}
           particleSizeMin={compact ? 1.2 : 1.4}
           particleSizeMax={compact ? 2.2 : 2.6}
           enableParticleDeath={false}
@@ -104,8 +104,8 @@ const HeroOrbParticles = memo(function HeroOrbParticles({
           blobSpread={compact ? 1.02 : 1.14}
           blobShimmerSpeed={3.2}
           blobShimmerAmplitude={compact ? 4 : 5}
-          blobFollowSpeed={0.22}
-          formReturnSpeed={0.24}
+          blobFollowSpeed={0.035}
+          formReturnSpeed={0.035}
         />
       </div>
     </div>
