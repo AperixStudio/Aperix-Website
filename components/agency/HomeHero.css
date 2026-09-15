@@ -34,20 +34,35 @@
   overflow: hidden;
 }
 
-.home-hero-backdrop__mark,
+/* The wordmark's START position — where the flying copy sits before it
+   moves. Must match IntroScreenSimple's text wrapper exactly (see the
+   position-contract comment in HomeHero.tsx) so the crossfade is invisible.
+   A transform, not padding: padding cannot be negative. */
 .home-hero-backdrop__mover-layer {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  /* Must match IntroScreenSimple's intro-text wrapper's FINAL (post-fly)
-     position exactly — see the position-contract comment in HomeHero.tsx. */
-  padding-top: -100vh;
+  /* 2.8rem below true centre — must equal INTRO_LINE_OFFSET_REM in
+     IntroScreenSimple.tsx, or the wordmark jumps at the crossfade. */
+  transform: translateY(2.8rem);
   margin: 0;
 }
 
+/* The wordmark's RESTING position — the slot the flying copy measures and
+   travels to. This must NOT be inset:0: measure() in HomeHero.tsx targets
+   this element's vertical CENTRE, so a full-height box would always resolve
+   to the middle of the viewport regardless of any padding. Height hugs the
+   glyphs instead, making --wordmark-rest-top the real knob. Lower = higher. */
 .home-hero-backdrop__mark {
+  position: absolute;
+  top: var(--wordmark-rest-top, 12vh);
+  left: 0;
+  right: 0;
+  height: auto;
+  margin: 0;
+  justify-content: center;
   visibility: hidden;
 }
 
@@ -61,15 +76,19 @@
   position: relative;
 }
 
-/* Reserved for the big hero-scale logo (most of the right side of the
-   screen); SiteLogoFixed reads this rect on load/resize and stays
-   invisible here itself — this element paints nothing. */
+/* Reserved for the big hero-scale logo. SiteLogoFixed reads this rect
+   on load/resize — this element paints nothing.
+
+   Size knob: --hero-logo-width. That is the only desktop size. There is
+   no min()/dvh formula fighting it. */
 .home-hero-backdrop__logo-slot {
+  --hero-logo-width: 110vw;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 1vw;
-  width: min(62vw, 1150px);
+  top: 10vh;
+  bottom: 10vh;
+  left: auto;
+  right: -20vw;
+  width: var(--hero-logo-width);
 }
 
 /* ---- Content layer ---- */
