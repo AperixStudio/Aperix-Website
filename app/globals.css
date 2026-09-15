@@ -105,6 +105,16 @@
   --lm-muted: #8b7a83;
   --lm-border: #ede5e9;
   --lm-dark-section: #1a1118;
+
+  /* APERIX STUDIO wordmark — shared by IntroScreenSimple + HomeHero.
+     The line is ~12.4em wide with the tracking below, so font-size is
+     derived from the remaining viewport after gutters. Cap at 10rem so
+     it does not keep growing on ultrawides. */
+  --wordmark-gutter: clamp(0.75rem, 2vw, 1.5rem);
+  --wordmark-size: min(10rem, calc((100vw - 2 * var(--wordmark-gutter)) / 12.4));
+  --wordmark-track-aperix: 0.22em;
+  --wordmark-track-studio: 0.34em;
+  --wordmark-gap: 0.5em;
 }
 
 html {

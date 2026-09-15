@@ -51,20 +51,13 @@ export default function ContactPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
         />
         <div className="contact-page__shell mx-auto h-full max-w-6xl">
-          <div className="contact-page__intro">
-            <p className="contact-page__kicker">Contact Aperix Studio</p>
-            <h1 className="contact-page__heading">
-              Contact us about web design in Melbourne.
-            </h1>
-            <p className="contact-page__lede">
-              Tell us what your business needs, and we&apos;ll reply with the best-fit package, a
-              clear next step, and the timeline to expect.
-            </p>
-          </div>
-
-          <div className="contact-page__form">
-            <ContactForm />
-          </div>
+          <ContactForm
+            kicker="A 30-second briefing"
+            heading="Contact us about web design in Melbourne."
+            headingId="contact-heading"
+            headingAs="h1"
+            lede="Four short questions. We'll reply within 24 hours."
+          />
         </div>
       </main>
 

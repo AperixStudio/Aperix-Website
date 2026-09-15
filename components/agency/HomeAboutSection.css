@@ -92,6 +92,35 @@
   color: rgba(255, 255, 255, 0.68);
 }
 
+/* ---- Socials ---- */
+
+.home-about__socials {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.home-about__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.03);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.home-about__social-link:hover,
+.home-about__social-link:focus-visible {
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.1);
+  transform: translateY(-2px);
+}
+
 /* ---- Responsive ---- */
 
 @media (max-width: 860px) {

@@ -5,11 +5,9 @@ describe("contactSchema", () => {
   const validPayload = {
     name: "Harrison Knight",
     email: "hello@example.com",
-    phone: "0412 345 678",
-    businessName: "Aperix Studio",
-    businessType: "Professional Services",
-    description: "We need a fast custom website that converts more local enquiries.",
-    contactMethod: "email" as const,
+    phone: "",
+    need: "New website" as const,
+    timing: "ASAP" as const,
     website: "",
   };
 
@@ -18,17 +16,22 @@ describe("contactSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("requires a phone number for call-backs", () => {
+  it("accepts an optional phone number", () => {
     const result = contactSchema.safeParse({
       ...validPayload,
-      phone: "",
-      contactMethod: "phone" as const,
+      phone: "0412 345 678",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an invalid need", () => {
+    const result = contactSchema.safeParse({
+      ...validPayload,
+      need: "Rebuild a site",
     });
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.flatten().fieldErrors.phone?.[0]).toContain("Phone is required");
-    }
   });
 
   it("rejects spam through the honeypot field", () => {

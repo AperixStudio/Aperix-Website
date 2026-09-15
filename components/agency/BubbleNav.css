@@ -58,7 +58,7 @@
    `.is-open` below is their explicit, JS-driven equivalent. */
 @media (hover: hover) {
   .bubble-nav-shell:hover .bubble-nav {
-    width: 22rem;
+    width: 34rem;
     box-shadow:
       0 0 0 1px rgba(14, 165, 233, 0.4),
       0 8px 40px rgba(14, 165, 233, 0.15),
@@ -70,7 +70,7 @@
    apply everywhere, since neither depends on hover capability. */
 .bubble-nav-shell:focus-within .bubble-nav,
 .bubble-nav-shell.is-open .bubble-nav {
-  width: 22rem;
+  width: 34rem;
   box-shadow:
     0 0 0 1px rgba(14, 165, 233, 0.4),
     0 8px 40px rgba(14, 165, 233, 0.15),
@@ -205,7 +205,7 @@
 
 .bubble-nav__link {
   position: relative;
-  padding: 0 1.1rem;
+  padding: 0 0.85rem;
   font-family: var(--font-display), sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
@@ -227,7 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1.1rem;
+  padding: 0 0.85rem;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
@@ -257,6 +257,23 @@
   height: 1rem;
   background: rgba(255, 255, 255, 0.15);
   flex-shrink: 0;
+}
+
+/* Narrow viewports: the expanded pill is capped at 100vw - 2rem (see
+   `.bubble-nav`'s max-width), so five full-tracked labels no longer fit at
+   the desktop type scale. Tighten padding, tracking and size just enough to
+   keep every label on screen instead of clipping at the pill's edges. */
+@media (max-width: 30rem) {
+  .bubble-nav__link {
+    padding: 0 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+  }
+
+  .bubble-nav__link::before,
+  .bubble-nav__link::after {
+    padding: 0 0.5rem;
+  }
 }
 
 /* ── Keyframes ──────────────────────────────────────────────── */

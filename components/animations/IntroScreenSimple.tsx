@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introState";
 
@@ -9,161 +9,169 @@ import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introStat
   Phase timeline
   ─────────────────────────────────────────────────────────────────
   holding       0 → HOLD_MS
-    Full dark overlay + logo centred above "APERIX".
+    Full dark overlay + logo centred above "APERIX" (STUDIO takes no
+    layout width yet, so the name sits under the mark).
 
-  overlayFading HOLD_MS → HOLD_MS + OVERLAY_MS
-    • Dark overlay fades to transparent.
-    • Logo flies from centre up to SiteLogoFixed position, stays opaque.
-    • STUDIO slides in alongside APERIX — starts at the same instant (t0)
-      as the logo's fly-up, so the wordmark completes as the mark moves.
+  morphing      HOLD_MS → HOLD_MS + STUDIO_REVEAL_MS + STUDIO_HOLD_MS
+    STUDIO wipes open and the centred lockup grows with it, so APERIX
+    eases left in the same motion. The logo stays put.
 
-  settling      HOLD_MS + OVERLAY_MS → … + SETTLE_MS
-    "APERIX STUDIO" floats on the live background (fixed center + inner
-    translateY(2.8rem) — same stack as HomeHero).
-    releaseIntroGate() + markIntroDone() BOTH fire at the START of this
-    phase → PageReveal fades the page in over 500 ms while the intro
-    text is still fully visible on top of it.
-    By the end of SETTLE_MS the home page "APERIX STUDIO" is fully
-    rendered underneath the intro text.
+  flying        morph end → + OVERLAY_MS
+    Logo flies from centre to the hero-scale slot and grows. Overlay
+    stays opaque (the HTML cover is still up) so SiteLogoFixed cannot
+    ghost in at the destination.
+
+  settling      fly end → + SETTLE_MS
+    releaseIntroGate() + markIntroDone() fire at the START of this
+    phase → cover fades, PageReveal fades the page in. The intro logo
+    holds its landing pose until the cover is gone, then unmounts so
+    SiteLogoFixed (now visible, same rect) is the only mark.
 
   textFading    settling end → + TEXT_FADE_MS
-    The intro floating text fades out. Because the matching home page
-    text is already fully visible behind it, there is no jump or gap —
-    the text simply appears to stay there as one continuous element.
-    HomeHero's upward movement is deliberately delayed until this phase
-    is complete so both copies are always at the same position.
+    Intro floating text fades out. HomeHero's matching copy is already
+    visible behind it. HomeHero then eases the wordmark up to rest.
 */
 
 export const INTRO_SETTLE_MS   = 700;   // exported so HomeHero can sync its delay
 export const INTRO_TEXT_FADE_MS = 400;  // exported so HomeHero can sync its delay
 
 // Long enough to watch the 3D mark finish assembling (last limb lands at
-// ~2.2s into its own build) with a beat to admire it fully formed, before
-// it starts flying up to the nav position.
+// ~2.2s into its own build) with a beat to admire it fully formed.
 const HOLD_MS         = 2800;
 const OVERLAY_MS      = 650;
-// Fires at t0, in lockstep with the logo starting its fly-up to the nav
-// position — STUDIO wipes open at the exact moment the logo starts moving.
-const STUDIO_DELAY_MS = 0;
-// How long STUDIO takes to wipe open. The settling phase waits for this to
-// finish (see t2 below) — once the page fades in, HomeHero's identically
-// positioned wordmark is on screen too, and a still-forming STUDIO would
-// break the alignment that makes that crossfade invisible.
-const STUDIO_REVEAL_MS = 1000;
-// Beat between the wordmark finishing and the page starting to fade in.
+// How long STUDIO takes to wipe open. Runs BEFORE the logo flies, so the
+// lockup is complete while the mark is still centred above it.
+const STUDIO_REVEAL_MS = 800;
+// Beat between the wordmark finishing and the logo starting its flight.
 const STUDIO_HOLD_MS   = 120;
-// Even acceleration in and out. The old ease-out-quint put most of the wipe
-// in the first fifth of its duration, which read as a snap however long the
-// duration was.
 const STUDIO_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
+// Animation bound only — must exceed STUDIO's natural glyph width at the
+// 10rem wordmark cap, or the intro lockup would be narrower than HomeHero's
+// copy and jump sideways at the crossfade.
+const STUDIO_REVEAL_MAX_WIDTH = 1200;
+const FLY_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+// Cover fade in releaseIntroGate — intro logo stays up this long so the
+// page logo can take its place without a gap on the dark field.
+const LOGO_HANDOFF_MS = 280;
 
 // Sizes
 const LOGO_INTRO_SIZE = 1056;
-const LOGO_NAV_SIZE   = 352; // matches SiteLogoFixed's LOGO_SIZE — the fly-to target
-const MOBILE_BREAKPOINT_PX = 767;
-/** Max share of viewport width the intro mark may occupy on phones. */
-const MOBILE_INTRO_VW = 0.88;
-// arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
-const LOGO_ASPECT = 668.5 / 921.75;
-const LOGO_INTRO_H    = Math.round(LOGO_INTRO_SIZE * LOGO_ASPECT);
-const LOGO_NAV_H      = Math.round(LOGO_NAV_SIZE   * LOGO_ASPECT);
-const NAV_SCALE       = LOGO_NAV_SIZE / LOGO_INTRO_SIZE;
-// How far above true centre the intro logo sits (and where its position is
-// measured from for the fly-to-nav calc below) — raised a little more to
-// give the much larger mark room above the "APERIX STUDIO" wordmark.
+// Fallback only. The hero logo's real on-screen width is the width of
+// #home-hero-logo-slot, which is viewport-proportional (HomeHero.css), so the
+// scale is measured from that slot at mount and this is used only when the
+// slot isn't laid out — i.e. mobile, where the logo docks to the nav instead.
+const LOGO_HERO_SIZE  = 1150;
+const HERO_SCALE      = LOGO_HERO_SIZE / LOGO_INTRO_SIZE;
 const LOGO_RAISE_REM  = 5.5;
 
-function readIntroLogoSize() {
-  if (typeof window === "undefined") {
-    return LOGO_INTRO_SIZE;
-  }
+// How far BELOW true viewport centre the intro wordmark sits — it holds this
+// one line for the whole intro, directly under the logo. HomeHero's
+// .home-hero-backdrop__mover-layer must use the identical value so the
+// crossfade from the intro copy to the hero's own copy is invisible.
+const INTRO_LINE_OFFSET_REM = 2.8;
+// Matches SiteLogoFixed's rest filter so the last frames of the flight
+// and the page logo are the same mark, not a heavier-glow lookalike.
+const LOGO_FILTER = "drop-shadow(0 0 8px rgba(14,165,233,0.4))";
 
-  if (window.innerWidth > MOBILE_BREAKPOINT_PX) {
-    return LOGO_INTRO_SIZE;
-  }
+type Phase = "holding" | "morphing" | "flying" | "settling" | "textFading";
 
-  return Math.min(LOGO_INTRO_SIZE, Math.floor(window.innerWidth * MOBILE_INTRO_VW));
+function hidePageLogo() {
+  const el = document.getElementById("site-logo-fixed");
+  if (el) el.style.opacity = "0";
 }
 
-function readFlyEndScale(introSize: number) {
-  if (typeof window === "undefined") {
-    return NAV_SCALE;
-  }
-
-  if (window.innerWidth > MOBILE_BREAKPOINT_PX) {
-    return NAV_SCALE;
-  }
-
-  const navEl = document.getElementById("site-logo-fixed");
-  if (navEl) {
-    return navEl.getBoundingClientRect().width / introSize;
-  }
-
-  return LOGO_NAV_SIZE / introSize;
+function showPageLogo() {
+  const el = document.getElementById("site-logo-fixed");
+  if (el) el.style.opacity = "1";
 }
-
-type Phase = "holding" | "overlayFading" | "settling" | "textFading";
 
 export default function IntroScreenSimple() {
   const [phase, setPhase]          = useState<Phase>("holding");
   const [studioVisible, setStudio] = useState(false);
-  const [flyToY, setFlyToY]        = useState<number>(-400);
-  const [introLogoSize, setIntroLogoSize] = useState(readIntroLogoSize);
-  const [flyEndScale, setFlyEndScale] = useState(() => readFlyEndScale(readIntroLogoSize()));
+  const [logoOn, setLogoOn]        = useState(true);
+  const [flyTo, setFlyTo]          = useState<{ x: number; y: number }>({ x: 0, y: -400 });
+  const [heroScale, setHeroScale]  = useState(HERO_SCALE);
 
-  // ── Measure the nav logo position once on mount ────────────────
-  useEffect(() => {
-    const introSize = readIntroLogoSize();
-    const endScale = readFlyEndScale(introSize);
-
-    setIntroLogoSize(introSize);
-    setFlyEndScale(endScale);
-
-    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const introCentreFromTop = window.innerHeight / 2 - LOGO_RAISE_REM * remPx;
-    const navEl = document.getElementById("site-logo-fixed");
-    const navCentreFromTop = navEl
-      ? navEl.getBoundingClientRect().top + navEl.getBoundingClientRect().height / 2
-      : 1.5 * remPx + LOGO_NAV_H / 2;
-    setFlyToY(navCentreFromTop - introCentreFromTop);
+  // Hide the page logo before first paint so it cannot ghost through the
+  // overlay while the intro copy is still assembling or flying.
+  useLayoutEffect(() => {
+    if (introHasPlayed || window.location.pathname.startsWith("/dev")) {
+      showPageLogo();
+      return;
+    }
+    hidePageLogo();
   }, []);
 
-  // ── Phase sequencer ────────────────────────────────────────────
+  // ── Measure the hero logo slot (fallback: the docked page logo) ────
   useEffect(() => {
-    if (introHasPlayed) { releaseIntroGate(); return; }
+    const raf = requestAnimationFrame(() => {
+      const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const introCentreX = window.innerWidth / 2;
+      const introCentreY = window.innerHeight / 2 - LOGO_RAISE_REM * remPx;
+
+      const slot = document.getElementById("home-hero-logo-slot");
+      const slotRect = slot?.getBoundingClientRect();
+      const slotW = slotRect?.width ?? 0;
+
+      if (slotW > 1 && slotRect) {
+        setFlyTo({
+          x: slotRect.left + slotRect.width / 2 - introCentreX,
+          y: slotRect.top + slotRect.height / 2 - introCentreY,
+        });
+        setHeroScale(slotW / LOGO_INTRO_SIZE);
+        return;
+      }
+
+      // Mobile / non-home: slot is display:none. Fly to the docked mark.
+      const navEl = document.getElementById("site-logo-fixed");
+      const rect = navEl?.getBoundingClientRect();
+      if (rect && rect.width > 1) {
+        setFlyTo({
+          x: rect.left + rect.width / 2 - introCentreX,
+          y: rect.top + rect.height / 2 - introCentreY,
+        });
+        setHeroScale(rect.width / LOGO_INTRO_SIZE);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // ── Phase sequencer: morph, then fly, then settle ──────────────
+  useEffect(() => {
+    if (introHasPlayed) { releaseIntroGate(); showPageLogo(); return; }
     if (window.location.pathname.startsWith("/dev")) {
-      markIntroDone(); releaseIntroGate(); return;
+      markIntroDone(); releaseIntroGate(); showPageLogo(); return;
     }
 
     const timers: ReturnType<typeof setTimeout>[] = [];
     const at = (ms: number, fn: () => void) => timers.push(setTimeout(fn, ms));
 
-    const t0 = HOLD_MS;
-    const t1 = t0 + STUDIO_DELAY_MS;
-    // Settling waits for whichever finishes last: the overlay/logo flight, or
-    // the STUDIO reveal plus its hold.
-    const t2 =
-      t0 + Math.max(OVERLAY_MS, STUDIO_DELAY_MS + STUDIO_REVEAL_MS + STUDIO_HOLD_MS);
-    const t3 = t2 + INTRO_SETTLE_MS;         // textFading begins
+    const tMorph  = HOLD_MS;
+    const tFly    = tMorph + STUDIO_REVEAL_MS + STUDIO_HOLD_MS;
+    const tSettle = tFly + OVERLAY_MS;
+    const tHandoff = tSettle + LOGO_HANDOFF_MS;
+    const tText   = tSettle + INTRO_SETTLE_MS;
 
-    at(t0, () => setPhase("overlayFading"));
-    at(t1, () => setStudio(true));
-    at(t2, () => {
-      setPhase("settling");
-      releaseIntroGate();   // remove the cover div
-      markIntroDone();      // PageReveal starts fading the page in (500 ms)
-                            // — home page "APERIX STUDIO" will be fully visible
-                            //   before textFading begins
+    at(tMorph, () => {
+      setPhase("morphing");
+      setStudio(true);
     });
-    at(t3, () => setPhase("textFading"));
+    at(tFly, () => setPhase("flying"));
+    at(tSettle, () => {
+      setPhase("settling");
+      showPageLogo();
+      releaseIntroGate();
+      markIntroDone();
+    });
+    at(tHandoff, () => setLogoOn(false));
+    at(tText, () => setPhase("textFading"));
 
     return () => timers.forEach(clearTimeout);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const overlayOn = phase === "holding" || phase === "overlayFading";
-  const logoOn    = phase === "holding" || phase === "overlayFading";
+  const overlayOn = phase === "holding" || phase === "morphing" || phase === "flying";
   const textOn    = phase !== "textFading";
-  const isFlying  = phase === "overlayFading";
+  const isFlying  = phase === "flying" || phase === "settling";
 
   return (
     <>
@@ -173,9 +181,9 @@ export default function IntroScreenSimple() {
           <motion.div
             key="intro-overlay"
             initial={{ opacity: 1 }}
-            animate={{ opacity: isFlying ? 0 : 1 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: OVERLAY_MS / 1000, ease: "easeOut" }}
+            transition={{ duration: LOGO_HANDOFF_MS / 1000, ease: "easeOut" }}
             aria-hidden="true"
             style={{
               position: "fixed", inset: 0, zIndex: 9997,
@@ -185,7 +193,7 @@ export default function IntroScreenSimple() {
         )}
       </AnimatePresence>
 
-      {/* ── Logo — flies to nav position during overlay fade ──── */}
+      {/* ── Logo — holds through morph, then flies to the hero slot ─ */}
       <AnimatePresence>
         {logoOn && (
           <motion.div
@@ -202,22 +210,19 @@ export default function IntroScreenSimple() {
               initial={{ opacity: 0, y: 10 }}
               animate={
                 isFlying
-                  ? { opacity: 1, y: flyToY, scale: flyEndScale }
-                  : { opacity: 1, y: 0,      scale: 1 }
+                  ? { opacity: 1, x: flyTo.x, y: flyTo.y, scale: heroScale }
+                  : { opacity: 1, x: 0,       y: 0,        scale: 1 }
               }
               transition={
                 isFlying
-                  ? { duration: OVERLAY_MS / 1000, ease: [0.22, 1, 0.36, 1] }
-                  : { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.15 }
+                  ? { duration: OVERLAY_MS / 1000, ease: FLY_EASE }
+                  : { duration: 0.55, ease: FLY_EASE, delay: 0.15 }
               }
             >
-              {/* The same rotating mark as SiteLogoFixed and the footer, so
-                  the logo that flies up to the nav is the logo that lands
-                  there — not a still lookalike that swaps at the last frame. */}
               <AnimatedLogo
-                size={introLogoSize}
+                size={LOGO_INTRO_SIZE}
                 priority
-                style={{ filter: "drop-shadow(0 0 20px rgba(14,165,233,0.55))" }}
+                style={{ filter: LOGO_FILTER }}
               />
             </motion.div>
           </motion.div>
@@ -239,50 +244,60 @@ export default function IntroScreenSimple() {
               pointerEvents: "none",
             }}
           >
-            {/*
-              Outer motion.div: fixed viewport centering + opacity only (no FM y).
-              Inner div: pure CSS translateY(2.8rem) — mirrors HomeHero exactly so
-              Framer Motion never overwrites the vertical offset.
-            */}
-            <div style={{ transform: "translateY(2.8rem)" }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
+            {/* Centred flex row. STUDIO's maxWidth is 0 on hold so APERIX sits
+                under the logo; opening it grows the row and APERIX eases left
+                in the same beat. Vertical travel happens afterwards, in HomeHero. */}
+            <div
+              style={{
+                display: "flex", alignItems: "baseline", gap: 0,
+                transform: `translateY(${INTRO_LINE_OFFSET_REM}rem)`,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-display), sans-serif",
+                  fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
+                  fontWeight: 800, letterSpacing: "var(--wordmark-track-aperix, 0.22em)",
+                  color: "#ffffff", lineHeight: 1,
+                  textShadow: "0 0 32px rgba(14,165,233,0.55)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                APERIX
+              </span>
+
+              <motion.span
+                initial={{ opacity: 0, maxWidth: 0 }}
+                animate={
+                  studioVisible
+                    ? { opacity: 1, maxWidth: STUDIO_REVEAL_MAX_WIDTH }
+                    : { opacity: 0, maxWidth: 0 }
+                }
+                transition={{
+                  duration: STUDIO_REVEAL_MS / 1000,
+                  ease: STUDIO_EASE,
+                }}
+                style={{
+                  overflow: "hidden",
+                  display: "inline-block",
+                  whiteSpace: "nowrap",
+                  verticalAlign: "baseline",
+                }}
+              >
                 <span
                   style={{
                     fontFamily: "var(--font-display), sans-serif",
                     fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
-                    fontWeight: 800, letterSpacing: "var(--wordmark-track-aperix, 0.22em)",
-                    color: "#ffffff", lineHeight: 1,
-                    textShadow: "0 0 32px rgba(14,165,233,0.55)",
+                    fontWeight: 300, letterSpacing: "var(--wordmark-track-studio, 0.34em)",
+                    color: "rgba(255,255,255,0.75)", lineHeight: 1,
+                    textShadow: "0 0 24px rgba(14,165,233,0.3)",
+                    paddingLeft: "var(--wordmark-gap, 0.5em)",
                     whiteSpace: "nowrap",
                   }}
                 >
-                  APERIX
+                  STUDIO
                 </span>
-
-                <AnimatePresence>
-                  {studioVisible && (
-                    <motion.span
-                      initial={{ opacity: 0, x: 18, maxWidth: 0 }}
-                      animate={{ opacity: 1, x: 0, maxWidth: 400 }}
-                      transition={{
-                        duration: STUDIO_REVEAL_MS / 1000,
-                        ease: STUDIO_EASE,
-                      }}
-                      style={{
-                        fontFamily: "var(--font-display), sans-serif",
-                        fontSize: "var(--wordmark-size, clamp(2.4rem, 5.5vw, 3.6rem))",
-                        fontWeight: 300, letterSpacing: "var(--wordmark-track-studio, 0.34em)",
-                        color: "rgba(255,255,255,0.75)", lineHeight: 1,
-                        textShadow: "0 0 24px rgba(14,165,233,0.3)",
-                        whiteSpace: "nowrap",
-                        paddingLeft: "var(--wordmark-gap, 0.5em)", overflow: "hidden",
-                      }}
-                    >
-                      STUDIO
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </div>
+              </motion.span>
             </div>
           </motion.div>
         )}

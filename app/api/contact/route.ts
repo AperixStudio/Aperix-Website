@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sendContactEmail } from "@/lib/contactEmail";
+import { ContactDeliveryError } from "@/lib/contactEnv";
 import { checkRateLimit } from "@/lib/contactRateLimit";
 import { contactSchema, toFieldErrors } from "@/lib/contactSchema";
 
@@ -69,7 +70,8 @@ export async function POST(request: NextRequest) {
     console.info("[contact] enquiry delivered", {
       requestId,
       clientIp,
-      businessName: parsed.data.businessName,
+      need: parsed.data.need,
+      name: parsed.data.name,
       email: parsed.data.email,
     });
 
@@ -81,10 +83,18 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : "Unknown error",
     });
 
+    const isDev = process.env.NODE_ENV !== "production";
+    const isAuthFailure = error instanceof ContactDeliveryError && error.kind === "auth";
+    const clientError =
+      isDev && isAuthFailure
+        ? "Resend rejected the API key. Update RESEND_API_KEY in .env.local and restart npm run dev."
+        : "Your message couldn't be sent right now. Please email hello@aperix.com.au and mention request ID " +
+          requestId +
+          ".";
+
     return NextResponse.json(
       {
-        error:
-          "Your message couldn't be sent right now. Please email hello@aperix.com.au and mention request ID " + requestId + ".",
+        error: clientError,
         requestId,
       },
       { status: 500, headers: { "X-Request-Id": requestId } },
