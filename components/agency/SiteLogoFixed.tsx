@@ -101,9 +101,8 @@ function SiteLogoFixed() {
       const heroSlot = document.getElementById("home-hero-logo-slot");
       const heroSection = document.getElementById("home-hero");
       const slotRect = heroSlot?.getBoundingClientRect();
-      const slotLaidOut = Boolean(slotRect && slotRect.width > 1);
 
-      if (!slotLaidOut || !heroSection) {
+      if (!slotRect || slotRect.width <= 1 || !heroSection) {
         // No hero on this page/breakpoint — docked at rest, same as before
         // this redesign, with the original scrollY-based mobile shrink.
         let scale = navScale;
