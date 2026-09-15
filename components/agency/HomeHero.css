@@ -77,6 +77,7 @@
 .home-hero__grid {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   /* Explicit rows rather than a centred stack: the fr spacers are what set
@@ -153,23 +154,63 @@
   text-shadow: 0 0 18px rgba(14, 165, 233, 0.55);
 }
 
-/* AI receptionist teaser / "live chat" — bottom left, clear of the
-   baseline cue (bottom centre) and the logo (right side).
-
-   Overrides .hero-orb's own `width:100%; justify-content:flex-end`
-   (HeroReceptionistOrb.css) — those were written for its old top-right
-   grid placement, where they right-aligned the orb within its grid cell.
-   Left uncountered here, that width:100% stretches this absolutely
-   positioned box back out to the right edge regardless of `left`, and
-   flex-end then re-parks the orb on the right — silently undoing the
-   left placement below. The compound selector guarantees this wins
-   regardless of the two stylesheets' import order. */
+/* AI receptionist teaser — bottom left, clear of baseline cue and logo. */
 .home-hero__ai-demo.hero-orb {
   position: absolute;
   left: clamp(1.5rem, 5vw, 4.5rem);
-  bottom: clamp(3.5rem, 9vh, 6rem);
-  width: auto;
+  bottom: clamp(4.25rem, 10.5vh, 6.75rem);
+  width: 12.5rem;
+  max-width: 12.5rem;
   justify-content: flex-start;
+  overflow: visible;
+  z-index: 2;
+}
+
+/* ---- Ambient orbs (over video, under copy) ---- */
+
+.home-hero__orbs {
+  position: absolute;
+  inset: -8%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.home-hero__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.home-hero__orb--sky {
+  top: 6%;
+  right: 4%;
+  width: min(42vw, 380px);
+  height: min(42vw, 380px);
+  background: var(--agency-atmosphere-blue, #0ea5e9);
+  opacity: 0.42;
+  animation: site-atmosphere-drift-c 44s ease-in-out infinite alternate;
+}
+
+.home-hero__orb--peach {
+  top: 22%;
+  right: 18%;
+  width: min(34vw, 300px);
+  height: min(34vw, 300px);
+  background: var(--agency-atmosphere-peach, #fb923c);
+  opacity: 0.28;
+  animation: site-atmosphere-drift-b 40s ease-in-out infinite alternate;
+}
+
+.home-hero__orb--coral {
+  top: 12%;
+  right: 28%;
+  width: min(28vw, 260px);
+  height: min(28vw, 260px);
+  background: var(--agency-atmosphere-red, #f87171);
+  opacity: 0.22;
+  animation: site-atmosphere-drift-a 34s ease-in-out infinite alternate;
 }
 
 /* ---- Baseline ---- */
@@ -226,36 +267,62 @@
    docked nav size/position throughout — same as every other page. */
 
 @media (max-width: 820px) {
+  #home-hero {
+    /* Lower value = higher on screen — mobile-only resting wordmark. */
+    --wordmark-rest-top: 5.5vh;
+  }
+
   .home-hero-backdrop__logo-slot {
     display: none;
   }
 
   .home-hero__grid {
+    /* Clear the wordmark + logo above, and the call orb + TABS below. */
+    padding-top: clamp(10.75rem, 28vh, 13.5rem);
+    padding-bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 8.5rem);
+    padding-inline: clamp(1.25rem, 5vw, 1.75rem);
+    row-gap: 0.75rem;
+    align-content: stretch;
     grid-template-rows:
-      minmax(0, 0.6fr)
       auto
-      auto
-      minmax(0, 0.5fr)
-      auto
-      minmax(0, 0.45fr);
+      1fr;
   }
 
   .home-hero__rule {
-    grid-area: 2 / 1 / 3 / 6;
+    grid-area: 1 / 1 / 2 / 6;
+    margin-top: 0;
   }
 
-  .home-hero__lead {
-    grid-area: 3 / 1 / 4 / 13;
+  /* Fill the band between the logo and the orb; even space above,
+     between, and below the two paragraphs. */
+  .home-hero__copy {
+    grid-area: 2 / 1 / 3 / 13;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    min-height: 0;
+    height: 100%;
   }
 
-  /* One column, but the indent keeps the step across the page. */
+  .home-hero__drift-wrap {
+    display: block;
+    overflow: visible;
+    width: 100%;
+  }
+
+  .home-hero__lead,
   .home-hero__sub {
-    grid-area: 5 / 2 / 6 / 13;
+    grid-area: auto;
+    margin: 0;
+    max-width: 100%;
   }
 
   .home-hero__ai-demo.hero-orb {
-    left: clamp(1rem, 4vw, 1.5rem);
-    bottom: clamp(1rem, 3vh, 1.5rem);
+    left: 50%;
+    margin-left: -4rem;
+    bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 1.25rem);
+    width: 8rem;
+    max-width: 8rem;
   }
 }
 
@@ -263,8 +330,20 @@
 
 @media (max-height: 660px) {
   .home-hero__grid {
-    padding-block: clamp(4rem, 10vh, 5.5rem) clamp(2.5rem, 7vh, 4rem);
+    padding-block: clamp(3rem, 8vh, 4.25rem) clamp(2.5rem, 7vh, 4rem);
     row-gap: clamp(0.75rem, 2vh, 1.5rem);
+  }
+
+  .home-hero__ai-demo.hero-orb {
+    bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 1rem);
+  }
+}
+
+@media (min-width: 821px) {
+  /* Pass through on desktop so grid areas stay on the copy blocks. */
+  .home-hero__copy,
+  .home-hero__drift-wrap {
+    display: contents;
   }
 }
 

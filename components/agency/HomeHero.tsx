@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 import { motion } from "framer-motion";
 import { onIntroDone } from "@/lib/introState";
 import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/IntroScreenSimple";
@@ -60,6 +67,36 @@ const DRIFT: Record<"lead" | "sub", Drift> = {
     duration: 31,
   },
 };
+
+const MOBILE_HERO_QUERY = "(max-width: 820px)";
+
+/** Softer on mobile — grid padding keeps copy on-screen without clipping. */
+const MOBILE_DRIFT: Record<"lead" | "sub", Drift> = {
+  lead: {
+    x: [0, 8, 12, 6, -8, -12, -6, 4, 10, 0],
+    y: [0, -6, -10, -12, -8, -3, 5, 10, 6, 0],
+    duration: 26,
+  },
+  sub: {
+    x: [0, -7, -11, -8, 3, 10, 12, 5, -9, 0],
+    y: [0, -8, -4, 6, 12, 8, -2, -10, -5, 0],
+    duration: 31,
+  },
+};
+
+function subscribeMobileHero(onChange: () => void) {
+  const mq = window.matchMedia(MOBILE_HERO_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+function getMobileHeroSnapshot() {
+  return window.matchMedia(MOBILE_HERO_QUERY).matches;
+}
+
+function getMobileHeroServerSnapshot() {
+  return false;
+}
 
 function driftTransition(drift: Drift) {
   const segments = drift.x.length - 1;
@@ -123,6 +160,11 @@ function WordmarkGlyphs({ interactive }: { interactive?: boolean }) {
 }
 
 export default function HomeHero() {
+  const isMobileHero = useSyncExternalStore(
+    subscribeMobileHero,
+    getMobileHeroSnapshot,
+    getMobileHeroServerSnapshot,
+  );
   const [canMove, setCanMove] = useState(false);
   const [moved, setMoved] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
@@ -229,7 +271,7 @@ export default function HomeHero() {
 
   /** Reveal, then drift — the two never overlap, so they never conflict. */
   const copyMotion = (key: "lead" | "sub", settled: object) => {
-    const drift = DRIFT[key];
+    const drift = isMobileHero ? MOBILE_DRIFT[key] : DRIFT[key];
     return floating
       ? { animate: { ...settled, opacity: 1, x: drift.x, y: drift.y },
           transition: driftTransition(drift) }
@@ -302,6 +344,13 @@ export default function HomeHero() {
           zIndex: 201,
         }}
       >
+        {/* Soft colour fields over the video — site-atmosphere blobs sit behind SiteBackground. */}
+        <div className="home-hero__orbs" aria-hidden="true">
+          <div className="home-hero__orb home-hero__orb--sky" />
+          <div className="home-hero__orb home-hero__orb--peach" />
+          <div className="home-hero__orb home-hero__orb--coral" />
+        </div>
+
         {/* ── The editorial composition ─────────────────────────── */}
         <div className="home-hero__grid">
           <motion.hr
@@ -315,28 +364,34 @@ export default function HomeHero() {
             transition={{ duration: 0.7, ease: HERO_EASE }}
           />
 
-          <motion.h1
-            className="home-hero__lead"
-            initial={{ opacity: 0, y: 16 }}
-            {...copyMotion("lead", {})}
-          >
-            A two-man team inspired by top creators and advancing technology,
-            providing Melbourne with the finest care in web development and
-            software solutions.
-          </motion.h1>
+          <div className="home-hero__copy">
+            <div className="home-hero__drift-wrap home-hero__drift-wrap--lead">
+              <motion.h1
+                className="home-hero__lead"
+                initial={{ opacity: 0, y: 16 }}
+                {...copyMotion("lead", {})}
+              >
+                A two-man team inspired by top creators and advancing technology,
+                providing Melbourne with the finest care in web development and
+                software solutions.
+              </motion.h1>
+            </div>
 
-          <motion.p
-            className="home-hero__sub"
-            initial={{ opacity: 0, y: 16 }}
-            {...copyMotion("sub", {})}
-          >
-            Driven by the desire to provide AI-supported, customised projects, we
-            give you the structure and strategy to build{" "}
-            <span className="home-hero__you">your</span> iconic brand and business.
-          </motion.p>
-
-          <HeroReceptionistOrb show={showCopy} />
+            <div className="home-hero__drift-wrap home-hero__drift-wrap--sub">
+              <motion.p
+                className="home-hero__sub"
+                initial={{ opacity: 0, y: 16 }}
+                {...copyMotion("sub", {})}
+              >
+                Driven by the desire to provide AI-supported, customised projects, we
+                give you the structure and strategy to build{" "}
+                <span className="home-hero__you">your</span> iconic brand and business.
+              </motion.p>
+            </div>
+          </div>
         </div>
+
+        <HeroReceptionistOrb show={showCopy} floating={floating} />
 
         <motion.div
           className="home-hero__base"
