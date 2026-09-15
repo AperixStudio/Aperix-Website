@@ -1,13 +1,19 @@
 "use client";
 
-import type { CSSProperties, MouseEvent } from "react";
-import ArrowheadLogo3D from "@/components/agency/arrowhead/ArrowheadLogo3D";
+import { useEffect, useRef, type CSSProperties, MouseEvent } from "react";
+import ArrowheadLogo3D, {
+  type ArrowheadLogoHandle,
+} from "@/components/agency/arrowhead/ArrowheadLogo3D";
 
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
 const LOGO_ASPECT = 668.5 / 921.75;
 
 /** Seconds. Matches arrowhead-logo-3d DEFAULTS.trackAt — limbs are assembled. */
 export const ARROWHEAD_TRACK_AT_S = 3.4;
+/** Seconds. Matches arrowhead-logo-3d DEFAULTS.orbitAt — mark is spinning. */
+export const ARROWHEAD_ORBIT_AT_S = 9.0;
+/** Past the orbit ramp so a seek lands already spinning. */
+export const ARROWHEAD_SPINNING_AT_S = ARROWHEAD_ORBIT_AT_S + 2;
 
 type AnimatedLogoProps = {
   size?: number;
@@ -18,6 +24,8 @@ type AnimatedLogoProps = {
   onMouseLeave?: (event: MouseEvent<HTMLSpanElement>) => void;
   /** Seek the 3D sequence here on mount (seconds). Skips the assemble at intro handoff. */
   startAt?: number;
+  /** Seek again when this changes (e.g. intro logo starts orbiting after it lands). */
+  seekTo?: number;
 };
 
 /**
@@ -34,8 +42,14 @@ export default function AnimatedLogo({
   onMouseEnter,
   onMouseLeave,
   startAt,
+  seekTo,
 }: AnimatedLogoProps) {
   const height = Math.round(size * LOGO_ASPECT);
+  const handleRef = useRef<ArrowheadLogoHandle | null>(null);
+
+  useEffect(() => {
+    if (seekTo != null) handleRef.current?.seek(seekTo);
+  }, [seekTo]);
 
   return (
     <span
@@ -54,6 +68,7 @@ export default function AnimatedLogo({
       <ArrowheadLogo3D
         options={{ tilt: 0 }}
         onReady={(handle) => {
+          handleRef.current = handle;
           if (startAt != null) handle?.seek(startAt);
         }}
       />

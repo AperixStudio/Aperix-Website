@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useLayoutEffect, useState } from "react";
-import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import AnimatedLogo, { ARROWHEAD_SPINNING_AT_S } from "@/components/agency/AnimatedLogo";
 import { introHasPlayed, markIntroDone, releaseIntroGate } from "@/lib/introState";
 
 /*
@@ -233,6 +233,12 @@ export default function IntroScreenSimple() {
                 size={introLogoSize}
                 priority
                 style={{ filter: LOGO_FILTER }}
+                seekTo={
+                  introLogoSize === LOGO_INTRO_MOBILE &&
+                  (phase === "settling" || phase === "textFading")
+                    ? ARROWHEAD_SPINNING_AT_S
+                    : undefined
+                }
               />
             </motion.div>
           </motion.div>

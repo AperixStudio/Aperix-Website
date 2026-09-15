@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { memo, useLayoutEffect, useRef, useState } from "react";
-import AnimatedLogo, { ARROWHEAD_TRACK_AT_S } from "@/components/agency/AnimatedLogo";
+import AnimatedLogo, {
+  ARROWHEAD_SPINNING_AT_S,
+  ARROWHEAD_TRACK_AT_S,
+} from "@/components/agency/AnimatedLogo";
 import { introHasPlayed } from "@/lib/introState";
 import { useIntroDone } from "@/lib/useIntroDone";
 
@@ -29,12 +32,14 @@ const NAV_TOP_REM = 0.25;
 // where there's no hero section on the page at all, past the top of the
 // page) — then holds there, smaller but never gone. Desktop is unaffected.
 const MOBILE_QUERY           = "(max-width: 767px)";
+const COMPACT_QUERY          = "(max-width: 820px)";
 const MOBILE_MIN_SCALE       = 0.45;
 const MOBILE_SHRINK_RANGE_PX = 220;
 
 /**
- * Fixed centred logo, living at hero scale on load and docking down to the
- * small nav position/size as the hero scrolls out of view.
+ * Fixed centred logo. Desktop: hero scale on load, docks to nav as the
+ * hero scrolls out. Compact home: one pose at the hero slot — no scroll
+ * travel, no size change.
  *
  * Lives in layout.tsx OUTSIDE <PageReveal> so it is always in the DOM —
  * IntroScreenSimple reads its bounding rect on mount (before any scroll) to
@@ -63,19 +68,26 @@ function SiteLogoFixed() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const gpuSizeRef = useRef(LOGO_HERO_SIZE);
   const [gpuSize, setGpuSize] = useState<number | null>(null);
+  const [compact, setCompact] = useState(false);
   const introDone = useIntroDone();
   // First-visit cinematic: skip the 2.2s assemble so the page mark matches
   // the intro logo that just landed. SPA / already-played: mount with default autoplay.
-  const skipAssemble = useRef(!introHasPlayed);
+  const [skipAssemble] = useState(!introHasPlayed);
   const mountMark = introDone;
-  const startAt =
-    skipAssemble.current && mountMark ? ARROWHEAD_TRACK_AT_S : undefined;
+  const startAt = !mountMark
+    ? undefined
+    : compact
+      ? ARROWHEAD_SPINNING_AT_S
+      : skipAssemble
+        ? ARROWHEAD_TRACK_AT_S
+        : undefined;
 
   useLayoutEffect(() => {
     const mobile = window.matchMedia(MOBILE_QUERY).matches;
     const size = mobile ? LOGO_GPU_MOBILE : LOGO_HERO_SIZE;
     gpuSizeRef.current = size;
     setGpuSize(size);
+    setCompact(window.matchMedia(COMPACT_QUERY).matches);
   }, []);
 
   // Layout effect (not a plain effect) so the very first transform is set
@@ -86,7 +98,9 @@ function SiteLogoFixed() {
     if (gpuSize == null) return undefined;
 
     const mq = window.matchMedia(MOBILE_QUERY);
+    const compactMq = window.matchMedia(COMPACT_QUERY);
     let isMobile = mq.matches;
+    let isCompact = compactMq.matches;
     let raf = 0;
 
     const apply = () => {
@@ -117,31 +131,34 @@ function SiteLogoFixed() {
       const heroRect = slotRect;
       const sectionRect = heroSection.getBoundingClientRect();
 
-      // How far through the hero the user has scrolled: 0 at the top of the
-      // page, 1 once the hero has fully scrolled past. Measured off the hero
-      // section itself so it stays correct regardless of its height.
-      const progress = Math.min(1, Math.max(0, -sectionRect.top / sectionRect.height));
-
       // transform-origin is "top center" on the wrapper, so translating and
       // then scaling always leaves the wrapper's own top-centre point at
       // exactly (naturalX + dx, naturalY + dy) — scale shrinks toward that
-      // point, it doesn't move it. So the two states below only need to
-      // agree on where that one point should be, plus a width-derived scale.
+      // point, it doesn't move it.
       const heroCenterX = heroRect.left + heroRect.width / 2;
+
+      if (isCompact) {
+        // Pin to the hero slot. Slot top is viewport-relative, so subtract
+        // the hero's scroll offset and the pose stays put at one size.
+        const restCenterY =
+          heroRect.top - sectionRect.top + heroRect.height / 2;
+        const heroTopY = restCenterY - (heroRect.width * LOGO_ASPECT) / 2;
+        const dx = heroCenterX - window.innerWidth / 2;
+        const dy = heroTopY - navTopY;
+        const scale = heroRect.width / size;
+        el.style.transform =
+          `translateX(-50%) translate(${dx}px, ${dy}px) scale(${scale})`;
+        return;
+      }
+
+      const progress = Math.min(1, Math.max(0, -sectionRect.top / sectionRect.height));
       const heroCenterY = heroRect.top + heroRect.height / 2;
       const heroTopY = heroCenterY - (heroRect.width * LOGO_ASPECT) / 2;
       const heroScale = heroRect.width / size;
 
       const dx = lerp(heroCenterX - window.innerWidth / 2, 0, progress);
       const dy = lerp(heroTopY - navTopY, 0, progress);
-      let scale = lerp(heroScale, navScale, progress);
-
-      // Layer the original mobile extra-shrink on top, once fully docked.
-      if (progress >= 1 && isMobile) {
-        const pastDock = Math.max(0, -sectionRect.top - sectionRect.height);
-        const t = Math.min(1, pastDock / MOBILE_SHRINK_RANGE_PX);
-        scale *= 1 - t * (1 - MOBILE_MIN_SCALE);
-      }
+      const scale = lerp(heroScale, navScale, progress);
 
       el.style.transform =
         `translateX(-50%) translate(${dx}px, ${dy}px) scale(${scale})`;
@@ -153,6 +170,8 @@ function SiteLogoFixed() {
     };
     const onMqChange = () => {
       isMobile = mq.matches;
+      isCompact = compactMq.matches;
+      setCompact(isCompact);
       apply();
     };
 
@@ -166,22 +185,37 @@ function SiteLogoFixed() {
     window.addEventListener("resize", apply);
     window.addEventListener("orientationchange", apply);
     (mq.addEventListener ? mq.addEventListener.bind(mq, "change") : mq.addListener.bind(mq))(onMqChange);
+    (compactMq.addEventListener ? compactMq.addEventListener.bind(compactMq, "change") : compactMq.addListener.bind(compactMq))(onMqChange);
 
-    const heroSlot = document.getElementById("home-hero-logo-slot");
-    const observer =
-      typeof ResizeObserver !== "undefined" && heroSlot ? new ResizeObserver(apply) : null;
-    if (heroSlot) observer?.observe(heroSlot);
+    let observer: ResizeObserver | null = null;
+    let findSlotRaf = 0;
+    const bindSlot = () => {
+      findSlotRaf = 0;
+      const heroSlot = document.getElementById("home-hero-logo-slot");
+      if (!heroSlot) {
+        findSlotRaf = requestAnimationFrame(bindSlot);
+        return;
+      }
+      if (typeof ResizeObserver !== "undefined") {
+        observer = new ResizeObserver(apply);
+        observer.observe(heroSlot);
+      }
+      apply();
+    };
+    bindSlot();
 
     return () => {
       cancelAnimationFrame(initialRaf);
+      if (findSlotRaf) cancelAnimationFrame(findSlotRaf);
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", apply);
       window.removeEventListener("orientationchange", apply);
       (mq.removeEventListener ? mq.removeEventListener.bind(mq, "change") : mq.removeListener.bind(mq))(onMqChange);
+      (compactMq.removeEventListener ? compactMq.removeEventListener.bind(compactMq, "change") : compactMq.removeListener.bind(compactMq))(onMqChange);
       observer?.disconnect();
     };
-  }, [gpuSize]);
+  }, [gpuSize, introDone]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (window.location.pathname !== "/") {
