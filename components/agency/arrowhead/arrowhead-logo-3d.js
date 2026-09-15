@@ -298,7 +298,13 @@ export function createArrowheadLogo(container, options = {}) {
   function resize() {
     const w = container.clientWidth, h = container.clientHeight;
     if (!w || !h) return;
-    renderer.setSize(w, h, false);
+    // Cap the drawing buffer so a huge CSS box (or high DPR) cannot
+    // overflow the GPU and paint the mark into a corner of the canvas.
+    const pr = renderer.getPixelRatio();
+    const maxDim = Math.min(renderer.capabilities.maxTextureSize || 8192, 4096);
+    const cap = maxDim / pr;
+    const k = Math.min(1, cap / Math.max(w, h));
+    renderer.setSize(Math.max(1, Math.floor(w * k)), Math.max(1, Math.floor(h * k)), false);
     camera.aspect = w / h;
     camera.fov = w / h < 0.9 ? 40 : 30;
     camera.updateProjectionMatrix();

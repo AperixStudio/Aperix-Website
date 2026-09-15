@@ -1,33 +1,72 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
-const LOGO_SIZE = 352; // px — the nav logo size
+// arrowhead-mark.svg viewBox is 921.75 × 668.50 — same constant AnimatedLogo
+// derives its own height from, kept in sync here for the vertical-centring
+// math below.
+const LOGO_ASPECT = 668.5 / 921.75;
 
-// Mobile-only scroll shrink: scales down toward MIN_SCALE over the first
-// SHRINK_RANGE_PX of scroll, then holds there — smaller, never gone.
-// Desktop is unaffected (the logo sits comfortably at full size there).
-const MOBILE_QUERY   = "(max-width: 767px)";
-const MIN_SCALE      = 0.45;
-const SHRINK_RANGE_PX = 220;
+// The logo renders at a single constant pixel size always — every state
+// change (hero-big → nav-small, plus the mobile extra-shrink) is a CSS
+// `transform: scale()` on the wrapper, never a change to this prop. That
+// keeps the WebGL canvas itself untouched across the whole journey (no
+// resize-driven redraw thrash), matching how IntroScreenSimple already flies
+// its own copy in via scale rather than by resizing it.
+// GPU canvas size only. Raising this does NOT make the on-screen logo
+// bigger — that is `--hero-logo-width` in HomeHero.css. Keep this under
+// ~2000 or phones clip the mark into a corner of its own box.
+const LOGO_HERO_SIZE = 1400;
+const LOGO_NAV_SIZE  = 352; // px-equivalent — docked nav size (unchanged from before)
+const NAV_SCALE = LOGO_NAV_SIZE / LOGO_HERO_SIZE;
+
+// Raised close to the very top of the viewport.
+const NAV_TOP_REM = 0.9;
+
+// Mobile-only extra shrink once fully docked: scales down toward MIN_SCALE
+// over the first SHRINK_RANGE_PX of scroll *past the docking point* (or,
+// where there's no hero section on the page at all, past the top of the
+// page) — then holds there, smaller but never gone. Desktop is unaffected.
+const MOBILE_QUERY           = "(max-width: 767px)";
+const MOBILE_MIN_SCALE       = 0.45;
+const MOBILE_SHRINK_RANGE_PX = 220;
 
 /**
- * Fixed centred logo at the top of every page.
+ * Fixed centred logo, living at hero scale on load and docking down to the
+ * small nav position/size as the hero scrolls out of view.
  *
  * Lives in layout.tsx OUTSIDE <PageReveal> so it is always in the DOM —
- * IntroScreenSimple reads its bounding rect on mount to compute the fly-to position.
+ * IntroScreenSimple reads its bounding rect on mount (before any scroll) to
+ * compute the fly-to position, which is why that rect must already be the
+ * *hero* rect at mount, not the nav rect.
  *
- * During the intro the overlay (z-index 9997) covers this logo entirely,
- * so there is no visual conflict. After the intro logo animates up and
- * fades out, this element is already in place at the correct position.
+ * During the intro IntroScreenSimple sets this node's opacity to 0 so the
+ * flying intro copy is the only visible mark. Opacity is restored at the
+ * intro landing, then the intro copy unmounts on top of this same rect.
+ *
+ * On any page without a laid-out `#home-hero-logo-slot` (every page but
+ * home) this behaves as it always has: docked at nav size/position, with
+ * the old mobile scroll-shrink. On home, the slot stays laid out at every
+ * width — below the wordmark on small screens, right-weighted on desktop.
+ *
+ * `transform` is deliberately owned ENTIRELY by the imperative effect below
+ * (`el.style.transform = ...`), never by React's `style` prop — if it were
+ * also set there, any re-render of this component (a route change, a parent
+ * re-render, React Fast Refresh) would reset it back to that static value
+ * until the next scroll/resize event fired, snapping the logo back to a
+ * wrong size. Wrapped in `memo` (zero props, so it never re-renders after
+ * mount) as a second line of defence against that.
  */
-export default function SiteLogoFixed() {
+function SiteLogoFixed() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
-  // ── Mobile scroll shrink ─────────────────────────────────────────
-  useEffect(() => {
+  // Layout effect (not a plain effect) so the very first transform is set
+  // synchronously before the browser paints — with no `transform` in the
+  // style prop below, a plain effect would let one frame paint with the
+  // logo untransformed (default position, no centring) first.
+  useLayoutEffect(() => {
     const mq = window.matchMedia(MOBILE_QUERY);
     let isMobile = mq.matches;
     let raf = 0;
@@ -36,13 +75,59 @@ export default function SiteLogoFixed() {
       raf = 0;
       const el = wrapRef.current;
       if (!el) return;
-      if (!isMobile) {
-        el.style.transform = "translateX(-50%)";
+
+      const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const navTopY = NAV_TOP_REM * remPx;
+      const heroSlot = document.getElementById("home-hero-logo-slot");
+      const heroSection = document.getElementById("home-hero");
+      const slotLaidOut = (heroSlot?.getBoundingClientRect().width ?? 0) > 1;
+
+      if (!heroSlot || !heroSection || !slotLaidOut) {
+        // No hero on this page/breakpoint — docked at rest, same as before
+        // this redesign, with the original scrollY-based mobile shrink.
+        // display:none (the <=820px hero treatment) still leaves the node
+        // in the DOM with a zero rect, so width is the real "is it laid out"
+        // test — matching IntroScreenSimple's own slot check.
+        let scale = NAV_SCALE;
+        if (isMobile) {
+          const t = Math.min(1, window.scrollY / MOBILE_SHRINK_RANGE_PX);
+          scale *= 1 - t * (1 - MOBILE_MIN_SCALE);
+        }
+        el.style.transform = `translateX(-50%) scale(${scale})`;
         return;
       }
-      const t = Math.min(1, window.scrollY / SHRINK_RANGE_PX);
-      const scale = 1 - t * (1 - MIN_SCALE);
-      el.style.transform = `translateX(-50%) scale(${scale})`;
+
+      const heroRect = heroSlot.getBoundingClientRect();
+      const sectionRect = heroSection.getBoundingClientRect();
+
+      // How far through the hero the user has scrolled: 0 at the top of the
+      // page, 1 once the hero has fully scrolled past. Measured off the hero
+      // section itself so it stays correct regardless of its height.
+      const progress = Math.min(1, Math.max(0, -sectionRect.top / sectionRect.height));
+
+      // transform-origin is "top center" on the wrapper, so translating and
+      // then scaling always leaves the wrapper's own top-centre point at
+      // exactly (naturalX + dx, naturalY + dy) — scale shrinks toward that
+      // point, it doesn't move it. So the two states below only need to
+      // agree on where that one point should be, plus a width-derived scale.
+      const heroCenterX = heroRect.left + heroRect.width / 2;
+      const heroCenterY = heroRect.top + heroRect.height / 2;
+      const heroTopY = heroCenterY - (heroRect.width * LOGO_ASPECT) / 2;
+      const heroScale = heroRect.width / LOGO_HERO_SIZE;
+
+      const dx = lerp(heroCenterX - window.innerWidth / 2, 0, progress);
+      const dy = lerp(heroTopY - navTopY, 0, progress);
+      let scale = lerp(heroScale, NAV_SCALE, progress);
+
+      // Layer the original mobile extra-shrink on top, once fully docked.
+      if (progress >= 1 && isMobile) {
+        const pastDock = Math.max(0, -sectionRect.top - sectionRect.height);
+        const t = Math.min(1, pastDock / MOBILE_SHRINK_RANGE_PX);
+        scale *= 1 - t * (1 - MOBILE_MIN_SCALE);
+      }
+
+      el.style.transform =
+        `translateX(-50%) translate(${dx}px, ${dy}px) scale(${scale})`;
     };
 
     const onScroll = () => {
@@ -54,14 +139,30 @@ export default function SiteLogoFixed() {
       apply();
     };
 
-    apply();
+    // After paint, so slot/section rects are real; also once fonts settle
+    // (the logo's own metrics don't depend on a webfont, but the hero
+    // wordmark sharing this layout does, so a font swap can still reflow
+    // the slot) and on resize/orientation change.
+    const initialRaf = requestAnimationFrame(apply);
+    void document.fonts?.ready.then(apply).catch(() => {});
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", apply);
+    window.addEventListener("orientationchange", apply);
     (mq.addEventListener ? mq.addEventListener.bind(mq, "change") : mq.addListener.bind(mq))(onMqChange);
 
+    const heroSlot = document.getElementById("home-hero-logo-slot");
+    const observer =
+      typeof ResizeObserver !== "undefined" && heroSlot ? new ResizeObserver(apply) : null;
+    if (heroSlot) observer?.observe(heroSlot);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      (mq.removeEventListener ? mq.removeEventListener.bind(mq, "change") : mq.removeListener.bind(mq))(onMqChange);
+      cancelAnimationFrame(initialRaf);
       if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", apply);
+      window.removeEventListener("orientationchange", apply);
+      (mq.removeEventListener ? mq.removeEventListener.bind(mq, "change") : mq.removeListener.bind(mq))(onMqChange);
+      observer?.disconnect();
     };
   }, []);
 
@@ -91,16 +192,17 @@ export default function SiteLogoFixed() {
       ref={wrapRef}
       style={{
         position: "fixed",
-        top: "1.5rem",
+        top: `${NAV_TOP_REM}rem`,
         left: "50%",
-        transform: "translateX(-50%)",
         transformOrigin: "top center",
+        // No `transform` here — see the component doc comment. The layout
+        // effect sets it synchronously before first paint.
         zIndex: 200,
       }}
     >
       <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
         <AnimatedLogo
-          size={LOGO_SIZE}
+          size={LOGO_HERO_SIZE}
           priority
           style={{
             filter: "drop-shadow(0 0 8px rgba(14,165,233,0.4))",
@@ -116,4 +218,10 @@ export default function SiteLogoFixed() {
       </Link>
     </div>
   );
+}
+
+export default memo(SiteLogoFixed);
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
 }
