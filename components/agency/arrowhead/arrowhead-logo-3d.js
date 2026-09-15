@@ -156,14 +156,24 @@ export function createArrowheadLogo(container, options = {}) {
   canvas.setAttribute('aria-label', 'Animated three-dimensional Arrowhead logo');
   container.appendChild(canvas);
 
+  const isCoarse =
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse)").matches;
+  const maxDpr = isCoarse ? 1 : 2;
+
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: !isCoarse,
+      alpha: true,
+      powerPreference: isCoarse ? "low-power" : "high-performance",
+    });
   } catch (err) {
     canvas.remove();
-    throw new Error('createArrowheadLogo: WebGL is unavailable in this browser');
+    throw new Error("createArrowheadLogo: WebGL is unavailable in this browser");
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
   setSRGB(renderer, null);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -224,8 +234,11 @@ export function createArrowheadLogo(container, options = {}) {
 
   function buildEnv(dark) {
     const c = document.createElement('canvas');
-    c.width = 1024; c.height = 512;
+    c.width = isCoarse ? 256 : 1024;
+    c.height = isCoarse ? 128 : 512;
     const g = c.getContext('2d');
+    g.save();
+    g.scale(c.width / 1024, c.height / 512);
     const sky = g.createLinearGradient(0, 0, 0, 512);
     if (dark) {
       sky.addColorStop(0, '#243444'); sky.addColorStop(0.48, '#0d151e');
@@ -249,13 +262,19 @@ export function createArrowheadLogo(container, options = {}) {
     box(790, 200, 250, 250, '#4fc3f7', dark ? 0.75 : 0.40);                 // blue rim
     box(560, 430, 320, 140, dark ? '#1b2a3a' : '#8fa3b6', 0.5);             // floor bounce
     box(60, 300, 180, 200, dark ? '#0d2233' : '#7d93a8', 0.45);             // fill
+    g.restore();
 
     const tex = new THREE.CanvasTexture(c);
     tex.mapping = THREE.EquirectangularReflectionMapping;
     if (envRT) envRT.dispose();
-    envRT = pmrem.fromEquirectangular(tex);
-    scene.environment = envRT.texture;
-    tex.dispose();
+    if (isCoarse) {
+      scene.environment = tex;
+      envRT = null;
+    } else {
+      envRT = pmrem.fromEquirectangular(tex);
+      scene.environment = envRT.texture;
+      tex.dispose();
+    }
   }
 
   const key = new THREE.DirectionalLight(0xffffff, 1.15); key.position.set(-2.2, 2.6, 3.2); scene.add(key);
@@ -301,7 +320,10 @@ export function createArrowheadLogo(container, options = {}) {
     // Cap the drawing buffer so a huge CSS box (or high DPR) cannot
     // overflow the GPU and paint the mark into a corner of the canvas.
     const pr = renderer.getPixelRatio();
-    const maxDim = Math.min(renderer.capabilities.maxTextureSize || 8192, 4096);
+    const maxDim = Math.min(
+      renderer.capabilities.maxTextureSize || 8192,
+      isCoarse ? 1024 : 4096,
+    );
     const cap = maxDim / pr;
     const k = Math.min(1, cap / Math.max(w, h));
     renderer.setSize(Math.max(1, Math.floor(w * k)), Math.max(1, Math.floor(h * k)), false);
@@ -365,6 +387,8 @@ export function createArrowheadLogo(container, options = {}) {
     prev = t;
 
     if (!onScreen || !tabVisible) return;      // skip work while hidden
+    const pageLogo = container.closest && container.closest('#site-logo-fixed');
+    if (pageLogo && pageLogo.style.opacity === '0') return;
     if (running) elapsed = t - t0;
     if (reduce) elapsed = opt.orbitAt + 2;
 

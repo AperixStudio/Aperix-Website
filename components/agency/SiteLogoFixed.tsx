@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { memo, useLayoutEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — same constant AnimatedLogo
@@ -15,9 +15,9 @@ const LOGO_ASPECT = 668.5 / 921.75;
 // keeps the WebGL canvas itself untouched across the whole journey (no
 // resize-driven redraw thrash), matching how IntroScreenSimple already flies
 // its own copy in via scale rather than by resizing it.
-const LOGO_HERO_SIZE = 2000; // px — full render size the wrapper scales down from; matches the intro's own LOGO_HERO_SIZE and the hero's logo-slot cap (HomeHero.css)
+const LOGO_HERO_SIZE = 2000; // px — desktop GPU buffer; wrapper scales this down to the slot
+const LOGO_GPU_MOBILE = 480; // iOS Safari OOMs on a 2000px WebGL canvas × devicePixelRatio
 const LOGO_NAV_SIZE  = 352; // px-equivalent — docked nav size (unchanged from before)
-const NAV_SCALE = LOGO_NAV_SIZE / LOGO_HERO_SIZE;
 
 // Raised close to the very top of the viewport.
 const NAV_TOP_REM = 0.25;
@@ -58,12 +58,23 @@ const MOBILE_SHRINK_RANGE_PX = 220;
  */
 function SiteLogoFixed() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const gpuSizeRef = useRef(LOGO_HERO_SIZE);
+  const [gpuSize, setGpuSize] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const mobile = window.matchMedia(MOBILE_QUERY).matches;
+    const size = mobile ? LOGO_GPU_MOBILE : LOGO_HERO_SIZE;
+    gpuSizeRef.current = size;
+    setGpuSize(size);
+  }, []);
 
   // Layout effect (not a plain effect) so the very first transform is set
   // synchronously before the browser paints — with no `transform` in the
   // style prop below, a plain effect would let one frame paint with the
   // logo untransformed (default position, no centring) first.
   useLayoutEffect(() => {
+    if (gpuSize == null) return undefined;
+
     const mq = window.matchMedia(MOBILE_QUERY);
     let isMobile = mq.matches;
     let raf = 0;
@@ -73,6 +84,8 @@ function SiteLogoFixed() {
       const el = wrapRef.current;
       if (!el) return;
 
+      const size = gpuSizeRef.current;
+      const navScale = LOGO_NAV_SIZE / size;
       const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const navTopY = NAV_TOP_REM * remPx;
       const heroSlot = document.getElementById("home-hero-logo-slot");
@@ -81,7 +94,7 @@ function SiteLogoFixed() {
       if (!heroSlot || !heroSection) {
         // No hero on this page/breakpoint — docked at rest, same as before
         // this redesign, with the original scrollY-based mobile shrink.
-        let scale = NAV_SCALE;
+        let scale = navScale;
         if (isMobile) {
           const t = Math.min(1, window.scrollY / MOBILE_SHRINK_RANGE_PX);
           scale *= 1 - t * (1 - MOBILE_MIN_SCALE);
@@ -106,11 +119,11 @@ function SiteLogoFixed() {
       const heroCenterX = heroRect.left + heroRect.width / 2;
       const heroCenterY = heroRect.top + heroRect.height / 2;
       const heroTopY = heroCenterY - (heroRect.width * LOGO_ASPECT) / 2;
-      const heroScale = heroRect.width / LOGO_HERO_SIZE;
+      const heroScale = heroRect.width / size;
 
       const dx = lerp(heroCenterX - window.innerWidth / 2, 0, progress);
       const dy = lerp(heroTopY - navTopY, 0, progress);
-      let scale = lerp(heroScale, NAV_SCALE, progress);
+      let scale = lerp(heroScale, navScale, progress);
 
       // Layer the original mobile extra-shrink on top, once fully docked.
       if (progress >= 1 && isMobile) {
@@ -157,7 +170,7 @@ function SiteLogoFixed() {
       (mq.removeEventListener ? mq.removeEventListener.bind(mq, "change") : mq.removeListener.bind(mq))(onMqChange);
       observer?.disconnect();
     };
-  }, []);
+  }, [gpuSize]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (window.location.pathname !== "/") {
@@ -194,20 +207,22 @@ function SiteLogoFixed() {
       }}
     >
       <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
-        <AnimatedLogo
-          size={LOGO_HERO_SIZE}
-          priority
-          style={{
-            filter: "drop-shadow(0 0 8px rgba(14,165,233,0.4))",
-            transition: "filter 0.2s ease",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.filter = "drop-shadow(0 0 16px rgba(14,165,233,0.7))")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.filter = "drop-shadow(0 0 8px rgba(14,165,233,0.4))")
-          }
-        />
+        {gpuSize != null ? (
+          <AnimatedLogo
+            size={gpuSize}
+            priority
+            style={{
+              filter: "drop-shadow(0 0 8px rgba(14,165,233,0.4))",
+              transition: "filter 0.2s ease",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.filter = "drop-shadow(0 0 16px rgba(14,165,233,0.7))")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.filter = "drop-shadow(0 0 8px rgba(14,165,233,0.4))")
+            }
+          />
+        ) : null}
       </Link>
     </div>
   );

@@ -33,6 +33,30 @@
   overflow: visible;
 }
 
+.hero-orb__css-blob {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 5.5rem;
+  height: 5.5rem;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 32%, rgba(142, 197, 232, 0.55), transparent 42%),
+    radial-gradient(circle at 50% 50%, #2d6488 0%, rgba(45, 100, 136, 0.35) 52%, transparent 70%);
+  filter: blur(0.5px);
+  box-shadow: 0 0 28px rgba(45, 100, 136, 0.45);
+  transition: border-radius 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+}
+
+.hero-orb__css-blob.is-formed {
+  border-radius: 1.15rem;
+  width: 3.1rem;
+  height: 5.1rem;
+  filter: blur(0);
+  box-shadow: 0 0 18px rgba(142, 197, 232, 0.4);
+}
+
 .hero-orb__particles-mount {
   position: absolute;
   left: 50%;

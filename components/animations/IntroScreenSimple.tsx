@@ -56,6 +56,8 @@ const LOGO_HANDOFF_MS = 280;
 
 // Sizes
 const LOGO_INTRO_SIZE = 1056;
+const LOGO_INTRO_MOBILE = 400;
+const INTRO_COMPACT_QUERY = "(max-width: 820px)";
 // Fallback only. The hero logo's real on-screen width is the width of
 // #home-hero-logo-slot, which is viewport-proportional (HomeHero.css), so the
 // scale is measured from that slot at mount and this is used only when the
@@ -91,6 +93,8 @@ export default function IntroScreenSimple() {
   const [logoOn, setLogoOn]        = useState(true);
   const [flyTo, setFlyTo]          = useState<{ x: number; y: number }>({ x: 0, y: -400 });
   const [heroScale, setHeroScale]  = useState(HERO_SCALE);
+  const [introLogoSize, setIntroLogoSize] = useState(LOGO_INTRO_SIZE);
+  const [introMarkReady, setIntroMarkReady] = useState(false);
 
   // Hide the page logo before first paint so it cannot ghost through the
   // overlay while the intro copy is still assembling or flying.
@@ -100,6 +104,12 @@ export default function IntroScreenSimple() {
       return;
     }
     hidePageLogo();
+  }, []);
+
+  useLayoutEffect(() => {
+    const compact = window.matchMedia(INTRO_COMPACT_QUERY).matches;
+    setIntroLogoSize(compact ? LOGO_INTRO_MOBILE : LOGO_INTRO_SIZE);
+    setIntroMarkReady(true);
   }, []);
 
   // ── Measure the hero logo slot (fallback: the docked page logo) ────
@@ -118,7 +128,7 @@ export default function IntroScreenSimple() {
           x: slotRect.left + slotRect.width / 2 - introCentreX,
           y: slotRect.top + slotRect.height / 2 - introCentreY,
         });
-        setHeroScale(slotW / LOGO_INTRO_SIZE);
+        setHeroScale(slotW / introLogoSize);
         return;
       }
 
@@ -130,11 +140,11 @@ export default function IntroScreenSimple() {
           x: rect.left + rect.width / 2 - introCentreX,
           y: rect.top + rect.height / 2 - introCentreY,
         });
-        setHeroScale(rect.width / LOGO_INTRO_SIZE);
+        setHeroScale(rect.width / introLogoSize);
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [introLogoSize]);
 
   // ── Phase sequencer: morph, then fly, then settle ──────────────
   useEffect(() => {
@@ -195,7 +205,7 @@ export default function IntroScreenSimple() {
 
       {/* ── Logo — holds through morph, then flies to the hero slot ─ */}
       <AnimatePresence>
-        {logoOn && (
+        {logoOn && introMarkReady && (
           <motion.div
             key="intro-logo"
             aria-hidden="true"
@@ -220,7 +230,7 @@ export default function IntroScreenSimple() {
               }
             >
               <AnimatedLogo
-                size={LOGO_INTRO_SIZE}
+                size={introLogoSize}
                 priority
                 style={{ filter: LOGO_FILTER }}
               />

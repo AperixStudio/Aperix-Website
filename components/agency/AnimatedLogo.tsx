@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, MouseEvent } from "react";
+import { useLayoutEffect, useState, type CSSProperties, MouseEvent } from "react";
 import ArrowheadLogo3D from "@/components/agency/arrowhead/ArrowheadLogo3D";
 
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
@@ -29,6 +29,14 @@ export default function AnimatedLogo({
   onMouseLeave,
 }: AnimatedLogoProps) {
   const height = Math.round(size * LOGO_ASPECT);
+  const [useWebGL, setUseWebGL] = useState(false);
+
+  useLayoutEffect(() => {
+    const mobile =
+      window.matchMedia("(max-width: 767px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    setUseWebGL(!mobile);
+  }, []);
 
   return (
     <span
@@ -44,8 +52,19 @@ export default function AnimatedLogo({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* tilt: 0 — no pointer tracking; once loaded it just spins in the orbit act. */}
-      <ArrowheadLogo3D options={{ tilt: 0 }} />
+      {useWebGL ? (
+        <ArrowheadLogo3D options={{ tilt: 0 }} />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/arrowhead-mark.svg"
+          alt=""
+          aria-hidden="true"
+          width={size}
+          height={height}
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "contain" }}
+        />
+      )}
     </span>
   );
 }

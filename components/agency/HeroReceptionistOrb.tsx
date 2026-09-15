@@ -36,13 +36,22 @@ const LINE_HOLD_MS = 2600;
 const MOBILE_ORB_QUERY = "(max-width: 820px)";
 
 function subscribeMobileOrb(onChange: () => void) {
-  const mq = window.matchMedia(MOBILE_ORB_QUERY);
-  mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
+  const widthMq = window.matchMedia(MOBILE_ORB_QUERY);
+  const coarseMq = window.matchMedia("(pointer: coarse)");
+  const onWidth = () => onChange();
+  widthMq.addEventListener("change", onWidth);
+  coarseMq.addEventListener("change", onWidth);
+  return () => {
+    widthMq.removeEventListener("change", onWidth);
+    coarseMq.removeEventListener("change", onWidth);
+  };
 }
 
 function getMobileOrbSnapshot() {
-  return window.matchMedia(MOBILE_ORB_QUERY).matches;
+  return (
+    window.matchMedia(MOBILE_ORB_QUERY).matches ||
+    window.matchMedia("(pointer: coarse)").matches
+  );
 }
 
 function getMobileOrbServerSnapshot() {
@@ -77,6 +86,14 @@ const HeroOrbParticles = memo(function HeroOrbParticles({
   formed: boolean;
   compact: boolean;
 }) {
+  if (compact) {
+    return (
+      <div className="hero-orb__visual" aria-hidden="true">
+        <div className={`hero-orb__css-blob${formed ? " is-formed" : ""}`} />
+      </div>
+    );
+  }
+
   return (
     <div className="hero-orb__visual" aria-hidden="true">
       <div className="hero-orb__particles-mount">

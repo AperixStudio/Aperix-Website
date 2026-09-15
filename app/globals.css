@@ -119,6 +119,8 @@
 
 html {
   color-scheme: light;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 html[data-theme="dark"] {
@@ -209,6 +211,9 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  max-width: 100%;
 }
 
 h1,

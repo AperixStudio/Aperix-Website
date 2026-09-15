@@ -122,8 +122,13 @@ function SiteBackgroundMobileVideo({ useMp4 }: { useMp4: boolean }) {
     video.muted = true;
     video.playsInline = true;
     video.setAttribute("webkit-playsinline", "true");
+    if (useMp4) {
+      video.loop = true;
+    }
 
     const syncLoop = () => {
+      if (video.loop) return;
+
       const loopEnd = loopEndRef.current;
 
       if (!pingPongRef.current) {
@@ -157,7 +162,9 @@ function SiteBackgroundMobileVideo({ useMp4 }: { useMp4: boolean }) {
       pingPongRef.current = !useMp4 && canReverseVideoPlayback(video);
       directionRef.current = 1;
       video.playbackRate = 1;
-      video.currentTime = 0;
+      if (!useMp4) {
+        video.currentTime = 0;
+      }
       ensurePlaying();
       signalReadyOnce();
     };
@@ -173,7 +180,9 @@ function SiteBackgroundMobileVideo({ useMp4 }: { useMp4: boolean }) {
     video.addEventListener("canplay", ensurePlaying);
     video.addEventListener("playing", signalReadyOnce);
     video.addEventListener("error", signalReadyOnce);
-    video.addEventListener("timeupdate", syncLoop);
+    if (!useMp4) {
+      video.addEventListener("timeupdate", syncLoop);
+    }
     video.addEventListener("ended", ensurePlaying);
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -206,7 +215,9 @@ function SiteBackgroundMobileVideo({ useMp4 }: { useMp4: boolean }) {
       video.removeEventListener("canplay", ensurePlaying);
       video.removeEventListener("playing", signalReadyOnce);
       video.removeEventListener("error", signalReadyOnce);
-      video.removeEventListener("timeupdate", syncLoop);
+      if (!useMp4) {
+        video.removeEventListener("timeupdate", syncLoop);
+      }
       video.removeEventListener("ended", ensurePlaying);
       document.removeEventListener("visibilitychange", onVisibility);
       heroObserver?.disconnect();
