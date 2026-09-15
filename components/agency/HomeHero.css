@@ -295,10 +295,11 @@
   #home-hero {
     /* Lower value = higher on screen — mobile-only resting wordmark. */
     --wordmark-rest-top: 5.5vh;
+    --hero-logo-width: 13.5rem;
   }
 
   .home-hero-backdrop__logo-slot {
-    --hero-logo-width: 6.75rem;
+    --hero-logo-width: 13.5rem;
     top: calc(var(--wordmark-rest-top, 5.5vh) + var(--wordmark-size, 3.2rem) + 0.55rem);
     bottom: auto;
     left: 50%;
@@ -309,8 +310,11 @@
   }
 
   .home-hero__grid {
-    /* Clear the wordmark + logo above, and the call orb + TABS below. */
-    padding-top: clamp(10.75rem, 28vh, 13.5rem);
+    /* Clear the wordmark + doubled logo above, and the call orb + TABS below. */
+    padding-top: calc(
+      var(--wordmark-rest-top, 5.5vh) + var(--wordmark-size, 3.2rem) + 0.55rem
+        + (13.5rem * 0.7253) + 1.1rem
+    );
     padding-bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 8.5rem);
     padding-inline: clamp(1.25rem, 5vw, 1.75rem);
     row-gap: 0.75rem;
