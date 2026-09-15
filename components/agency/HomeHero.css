@@ -287,11 +287,9 @@
 
 /* ---- Narrow ----
 
-   Below this breakpoint the hero drops the big-logo-on-the-right treatment
-   entirely: HomeHero still renders the backdrop/logo-slot markup, but
-   SiteLogoFixed only measures #home-hero-logo-slot when it's actually laid
-   out, so hiding it here makes SiteLogoFixed fall back to its normal
-   docked nav size/position throughout — same as every other page. */
+   Below this breakpoint the hero drops the big-logo-on-the-right treatment.
+   The logo still rests in the hero — centred under the wordmark, above the
+   first paragraph — then docks to the nav as the hero scrolls away. */
 
 @media (max-width: 820px) {
   #home-hero {
@@ -300,7 +298,14 @@
   }
 
   .home-hero-backdrop__logo-slot {
-    display: none;
+    --hero-logo-width: 6.75rem;
+    top: calc(var(--wordmark-rest-top, 5.5vh) + var(--wordmark-size, 3.2rem) + 0.55rem);
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    width: var(--hero-logo-width);
+    height: calc(var(--hero-logo-width) * 0.7253);
+    margin-left: calc(var(--hero-logo-width) / -2);
   }
 
   .home-hero__grid {

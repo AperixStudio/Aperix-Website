@@ -132,7 +132,7 @@ export default function IntroScreenSimple() {
         return;
       }
 
-      // Mobile / non-home: slot is display:none. Fly to the docked mark.
+      // Non-home: slot missing. Fly to the docked mark.
       const navEl = document.getElementById("site-logo-fixed");
       const rect = navEl?.getBoundingClientRect();
       if (rect && rect.width > 1) {

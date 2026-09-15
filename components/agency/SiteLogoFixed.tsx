@@ -47,10 +47,9 @@ const MOBILE_SHRINK_RANGE_PX = 220;
  * measurement still works. After the intro logo animates up and fades out,
  * this element is already in place at the correct (hero) position.
  *
- * On any page without a `#home-hero-logo-slot` marker (every page but the
- * home page, or the home page below the 820px breakpoint where the big-logo
- * hero treatment doesn't run — see HomeHero.css) this behaves exactly as it
- * always has: docked at nav size/position, with the old mobile scroll-shrink.
+ * On any page without a laid-out `#home-hero-logo-slot` (every page but
+ * home, or a slot with no box) this docks at nav size/position, with the
+ * original mobile scroll-shrink.
  *
  * `transform` is deliberately owned ENTIRELY by the imperative effect below
  * (`el.style.transform = ...`), never by React's `style` prop — if it were
@@ -101,8 +100,10 @@ function SiteLogoFixed() {
       const navTopY = NAV_TOP_REM * remPx;
       const heroSlot = document.getElementById("home-hero-logo-slot");
       const heroSection = document.getElementById("home-hero");
+      const slotRect = heroSlot?.getBoundingClientRect();
+      const slotLaidOut = Boolean(slotRect && slotRect.width > 1);
 
-      if (!heroSlot || !heroSection) {
+      if (!slotLaidOut || !heroSection) {
         // No hero on this page/breakpoint — docked at rest, same as before
         // this redesign, with the original scrollY-based mobile shrink.
         let scale = navScale;
@@ -114,7 +115,7 @@ function SiteLogoFixed() {
         return;
       }
 
-      const heroRect = heroSlot.getBoundingClientRect();
+      const heroRect = slotRect;
       const sectionRect = heroSection.getBoundingClientRect();
 
       // How far through the hero the user has scrolled: 0 at the top of the
