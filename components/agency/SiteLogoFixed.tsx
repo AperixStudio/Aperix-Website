@@ -15,15 +15,12 @@ const LOGO_ASPECT = 668.5 / 921.75;
 // keeps the WebGL canvas itself untouched across the whole journey (no
 // resize-driven redraw thrash), matching how IntroScreenSimple already flies
 // its own copy in via scale rather than by resizing it.
-// GPU canvas size only. Raising this does NOT make the on-screen logo
-// bigger — that is `--hero-logo-width` in HomeHero.css. Keep this under
-// ~2000 or phones clip the mark into a corner of its own box.
-const LOGO_HERO_SIZE = 1400;
+const LOGO_HERO_SIZE = 2000; // px — full render size the wrapper scales down from; matches the intro's own LOGO_HERO_SIZE and the hero's logo-slot cap (HomeHero.css)
 const LOGO_NAV_SIZE  = 352; // px-equivalent — docked nav size (unchanged from before)
 const NAV_SCALE = LOGO_NAV_SIZE / LOGO_HERO_SIZE;
 
 // Raised close to the very top of the viewport.
-const NAV_TOP_REM = 0.9;
+const NAV_TOP_REM = 0.25;
 
 // Mobile-only extra shrink once fully docked: scales down toward MIN_SCALE
 // over the first SHRINK_RANGE_PX of scroll *past the docking point* (or,
@@ -42,14 +39,14 @@ const MOBILE_SHRINK_RANGE_PX = 220;
  * compute the fly-to position, which is why that rect must already be the
  * *hero* rect at mount, not the nav rect.
  *
- * During the intro IntroScreenSimple sets this node's opacity to 0 so the
- * flying intro copy is the only visible mark. Opacity is restored at the
- * intro landing, then the intro copy unmounts on top of this same rect.
+ * During the intro the overlay (z-index 9997) covers this logo entirely,
+ * so there is no visual conflict. After the intro logo animates up and
+ * fades out, this element is already in place at the correct (hero) position.
  *
- * On any page without a laid-out `#home-hero-logo-slot` (every page but
- * home) this behaves as it always has: docked at nav size/position, with
- * the old mobile scroll-shrink. On home, the slot stays laid out at every
- * width — below the wordmark on small screens, right-weighted on desktop.
+ * On any page without a `#home-hero-logo-slot` marker (every page but the
+ * home page, or the home page below the 820px breakpoint where the big-logo
+ * hero treatment doesn't run — see HomeHero.css) this behaves exactly as it
+ * always has: docked at nav size/position, with the old mobile scroll-shrink.
  *
  * `transform` is deliberately owned ENTIRELY by the imperative effect below
  * (`el.style.transform = ...`), never by React's `style` prop — if it were
@@ -80,14 +77,10 @@ function SiteLogoFixed() {
       const navTopY = NAV_TOP_REM * remPx;
       const heroSlot = document.getElementById("home-hero-logo-slot");
       const heroSection = document.getElementById("home-hero");
-      const slotLaidOut = (heroSlot?.getBoundingClientRect().width ?? 0) > 1;
 
-      if (!heroSlot || !heroSection || !slotLaidOut) {
+      if (!heroSlot || !heroSection) {
         // No hero on this page/breakpoint — docked at rest, same as before
         // this redesign, with the original scrollY-based mobile shrink.
-        // display:none (the <=820px hero treatment) still leaves the node
-        // in the DOM with a zero rect, so width is the real "is it laid out"
-        // test — matching IntroScreenSimple's own slot check.
         let scale = NAV_SCALE;
         if (isMobile) {
           const t = Math.min(1, window.scrollY / MOBILE_SHRINK_RANGE_PX);
