@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState, type CSSProperties, MouseEvent } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import ArrowheadLogo3D from "@/components/agency/arrowhead/ArrowheadLogo3D";
 
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
@@ -24,7 +24,8 @@ type AnimatedLogoProps = {
  * The Aperix arrowhead mark, animating through its three-act WebGL sequence
  * (reveal → track → orbit) — same module and tuning as the hero deliverable.
  * Shared here so every place the mark appears (nav, fixed top logo, footer,
- * intro) is the same logo, not a lookalike.
+ * intro) is the same logo, not a lookalike. ArrowheadLogo3D falls back to
+ * the flat SVG only when WebGL itself is unavailable.
  */
 export default function AnimatedLogo({
   size = 34,
@@ -35,14 +36,6 @@ export default function AnimatedLogo({
   startAt,
 }: AnimatedLogoProps) {
   const height = Math.round(size * LOGO_ASPECT);
-  const [useWebGL, setUseWebGL] = useState(false);
-
-  useLayoutEffect(() => {
-    const mobile =
-      window.matchMedia("(max-width: 767px)").matches ||
-      window.matchMedia("(pointer: coarse)").matches;
-    setUseWebGL(!mobile);
-  }, []);
 
   return (
     <span
@@ -58,24 +51,12 @@ export default function AnimatedLogo({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {useWebGL ? (
-        <ArrowheadLogo3D
-          options={{ tilt: 0 }}
-          onReady={(handle) => {
-            if (startAt != null) handle?.seek(startAt);
-          }}
-        />
-      ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="/arrowhead-mark.svg"
-          alt=""
-          aria-hidden="true"
-          width={size}
-          height={height}
-          style={{ display: "block", width: "100%", height: "100%", objectFit: "contain" }}
-        />
-      )}
+      <ArrowheadLogo3D
+        options={{ tilt: 0 }}
+        onReady={(handle) => {
+          if (startAt != null) handle?.seek(startAt);
+        }}
+      />
     </span>
   );
 }
