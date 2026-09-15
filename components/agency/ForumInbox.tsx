@@ -14,51 +14,76 @@ type ForumPost = {
   body: string[];
 };
 
-// Placeholder posts — no forum backend wired up yet. Swap this array (or a
-// fetch) for real data once there's somewhere to write from.
 const FORUM_POSTS: ForumPost[] = [
   {
-    id: "welcome-to-the-forum",
-    title: "Welcome to the Aperix forum",
+    id: "how-we-plan-a-project",
+    title: "How we plan a project",
     author: "Aperix Studio",
-    date: "Sep 1, 2026",
-    tag: "Announcement",
-    snippet: "A place for build notes, launch write-ups, and things we've learned shipping client sites.",
-    body: [
-      "This is the first post in what will become a running log of build notes, launch write-ups, and small lessons picked up while shipping client work.",
-      "Nothing here is final yet — the layout, the categories, and the posts themselves are all placeholders while the real thing gets designed.",
-    ],
-  },
-  {
-    id: "how-we-scope-a-project",
-    title: "How we scope a new project",
-    author: "Aperix Studio",
-    date: "Aug 24, 2026",
+    date: "Sep 8, 2026",
     tag: "Process",
-    snippet: "A quick look at how a project moves from first enquiry to a signed-off scope.",
+    snippet:
+      "From the first message to a written scope, before anyone writes a line of code.",
     body: [
-      "Every project starts with a short discovery call, then a written scope covering pages, features, timeline, and price before any code is written.",
-      "This keeps expectations aligned on both sides and gives us a clear reference point for revisions later in the build.",
+      "Every project starts the same way. You send a note with whatever you have: a rough idea, a half finished brief, or a problem with the current site. It is always us two on the other end. No forms maze, no account manager.",
+      "The first call is for the business, not the design. We want to know who the customer is, what is falling short today, and what a good outcome looks like. Pages, features, timeline, and price get written down after that, before any code is written.",
+      "That written scope is the reference point for the rest of the build. It keeps both sides honest about what is in, what is out, and what a revision actually means later.",
+      "Before we lock anything in, we sketch the structure, flow, and feel. Sometimes that is a wireframe on screen. Sometimes it is a quick coded draft. We pick whichever helps both of us see if it is heading the right way.",
+      "Then we build the site, send a private staging link, work through feedback, and launch. After it is live we stay for handover, and we can keep looking after hosting and updates if you want us to. The same people who built it are the ones answering the messages.",
     ],
   },
   {
-    id: "notes-on-fast-sites",
-    title: "Notes on keeping sites fast",
+    id: "national-roofing-solutions",
+    title: "National Roofing Solutions: trust on the first screen",
     author: "Aperix Studio",
-    date: "Aug 12, 2026",
-    tag: "Engineering",
-    snippet: "A few of the defaults we reach for to keep hand-built sites loading quickly.",
+    date: "Sep 9, 2025",
+    tag: "Launch",
+    snippet:
+      "A local roofing site for urgent enquiries, built so trust and contact land before anything else.",
     body: [
-      "Custom-built sites start with an advantage over template platforms: no unused CSS, no plugin bloat, and full control over what actually ships to the browser.",
-      "From there it's the usual discipline — image optimisation, lazy-loading below the fold, and keeping the JavaScript bundle honest.",
+      "Roofing traffic is often urgent. A leak, a storm, a quote needed this week. The site had to feel local and trustworthy from the first screen, then make contact obvious.",
+      "National Roofing Solutions is based in Sunbury and services Melbourne's north west. We led with repairs, restorations, and replacements, and put trust signals up front so a first time visitor did not have to hunt for proof.",
+      "The typewriter hero is a service reminder, not decoration. It loops the work they actually do so the offer stays in view without adding clutter. Local SEO sat in the structure: service pages, location, and a contact path built for someone who needs a roofer, not a page stuffed with keywords.",
+      "We would front load trust again. For local trades, clarity and a direct contact path do more than a long explanation of the business.",
+      "Live at nationalroofing.com.au.",
+    ],
+  },
+  {
+    id: "complete-trade-solutions",
+    title: "Complete Trade Solutions: one site, a lot of trades",
+    author: "Aperix Studio",
+    date: "Jul 22, 2025",
+    tag: "Launch",
+    snippet:
+      "How we kept a multi service trades homepage scannable, with a quote path you can always find.",
+    body: [
+      "Kitchen renovations, roof restoration, painting, plumbing, electrical, cabinetry, and flooring. The risk with a business that broad is a homepage that feels like a pile of trades instead of one team.",
+      "We grouped the services so the page stayed scannable, then put a quote path where you could always see it. The intro animation is there to set the business up before the list starts, not to decorate the load.",
+      "Quote first mattered because most visitors already know they need work done. They are not browsing. They need to find their service and send an enquiry without hunting.",
+      "We would keep that structure on any multi service trades site. One capable team, a clear map of the work, and a quote path that does not hide.",
+      "Live at completetrade.au.",
+    ],
+  },
+  {
+    id: "the-hidden-chapter",
+    title: "The Hidden Chapter: making a shop feel like a gift",
+    author: "Aperix Studio",
+    date: "Feb 18, 2025",
+    tag: "Launch",
+    snippet:
+      "A mood led book shop where the first scroll has to feel like a gift, not a catalogue.",
+    body: [
+      "A blind date with a book store cannot look like a generic catalogue. The first scroll has to carry mood, mystery, and gifting, or people treat it like any other shop.",
+      "We led the homepage with story instead of a wall of books. Product still had to be easy to find, but the brand mood had to land before the grid did. That meant a warmer visual hierarchy and a product path that stayed short on mobile.",
+      "The constraint was keeping the shop feeling considered without slowing it down. Heavy imagery and a long browse flow would have killed the gift impulse. We kept the product journey tight so someone on a phone could move from curiosity to a purchase without digging.",
+      "We would do the story first homepage again. For a brand like this, the shop has to feel like a gift experience from the first screen, not a catalogue with nicer photos.",
+      "Live at thehiddenchapter.com.au.",
     ],
   },
 ];
 
 /**
- * Forum — inbox-style layout. A post list on the left, the selected post
- * expanded on the right, echoing an email client rather than a classic blog
- * grid. Placeholder content only; no backend yet.
+ * Forum inbox layout. A post list on the left, the selected post expanded
+ * on the right, echoing an email client rather than a classic blog grid.
  *
  * Below sm the two columns collapse into one: the list is the default view,
  * and picking a post swaps it for the detail pane full-width with a way
@@ -110,11 +135,11 @@ export default function ForumInbox() {
       </svg>
 
       <header className="pb-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-agency-muted">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/65">
           Forum
         </p>
-        <h1 className="mt-2 font-display text-2xl font-bold text-agency-ink sm:text-3xl">
-          Build notes &amp; write-ups
+        <h1 className="mt-2 font-display text-2xl font-bold text-white sm:text-3xl">
+          Build notes &amp; write ups
         </h1>
       </header>
 
@@ -139,12 +164,12 @@ export default function ForumInbox() {
                   <span className="forum-tag text-[10px] font-bold uppercase tracking-[0.14em] text-sky-300">
                     {post.tag}
                   </span>
-                  <span className="shrink-0 text-[11px] text-agency-muted">{post.date}</span>
+                  <span className="shrink-0 text-[11px] text-white/60">{post.date}</span>
                 </div>
-                <p className="mt-2 font-display text-sm font-semibold text-agency-ink">
+                <p className="mt-2 font-display text-sm font-semibold text-white">
                   {post.title}
                 </p>
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-agency-muted">
+                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/60">
                   {post.snippet}
                 </p>
               </button>
@@ -162,7 +187,7 @@ export default function ForumInbox() {
           <button
             type="button"
             onClick={() => setMobileShowDetail(false)}
-            className="forum-back-btn mb-4 flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-agency-muted transition-colors hover:text-agency-ink sm:hidden"
+            className="forum-back-btn mb-4 flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition-colors hover:text-white sm:hidden"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" />
@@ -173,14 +198,14 @@ export default function ForumInbox() {
           <span className="forum-tag w-fit text-[10px] font-bold uppercase tracking-[0.14em] text-sky-300">
             {selected.tag}
           </span>
-          <h2 className="mt-3 font-display text-xl font-bold text-agency-ink sm:text-2xl">
+          <h2 className="mt-3 font-display text-xl font-bold text-white sm:text-2xl">
             {selected.title}
           </h2>
-          <p className="mt-1.5 text-xs text-agency-muted">
+          <p className="mt-1.5 text-xs text-white/60">
             {selected.author} · {selected.date}
           </p>
 
-          <div className="mt-5 space-y-4 text-sm leading-relaxed text-agency-text-secondary">
+          <div className="mt-5 space-y-4 text-sm leading-relaxed text-white/90">
             {selected.body.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}

@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { memo, useLayoutEffect, useRef, useState } from "react";
-import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import AnimatedLogo, { ARROWHEAD_TRACK_AT_S } from "@/components/agency/AnimatedLogo";
+import { introHasPlayed } from "@/lib/introState";
+import { useIntroDone } from "@/lib/useIntroDone";
 
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — same constant AnimatedLogo
 // derives its own height from, kept in sync here for the vertical-centring
@@ -40,8 +42,10 @@ const MOBILE_SHRINK_RANGE_PX = 220;
  * *hero* rect at mount, not the nav rect.
  *
  * During the intro the overlay (z-index 9997) covers this logo entirely,
- * so there is no visual conflict. After the intro logo animates up and
- * fades out, this element is already in place at the correct (hero) position.
+ * so there is no visual conflict. The 2000px WebGL mark is not created until
+ * intro-done — the wrapper stays as a sized placeholder so fly-to
+ * measurement still works. After the intro logo animates up and fades out,
+ * this element is already in place at the correct (hero) position.
  *
  * On any page without a `#home-hero-logo-slot` marker (every page but the
  * home page, or the home page below the 820px breakpoint where the big-logo
@@ -60,6 +64,13 @@ function SiteLogoFixed() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const gpuSizeRef = useRef(LOGO_HERO_SIZE);
   const [gpuSize, setGpuSize] = useState<number | null>(null);
+  const introDone = useIntroDone();
+  // First-visit cinematic: skip the 2.2s assemble so the page mark matches
+  // the intro logo that just landed. SPA / already-played: mount with default autoplay.
+  const skipAssemble = useRef(!introHasPlayed);
+  const mountMark = introDone;
+  const startAt =
+    skipAssemble.current && mountMark ? ARROWHEAD_TRACK_AT_S : undefined;
 
   useLayoutEffect(() => {
     const mobile = window.matchMedia(MOBILE_QUERY).matches;
@@ -208,10 +219,13 @@ function SiteLogoFixed() {
     >
       <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
         {gpuSize != null ? (
-          <AnimatedLogo
-            size={gpuSize}
-            priority
+          <span
             style={{
+              position: "relative",
+              display: "inline-block",
+              width: gpuSize,
+              height: Math.round(gpuSize * LOGO_ASPECT),
+              overflow: "hidden",
               filter: "drop-shadow(0 0 8px rgba(14,165,233,0.4))",
               transition: "filter 0.2s ease",
             }}
@@ -221,7 +235,15 @@ function SiteLogoFixed() {
             onMouseLeave={(e) =>
               (e.currentTarget.style.filter = "drop-shadow(0 0 8px rgba(14,165,233,0.4))")
             }
-          />
+          >
+            {mountMark ? (
+              <AnimatedLogo
+                size={gpuSize}
+                priority
+                startAt={startAt}
+              />
+            ) : null}
+          </span>
         ) : null}
       </Link>
     </div>

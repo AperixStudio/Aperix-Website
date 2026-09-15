@@ -121,10 +121,13 @@ export default function CursorFollower() {
   useEffect(() => {
     if (!enabled) return;
 
+    const root = document.documentElement;
     const previousCursor = document.body.style.cursor;
+    root.dataset.cursorDot = "";
     document.body.style.cursor = "none";
 
     return () => {
+      delete root.dataset.cursorDot;
       document.body.style.cursor = previousCursor;
     };
   }, [enabled]);

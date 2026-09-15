@@ -6,6 +6,9 @@ import ArrowheadLogo3D from "@/components/agency/arrowhead/ArrowheadLogo3D";
 // arrowhead-mark.svg viewBox is 921.75 × 668.50 — height derives from this.
 const LOGO_ASPECT = 668.5 / 921.75;
 
+/** Seconds. Matches arrowhead-logo-3d DEFAULTS.trackAt — limbs are assembled. */
+export const ARROWHEAD_TRACK_AT_S = 3.4;
+
 type AnimatedLogoProps = {
   size?: number;
   className?: string;
@@ -13,6 +16,8 @@ type AnimatedLogoProps = {
   priority?: boolean;
   onMouseEnter?: (event: MouseEvent<HTMLSpanElement>) => void;
   onMouseLeave?: (event: MouseEvent<HTMLSpanElement>) => void;
+  /** Seek the 3D sequence here on mount (seconds). Skips the assemble at intro handoff. */
+  startAt?: number;
 };
 
 /**
@@ -27,6 +32,7 @@ export default function AnimatedLogo({
   style,
   onMouseEnter,
   onMouseLeave,
+  startAt,
 }: AnimatedLogoProps) {
   const height = Math.round(size * LOGO_ASPECT);
   const [useWebGL, setUseWebGL] = useState(false);
@@ -53,7 +59,12 @@ export default function AnimatedLogo({
       onMouseLeave={onMouseLeave}
     >
       {useWebGL ? (
-        <ArrowheadLogo3D options={{ tilt: 0 }} />
+        <ArrowheadLogo3D
+          options={{ tilt: 0 }}
+          onReady={(handle) => {
+            if (startAt != null) handle?.seek(startAt);
+          }}
+        />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img

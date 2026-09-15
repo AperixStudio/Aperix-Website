@@ -216,6 +216,13 @@ body {
   max-width: 100%;
 }
 
+/* Custom blue-dot cursor: hide the OS pointer on buttons, links, and
+   anything else that sets cursor: pointer in UA or component CSS. */
+html[data-cursor-dot],
+html[data-cursor-dot] * {
+  cursor: none !important;
+}
+
 h1,
 h2,
 h3,

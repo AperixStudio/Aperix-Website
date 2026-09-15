@@ -1,7 +1,9 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import HashLink from "@/components/agency/HashLink";
+import { useIntroDone } from "@/lib/useIntroDone";
 import "./BubbleNav.css";
 
 const NAV_LINKS = [
@@ -23,6 +25,10 @@ function scrollToTop() {
  * Hover/focus: expands to reveal site links, each with a per-letter glitch on
  * hover, plus a small "back to top" chevron floating above centre.
  *
+ * Portalled to document.body so its z-index stacks against SiteLogoFixed
+ * (also a body-level sibling). Inside #aperix-page the 2000px hero logo
+ * canvas sits on top of the TABS label and eats hover.
+ *
  * The shell (not the pill) owns the fixed positioning and hover/focus-within
  * triggers. That's what lets the chevron sit outside the pill's own
  * overflow:hidden — needed so the width transition doesn't clip it — while
@@ -42,7 +48,13 @@ function scrollToTop() {
  */
 export default function BubbleNav() {
   const [open, setOpen] = useState(false);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+  const introDone = useIntroDone();
   const shellRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
 
   const openPill = useCallback(
     (event: React.MouseEvent) => {
@@ -79,7 +91,9 @@ export default function BubbleNav() {
     };
   }, [open]);
 
-  return (
+  if (!portalTarget || !introDone) return null;
+
+  return createPortal(
     <div
       ref={shellRef}
       className={`bubble-nav-shell${open ? " is-open" : ""}`}
@@ -137,6 +151,7 @@ export default function BubbleNav() {
           <path d="M6 15l6-6 6 6" />
         </svg>
       </button>
-    </div>
+    </div>,
+    portalTarget,
   );
 }

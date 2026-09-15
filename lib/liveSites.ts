@@ -91,7 +91,7 @@ export const LIVE_SITES = [
   },
   {
     name: "Complete Trade Solutions",
-    href: "https://completetradesolutions.netlify.app/",
+    href: "https://www.completetrade.au/",
     previewVideo: "/CSPreview.webm",
     previewVideoTile: "/CSPreviewTile.webm",
     previewVideoTileMp4: "/CSPreviewTile.mp4",
@@ -122,7 +122,7 @@ export const LIVE_SITES = [
   },
   {
     name: "National Roofing Solutions",
-    href: "https://nationalroofingsolutions.netlify.app/",
+    href: "https://www.nationalroofing.com.au/",
     previewVideo: "/NRSPreview.webm",
     previewVideoTile: "/NRSPreviewTile.webm",
     previewVideoTileMp4: "/NRSPreviewTile.mp4",

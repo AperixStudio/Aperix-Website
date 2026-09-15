@@ -93,6 +93,13 @@
 
 /* ---- Content layer ---- */
 
+/* Full-viewport overlay at z-index 201 (set inline) so copy sits in front
+   of the fixed logo. It must not eat pointer events in the empty regions —
+   that's where the TABS pill lives. Interactive children opt back in. */
+.home-hero {
+  pointer-events: none;
+}
+
 .home-hero__grid {
   position: absolute;
   inset: 0;
@@ -183,6 +190,7 @@
   justify-content: flex-start;
   overflow: visible;
   z-index: 2;
+  pointer-events: auto;
 }
 
 /* ---- Ambient orbs (over video, under copy) ---- */

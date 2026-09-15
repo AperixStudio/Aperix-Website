@@ -6,7 +6,7 @@ import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Forum | Aperix Studio",
-  description: "Build notes and write-ups from Aperix Studio.",
+  description: "Build notes and write ups from Aperix Studio.",
   path: "/forum",
 });
 

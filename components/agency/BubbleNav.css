@@ -8,7 +8,10 @@
   bottom: var(--bubble-nav-bottom, 2rem);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 200;
+  /* Above .home-hero (z-index 201) and SiteLogoFixed (200). Those layers
+     are full-viewport overlays in the hero, so a matching 200 left this
+     pill unhoverable until the user scrolled it out from under them. */
+  z-index: 400;
 
   display: flex;
   flex-direction: column;

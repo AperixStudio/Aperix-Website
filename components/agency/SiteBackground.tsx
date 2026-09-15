@@ -7,6 +7,7 @@ import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { signalIntroBackgroundReady } from "@/lib/introAssets";
 import { introHasPlayed, onIntroDone } from "@/components/animations/IntroScreen";
+import { useIntroDone } from "@/lib/useIntroDone";
 import "./SiteBackground.css";
 
 const BG_UNICORN_JSON = "/unicorn/aperixbg_scene.json";
@@ -261,10 +262,13 @@ function SiteBackgroundStaticVideo({ useMp4 }: { useMp4: boolean }) {
 export default function SiteBackground() {
   const { isMobile: isNarrowViewport, ready } = useNarrowViewport();
   const prefersReduced = useReducedMotion();
+  const introDone = useIntroDone();
   const useMp4 = useMp4BackgroundPreference();
 
   const useVideoBackground = ready && isNarrowViewport && !prefersReduced;
   const useStaticBackground = ready && isNarrowViewport && prefersReduced;
+  const useUnicornBackground =
+    ready && !useVideoBackground && !useStaticBackground && introDone;
 
   useEffect(() => {
     if (prefersReduced) {
@@ -272,11 +276,42 @@ export default function SiteBackground() {
     }
   }, [prefersReduced]);
 
+  // Warm the Unicorn JSON during the splash so the scene can appear quickly
+  // after the fly — same pattern as HeroV4. Do not mount the WebGL scene
+  // until intro-done; the cover is opaque and a second GPU context hitches
+  // the visible logo assemble. Signal background-ready after the fetch so
+  // the legacy /current intro gate is not stuck waiting on onLoad.
+  useEffect(() => {
+    if (!ready || prefersReduced || isNarrowViewport || introDone) {
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const preload = async () => {
+      try {
+        await fetch(BG_UNICORN_JSON, { cache: "force-cache" });
+      } catch {
+        /* scene will fetch again on mount */
+      }
+
+      if (!cancelled) {
+        signalIntroBackgroundReady();
+      }
+    };
+
+    void preload();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, prefersReduced, isNarrowViewport, introDone]);
+
   return (
     <div className="site-bg" aria-hidden="true">
       {useVideoBackground ? <SiteBackgroundMobileVideo useMp4={useMp4} /> : null}
       {useStaticBackground ? <SiteBackgroundStaticVideo useMp4={useMp4} /> : null}
-      {!useVideoBackground && !useStaticBackground && ready ? <SiteBackgroundUnicorn /> : null}
+      {useUnicornBackground ? <SiteBackgroundUnicorn /> : null}
     </div>
   );
 }
