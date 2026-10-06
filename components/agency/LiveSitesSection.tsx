@@ -4,7 +4,8 @@ import { useState, useCallback, useRef, useEffect, type CSSProperties } from "re
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/animations";
-import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import LiveSiteIframe from "@/components/agency/LiveSiteIframe";
+import { LIVE_SITES, liveEmbedSrc, previewImage, usesLiveTile, type LiveSite } from "@/lib/liveSites";
 import { cn } from "@/lib/utils";
 import "./LiveSitesSection.css";
 
@@ -68,6 +69,10 @@ const STEP_DEG = 22;
 const CARD_FAN_X = 24;
 const DRAG_THRESHOLD = 60;
 
+function showsLiveIframe(site: Site) {
+  return usesLiveTile(site) || !previewImage(site);
+}
+
 function getOffset(index: number, active: number): number {
   let offset = (index - active + TOTAL) % TOTAL;
   if (offset > TOTAL / 2) offset -= TOTAL;
@@ -83,6 +88,7 @@ function CaseStudyModal({
 }) {
   const siteIndex = LIVE_SITES.findIndex((item) => item.name === site.name);
   const theme = CARD_THEMES[siteIndex >= 0 ? siteIndex % CARD_THEMES.length : 0];
+  const image = previewImage(site);
 
   return (
     <motion.div
@@ -192,24 +198,21 @@ function CaseStudyModal({
             <div className="space-y-5">
               <div className="overflow-hidden rounded-3xl border border-agency-border bg-agency-surface shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
                 <div className="relative h-96 w-full overflow-hidden border-t border-agency-border bg-agency-bg">
-                  {"preview" in site && site.preview ? (
+                  {image ? (
                     <img
-                      src={site.preview}
+                      src={image}
                       alt={`Preview of ${site.name}`}
                       className="absolute inset-0 h-full w-full object-cover object-top"
                     />
-                  ) : (
-                    <iframe
-                      src={site.href}
+                  ) : null}
+                  {showsLiveIframe(site) ? (
+                    <LiveSiteIframe
+                      src={liveEmbedSrc(site)}
                       title={`Preview of ${site.name}`}
                       className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
                       style={{ transform: "scale(0.42)", transformOrigin: "top left" }}
-                      loading="lazy"
-                      tabIndex={-1}
-                      aria-hidden="true"
-                      sandbox="allow-scripts allow-same-origin"
                     />
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -326,47 +329,40 @@ function ProjectCard({
         </div>
         {/* Live preview */}
         <div className="live-sites-card__preview relative h-44 w-full overflow-hidden">
-          {"preview" in site && site.preview ? (
+          {previewImage(site) ? (
             <img
-              src={site.preview}
+              src={previewImage(site)}
               alt={`Preview of ${site.name}`}
               className="absolute inset-0 h-full w-full object-cover object-top"
               loading="lazy"
               aria-hidden="true"
             />
           ) : (
-            <>
-              {/* Static placeholder — shown for every card except the live front card.
-                  Keeps the deck cheap to composite: only the active iframe ever paints. */}
-              <div
-                aria-hidden="true"
-                className="live-sites-card__preview-placeholder absolute inset-0 flex items-center justify-center"
-              >
-                <span className="text-[11px] font-medium uppercase tracking-[0.16em]">
-                  Live preview
-                </span>
-              </div>
-              {/* Mount the iframe only once a card has been the active card, then keep
-                  it mounted (no reload flash on swipe-back) but only PAINT it while it
-                  is the front card via `visibility`. */}
-              {hasMounted ? (
-                <iframe
-                  src={site.href}
-                  title={`Preview of ${site.name}`}
-                  className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
-                  style={{
-                    transform: "scale(0.235)",
-                    transformOrigin: "top left",
-                    visibility: isActive ? "visible" : "hidden",
-                  }}
-                  loading="lazy"
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  sandbox="allow-scripts allow-same-origin"
-                />
-              ) : null}
-            </>
+            <div
+              aria-hidden="true"
+              className="live-sites-card__preview-placeholder absolute inset-0 flex items-center justify-center"
+            >
+              <span className="text-[11px] font-medium uppercase tracking-[0.16em]">
+                Live preview
+              </span>
+            </div>
           )}
+          {/* Mount the iframe only once a card has been the active card, then keep
+              it mounted (no reload flash on swipe-back) but only PAINT it while it
+              is the front card via `visibility`. liveTile sites take this path
+              even when a fallback PNG is present. */}
+          {showsLiveIframe(site) && hasMounted ? (
+            <LiveSiteIframe
+              src={liveEmbedSrc(site)}
+              title={`Preview of ${site.name}`}
+              className="pointer-events-none absolute left-0 top-0 h-225 w-360 origin-top-left select-none"
+              style={{
+                transform: "scale(0.235)",
+                transformOrigin: "top left",
+                visibility: isActive ? "visible" : "hidden",
+              }}
+            />
+          ) : null}
         </div>
 
         {/* Visit button */}

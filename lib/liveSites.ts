@@ -63,7 +63,9 @@ export const LIVE_SITES = [
   },
   {
     name: "POV Sync",
-    href: "https://pov-sync.onrender.com/",
+    href: "https://povsync.netlify.app/",
+    liveTile: true,
+    liveEmbedPath: "/live-previews/povsync/",
     location: "Web app",
     status: "Live now",
     label: "SaaS / streaming product",
@@ -153,3 +155,17 @@ export const LIVE_SITES = [
   },
 ] as const;
 export type LiveSite = (typeof LIVE_SITES)[number];
+
+export function usesLiveTile(site: LiveSite): boolean {
+  return "liveTile" in site && Boolean(site.liveTile);
+}
+
+export function previewImage(site: LiveSite): string | undefined {
+  return "preview" in site ? site.preview : undefined;
+}
+
+/** Iframe src. Proxied paths dodge the remote site's frame-ancestors lock. */
+export function liveEmbedSrc(site: LiveSite): string {
+  if ("liveEmbedPath" in site && site.liveEmbedPath) return site.liveEmbedPath;
+  return site.href;
+}

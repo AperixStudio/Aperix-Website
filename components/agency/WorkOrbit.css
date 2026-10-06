@@ -50,11 +50,11 @@
   visibility: hidden;
   transform-origin: center;
   will-change: transform;
-  /* Depth cue: far side of the ring sits back in the haze. */
-  filter: brightness(calc(0.52 + 0.48 * var(--orbit-depth, 1)));
+  isolation: isolate;
 }
 
 .work-orbit__card {
+  position: relative;
   height: 100%;
   width: 100%;
   border-radius: 14px;
@@ -64,6 +64,18 @@
      abstract gradients. */
   transform: none;
   box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.95);
+}
+
+/* Dim far cards with an overlay, not `filter` — CSS filter on a slot that
+   is matrix-transformed every frame blanks <iframe> live previews. */
+.work-orbit__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  background: rgb(0 0 0 / calc(0.48 * (1 - var(--orbit-depth, 1))));
 }
 
 .work-orbit__slot[data-mirrored="true"] .work-orbit__card {

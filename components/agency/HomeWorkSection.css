@@ -246,6 +246,19 @@
   width: 100%;
   overflow: hidden;
   background: var(--work-navy);
+  container-type: inline-size;
+}
+
+.home-work__tile-iframe {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  width: 400%;
+  height: 400%;
+  border: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  transform: scale(0.25);
 }
 
 .home-work__tile-el {

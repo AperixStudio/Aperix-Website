@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import { LIVE_SITES, liveEmbedSrc, previewImage, usesLiveTile, type LiveSite } from "@/lib/liveSites";
 import { useInView } from "@/lib/useInView";
 import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import WorkOrbit, { type WorkOrbitItem } from "@/components/agency/WorkOrbit";
 import { WORK_ORBIT_NARROW, WORK_ORBIT_WIDE } from "@/lib/workOrbit";
+import LiveSiteIframe from "@/components/agency/LiveSiteIframe";
 import WorkPixelFade from "@/components/agency/WorkPixelFade";
 import {
   MorphingDialog,
@@ -49,12 +50,13 @@ function mediaFor(site: LiveSite) {
   const tileVideo = "previewVideoTile" in site ? site.previewVideoTile : video;
   const tileVideoMp4 =
     "previewVideoTileMp4" in site ? site.previewVideoTileMp4 : videoMp4;
-  const image = "preview" in site ? site.preview : undefined;
-  return { video, videoMp4, tileVideo, tileVideoMp4, image };
+  const image = previewImage(site);
+  const liveTile = usesLiveTile(site);
+  return { video, videoMp4, tileVideo, tileVideoMp4, image, liveTile };
 }
 
 function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
-  const { video, videoMp4, tileVideo, tileVideoMp4, image } = mediaFor(site);
+  const { video, videoMp4, tileVideo, tileVideoMp4, image, liveTile } = mediaFor(site);
   const mediaRef = useRef<HTMLDivElement>(null);
   // The marquee duplicates its children, so roughly half the tiles sit
   // off-screen at any moment. Decoding those is pure waste.
@@ -69,7 +71,28 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
         className="home-work__tile"
       >
         <div className="home-work__tile-media" ref={mediaRef}>
-          {tileVideo ? (
+          {liveTile ? (
+            <>
+              {image ? (
+                <MorphingDialogImage
+                  src={image}
+                  alt={`Preview of the ${site.name} website`}
+                  className="home-work__tile-el"
+                />
+              ) : (
+                <div className="home-work__tile-placeholder" aria-hidden="true">
+                  Live site
+                </div>
+              )}
+              {playing || onScreen ? (
+                <LiveSiteIframe
+                  src={liveEmbedSrc(site)}
+                  title={`Live preview of ${site.name}`}
+                  className="home-work__tile-iframe"
+                />
+              ) : null}
+            </>
+          ) : tileVideo ? (
             <MorphingDialogVideo
               src={tileVideo}
               fallbackSrc={tileVideoMp4}
@@ -211,7 +234,11 @@ export default function HomeWorkSection() {
   const { isMobile: isNarrow } = useNarrowViewport();
   // A full wide ring is 10 <video> elements. Keep them all paused until the
   // section is actually on screen.
-  const sectionInView = useInView(sectionRef, { rootMargin: "15% 0px", threshold: 0 });
+  const sectionInView = useInView(sectionRef, {
+    rootMargin: "15% 0px",
+    threshold: 0,
+    initialInView: true,
+  });
   const playing = sectionInView && !prefersReducedMotion;
 
   const lede = (
