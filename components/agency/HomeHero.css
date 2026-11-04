@@ -106,16 +106,14 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  /* Explicit rows rather than a centred stack: the fr spacers are what set
-     the diagonal, dropping the second paragraph into the lower right instead
-     of letting both paragraphs bunch around the middle of the panel. */
+  /* The team sentence sits with the lead. The closer is taken out of
+     this grid on desktop and pinned above the TABS pill. */
   grid-template-rows:
-    minmax(0, 0.8fr) /* 1 — head space under the raised fixed logo */
-    auto /* 2 — rule   */
-    auto /* 3 — lead   */
-    minmax(0, 1fr) /* 4 — the step across */
-    auto /* 5 — second paragraph */
-    minmax(0, 0.5fr); /* 6 — tail above the baseline */
+    minmax(0, 0.7fr) /* 1 — head space under the raised fixed logo */
+    auto /* 2 — rule */
+    auto /* 3 — lead */
+    auto /* 4 — team sentence */
+    minmax(0, 1fr); /* 5 — open field under the copy */
   column-gap: clamp(1rem, 2vw, 2rem);
   row-gap: clamp(0.5rem, 1.4vh, 1rem);
   width: 100%;
@@ -144,9 +142,8 @@
   transform-origin: left center;
 }
 
-/* The lead statement, promoted to the page's h1. Extended further right
-   than before so it reads as floating in front of the big logo, not just
-   beside it. */
+/* The page's only h1. Extended further right than a narrow column so it
+   reads as floating in front of the big logo, not just beside it. */
 .home-hero__lead {
   grid-area: 3 / 1 / 4 / 10;
   margin: clamp(0.75rem, 1.8vh, 1.5rem) 0 0;
@@ -160,37 +157,48 @@
   text-shadow: 0 2px 24px rgba(2, 8, 18, 0.65);
 }
 
-/* Stepped down and across, at body scale — the second read, not a second
-   headline. Reaches the right edge, over the logo. */
-.home-hero__sub {
-  grid-area: 5 / 6 / 6 / 13;
+.home-hero__sub,
+.home-hero__close {
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(0.85rem, 1.05vw, 0.98rem);
   font-weight: 400;
-  line-height: 1.8;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.7);
   text-shadow: 0 2px 20px rgba(2, 8, 18, 0.65);
+}
+
+/* Under the Melbourne line, left of the logo. */
+.home-hero__sub {
+  grid-area: 4 / 1 / 5 / 7;
+  max-width: 42ch;
+  margin-top: clamp(0.35rem, 0.8vh, 0.65rem);
+  font-size: clamp(0.85rem, 1.05vw, 0.98rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.home-hero__close {
+  font-size: clamp(0.78rem, 0.92vw, 0.88rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* Pinned above the pill, in the dark to its left. The pill's top is
+   --bubble-nav-bottom plus its own 3rem height. Drift stays on the
+   paragraph, so this slot does not use transform. */
+@media (min-width: 821px) {
+  .home-hero__close-slot {
+    position: absolute;
+    right: calc(50% + 3.75rem);
+    bottom: calc(var(--bubble-nav-bottom, 6rem) + 3rem + 1.5rem);
+    width: min(36ch, 42vw);
+    z-index: 2;
+  }
 }
 
 .home-hero__you {
   color: #ffffff;
   font-weight: 600;
   text-shadow: 0 0 18px rgba(14, 165, 233, 0.55);
-}
-
-/* AI receptionist teaser — bottom left, clear of baseline cue and logo. */
-.home-hero__ai-demo.hero-orb {
-  position: absolute;
-  left: clamp(1.5rem, 5vw, 4.5rem);
-  bottom: clamp(4.25rem, 10.5vh, 6.75rem);
-  width: 12.5rem;
-  max-width: 12.5rem;
-  justify-content: flex-start;
-  overflow: visible;
-  z-index: 2;
-  pointer-events: auto;
 }
 
 /* ---- Ambient orbs (over video, under copy) ---- */
@@ -329,8 +337,8 @@
     margin-top: 0;
   }
 
-  /* Fill the band between the logo and the orb; even space above,
-     between, and below the two paragraphs. */
+  /* Fill the band under the logo; even space above,
+     between, and below the headline and the supporting copy. */
   .home-hero__copy {
     grid-area: 2 / 1 / 3 / 13;
     display: flex;
@@ -347,33 +355,28 @@
   }
 
   .home-hero__lead,
-  .home-hero__sub {
+  .home-hero__sub,
+  .home-hero__close {
     grid-area: auto;
+    justify-self: stretch;
     margin: 0;
     max-width: 100%;
-  }
-
-  .home-hero__ai-demo.hero-orb {
-    left: 50%;
-    margin-left: -4rem;
-    bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 1.25rem);
-    width: 8rem;
-    max-width: 8rem;
   }
 }
 
 /* ---- Short ---- */
 
-@media (max-height: 660px) {
-  .home-hero__ai-demo.hero-orb {
-    bottom: calc(var(--bubble-nav-bottom, 2rem) + 3rem + 1rem);
-  }
-}
-
 @media (min-width: 821px) and (max-height: 660px) {
   .home-hero__grid {
     padding-block: clamp(3rem, 8vh, 4.25rem) clamp(2.5rem, 7vh, 4rem);
     row-gap: clamp(0.75rem, 2vh, 1.5rem);
+  }
+}
+
+/* The logo tip drops into the closer's band below this height. */
+@media (min-width: 821px) and (max-height: 760px) {
+  .home-hero__close-slot {
+    right: calc(50% + 7.5rem);
   }
 }
 

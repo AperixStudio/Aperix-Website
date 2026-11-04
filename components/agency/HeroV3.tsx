@@ -56,7 +56,7 @@ const HERO_KICKER = "Two-person team · Melbourne";
 const HERO_TITLE_LINES = ["Web developer", "& SaaS", "studio."];
 const HERO_TITLE = HERO_TITLE_LINES.join(" ");
 const HERO_BODY =
-  "We're two developers in Melbourne — hand-coding websites, web apps, and SaaS products. Landing page or full platform, side project or serious build — if it's worth making well, we're in.";
+  "We're two developers in Melbourne, hand-coding websites, web apps, and SaaS products. Landing page or full platform, side project or serious build. If it's worth making well, we're in.";
 const HERO_META = ["Melbourne", "2-person team", "Any size project"];
 
 function readHeroScrollMetrics() {

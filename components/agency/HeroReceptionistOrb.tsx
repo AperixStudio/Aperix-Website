@@ -23,7 +23,7 @@ const APERIX_CALL_HREF = "tel:+61399624119";
 const SCRIPT: Line[] = [
   {
     from: "ai",
-    text: "Hi, welcome to Aperix — I'm Bec, our AI assistant. How can I help you today?",
+    text: "Hi, welcome to Aperix. I'm Bec, our AI assistant. How can I help you today?",
   },
   { from: "ai", text: "Yes, we have available time tomorrow." },
   { from: "ai", text: "Would you like to book a call at 11am?" },
@@ -152,11 +152,13 @@ function setCaptionLayerVisibility(
 }
 
 export default function HeroReceptionistOrb({
-  show,
-  floating,
+  show = true,
+  floating = false,
 }: {
-  show: boolean;
-  floating: boolean;
+  /** Fade the widget in. Defaults on so it can sit outside the hero reveal. */
+  show?: boolean;
+  /** Same watery drift as the hero copy. Off until a parent opts in. */
+  floating?: boolean;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const isMobileOrb = useSyncExternalStore(
@@ -249,7 +251,7 @@ export default function HeroReceptionistOrb({
 
   return (
     <motion.div
-      className="home-hero__ai-demo hero-orb"
+      className="hero-orb"
       initial={{ opacity: 0, y: 12 }}
       animate={floatMotion}
       transition={
@@ -263,7 +265,7 @@ export default function HeroReceptionistOrb({
         className={`hero-orb__stage${hovering ? " is-preview" : " is-idle"}${prefersReducedMotion ? " no-motion" : ""}`}
         onMouseEnter={startPreview}
         onMouseLeave={stopPreview}
-        aria-label="Call Aperix on +61 3 9962 4119 — hover to preview Bec, our AI assistant"
+        aria-label="Call Aperix on +61 3 9962 4119. Hover to preview Bec, our AI assistant"
       >
         <HeroOrbParticles formed={hovering} compact={isMobileOrb} />
 

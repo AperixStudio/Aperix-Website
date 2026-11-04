@@ -208,7 +208,7 @@ export default function HeroV2() {
               </h1>
 
               <p className="mt-6 max-w-md text-sm leading-relaxed text-agency-muted sm:text-base">
-                Hand-coded websites and software for Melbourne businesses — fast
+                Hand-coded websites and software for Melbourne businesses. Fast
                 turnaround, no templates, ongoing support.
               </p>
 

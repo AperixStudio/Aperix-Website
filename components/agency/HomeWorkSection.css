@@ -351,7 +351,9 @@
     0 0 0 1px rgba(125, 211, 252, 0.14),
     0 30px 70px -20px rgba(3, 14, 28, 0.9),
     0 0 90px -20px rgba(125, 211, 252, 0.35);
-  color: var(--work-text);
+  /* Portaled to document.body, outside .home-band, so the section tokens
+     are not in scope here. Set the copy directly or it inherits body ink. */
+  color: #ffffff;
 }
 
 .home-work__dialog-media {
@@ -382,7 +384,7 @@
   border-radius: 999px;
   border: 1px solid rgba(190, 224, 255, 0.35);
   background: rgba(11, 40, 70, 0.9);
-  color: var(--work-text);
+  color: #ffffff;
   font-size: 0.78rem;
   font-weight: 650;
   opacity: 0;
@@ -439,12 +441,13 @@
   font-size: clamp(1.35rem, 3vw, 1.75rem);
   font-weight: 700;
   line-height: 1.15;
+  color: #ffffff;
 }
 
 .home-work__dialog-label {
   margin-top: 0.3rem;
   font-size: 0.82rem;
-  color: var(--work-muted);
+  color: #ffffff;
 }
 
 /* Label beside the text rather than above it — the same three points in
@@ -464,7 +467,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--work-accent);
+  color: #ffffff;
   padding-top: 0.15rem;
 }
 
@@ -472,7 +475,7 @@
   margin: 0;
   font-size: 0.86rem;
   line-height: 1.5;
-  color: var(--work-muted);
+  color: #ffffff;
 }
 
 .home-work__dialog-close {

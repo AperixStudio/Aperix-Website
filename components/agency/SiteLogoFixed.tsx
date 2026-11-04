@@ -251,7 +251,7 @@ function SiteLogoFixed() {
         zIndex: 200,
       }}
     >
-      <Link href="/" onClick={handleClick} aria-label="Aperix — back to home">
+      <Link href="/" onClick={handleClick} aria-label="Aperix, back to home">
         {gpuSize != null ? (
           <span
             style={{

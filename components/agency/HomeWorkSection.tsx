@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import { CAROUSEL_SITES, type LiveSite } from "@/lib/liveSites";
 import { useInView } from "@/lib/useInView";
 import { useNarrowViewport } from "@/lib/useMobileViewport";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -202,14 +202,14 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
  * never visible twice on the near face. The narrow ring has room for one lap,
  * so it carries each project once.
  */
-const ORBIT_SITES_WIDE = [...LIVE_SITES, ...LIVE_SITES];
-const ORBIT_SITES_NARROW = [...LIVE_SITES];
+const ORBIT_SITES_WIDE = [...CAROUSEL_SITES, ...CAROUSEL_SITES];
+const ORBIT_SITES_NARROW = [...CAROUSEL_SITES];
 
 export default function HomeWorkSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { isMobile: isNarrow } = useNarrowViewport();
-  // A full wide ring is 10 <video> elements. Keep them all paused until the
+  // A full wide ring is 10 cards. Keep them all paused until the
   // section is actually on screen.
   const sectionInView = useInView(sectionRef, { rootMargin: "15% 0px", threshold: 0 });
   const playing = sectionInView && !prefersReducedMotion;
@@ -263,7 +263,7 @@ export default function HomeWorkSection() {
               the same cards as a plain strip the reader drives themselves. */}
           <div className="home-work__marquee">
             <div className="home-work__static-rows">
-              {LIVE_SITES.map((site) => (
+              {CAROUSEL_SITES.map((site) => (
                 <WorkTile key={site.name} site={site} playing={playing} />
               ))}
             </div>

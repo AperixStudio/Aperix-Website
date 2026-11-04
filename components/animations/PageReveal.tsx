@@ -51,7 +51,10 @@ export default function PageReveal({ children }: { children: React.ReactNode }) 
     <div
       id="aperix-page"
       ref={wrapRef}
-      style={isDevRoute ? undefined : { opacity: 0, visibility: "hidden" }}
+      // Opacity-only hide: crawlers (and `innerText`) ignore
+      // `visibility: hidden` and treat the page as empty. The intro cover
+      // already blocks the visual flash for people.
+      style={isDevRoute ? undefined : { opacity: 0 }}
     >
       {children}
     </div>

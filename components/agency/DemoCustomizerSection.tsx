@@ -38,7 +38,7 @@ const DEMO_OPTIONS = [
 
 const STEPS = [
   "Open the demo that feels closest to your business.",
-  "Make a note of what you like — layout, colours, sections, wording, or flow.",
+  "Make a note of what you like: layout, colours, sections, wording, or flow.",
   "Send us the links and your notes, and we’ll shape the final direction around that.",
 ] as const;
 
@@ -169,7 +169,7 @@ export default function DemoCustomizerSection() {
 
         <Reveal className="mt-10 flex flex-col gap-4 rounded-4xl border border-agency-border bg-agency-bg px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="max-w-3xl text-sm leading-relaxed text-agency-muted sm:text-base">
-            You can mix ideas across demos too — the layout from one, the tone from another,
+            You can mix ideas across demos too: the layout from one, the tone from another,
             and the content structure from a third. We use that input to shape something that
             suits your business, not to copy a template page for page.
           </p>

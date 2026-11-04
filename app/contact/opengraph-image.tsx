@@ -8,7 +8,7 @@ export const contentType = OG_IMAGE_CONTENT_TYPE;
 
 export default function ContactOpenGraphImage() {
   return new ImageResponse(
-    <AperixOgImage title="Contact" subtitle="Melbourne web studio — say hello" />,
+    <AperixOgImage title="Contact" subtitle="Melbourne web studio. Say hello" />,
     { ...size },
   );
 }

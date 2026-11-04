@@ -11,7 +11,7 @@ type Line = { from: "caller" | "ai"; text: string };
 // checks availability, books it, confirms) without needing a real backend.
 const SCRIPT: Line[] = [
   { from: "caller", text: "Hi, do you have anything free this Saturday?" },
-  { from: "ai", text: "Let me check... I've got 10am or 2pm open — which suits you?" },
+  { from: "ai", text: "Let me check... I've got 10am or 2pm open. Which suits you?" },
   { from: "caller", text: "2pm works great." },
   { from: "ai", text: "You're booked for 2pm Saturday. Confirmation is on its way." },
 ];
@@ -92,7 +92,7 @@ export default function HeroAIReceptionistDemo({ show }: { show: boolean }) {
     >
       <div className="hero-ai-demo__head">
         <span className="hero-ai-demo__dot" aria-hidden="true" />
-        <span className="hero-ai-demo__label">AI Receptionist — live demo</span>
+        <span className="hero-ai-demo__label">AI Receptionist: live demo</span>
       </div>
 
       <div className="hero-ai-demo__thread" aria-hidden="true">

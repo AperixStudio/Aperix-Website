@@ -144,6 +144,50 @@ export const SERVICE_TIERS: ServiceTierContent[] = [
   },
 ];
 
+export type StudioService = {
+  id: string;
+  name: string;
+  summary: string;
+  /** Short lines under the summary. Add or remove freely. */
+  covers: string[];
+};
+
+/**
+ * Services shown on /services, in display order.
+ * Add another object to this list and it appears on the page.
+ * Numbering is automatic.
+ */
+export const STUDIO_SERVICES: StudioService[] = [
+  {
+    id: "web-design",
+    name: "Web design",
+    summary:
+      "Hand-coded websites for service businesses, shops, and brands that need a site with a point of view. No templates, and no WordPress.",
+    covers: ["Service businesses", "E-commerce", "Landing pages"],
+  },
+  {
+    id: "web-apps",
+    name: "Web apps & SaaS",
+    summary:
+      "Products people log into. The site, the onboarding, and the product itself, built as one piece rather than a theme with a login attached.",
+    covers: ["SaaS products", "Onboarding", "Dashboards"],
+  },
+  {
+    id: "software",
+    name: "Software development",
+    summary:
+      "Bespoke software for the way a business actually runs. Tools, portals, and the work a marketing site was never meant to carry.",
+    covers: ["Custom software", "Internal tools", "Client portals"],
+  },
+  {
+    id: "apps",
+    name: "App development",
+    summary:
+      "Apps for the phone and for the product. The same two people from the first conversation through to something you can hand someone.",
+    covers: ["Mobile apps", "Product apps"],
+  },
+];
+
 export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Do I own my website after you build it?",

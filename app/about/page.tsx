@@ -9,7 +9,7 @@ import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 export const metadata: Metadata = buildPageMetadata({
   title: "About Us | Aperix Studio",
   description:
-    "Meet Aperix Studio — a two-person web development team in Melbourne building custom websites, web apps, and SaaS products.",
+    "Meet Aperix Studio, a two-person web development team in Melbourne building custom websites, web apps, and SaaS products.",
   path: "/about",
 });
 

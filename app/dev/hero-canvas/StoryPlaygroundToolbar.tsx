@@ -153,17 +153,17 @@ export default function StoryPlaygroundToolbar({
               <p className="font-mono text-[10px] leading-relaxed text-white/50">
                 Scrub drives the PC slide + monitor evolution together. Tune endpoints with Leva{" "}
                 <strong className="text-white/70">Model start (Act 2)</strong> /{" "}
-                <strong className="text-white/70">Model end (Act 2)</strong> — fully independent of Act 1.
+                <strong className="text-white/70">Model end (Act 2)</strong>, fully independent of Act 1.
               </p>
             ) : null}
           </>
         ) : (
-          <p className="font-mono text-[11px] text-white/60">Sticky scroll active — scroll the page</p>
+          <p className="font-mono text-[11px] text-white/60">Sticky scroll active. Scroll the page</p>
         )}
 
         {mobilePreview ? (
           <p className="font-mono text-[10px] leading-relaxed text-white/50">
-            Mobile preview — {MOBILE_PREVIEW_WIDTH}×{MOBILE_PREVIEW_HEIGHT}px phone frame (matches
+            Mobile preview: {MOBILE_PREVIEW_WIDTH}×{MOBILE_PREVIEW_HEIGHT}px phone frame (matches
             homepage mobile aspect). Export with{" "}
             <strong className="text-white/70">
               {editor === "theatre" ? "Copy state" : "Copy mobile overrides"}

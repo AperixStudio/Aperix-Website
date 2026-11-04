@@ -1,4 +1,5 @@
 import { ABOUT_HERO_IMAGE_SRC } from "@/lib/aboutContent";
+import { FAQ_ITEMS, STUDIO_SERVICES } from "@/lib/services-content";
 import { getSiteUrl, SITE_EMAIL, SITE_LOGO_PATH, SITE_NAME, SITE_SOCIAL_LINKS } from "@/lib/site";
 import { SITE_LOCALITY, SITE_TEAM } from "@/lib/siteBusiness";
 
@@ -23,6 +24,17 @@ export function buildGeoCoordinates() {
   };
 }
 
+function buildContactPoints() {
+  return SITE_TEAM.map((member) => ({
+    "@type": "ContactPoint" as const,
+    telephone: member.phoneTel,
+    contactType: "customer support",
+    name: member.name,
+    areaServed: SITE_LOCALITY.country,
+    availableLanguage: "English",
+  }));
+}
+
 export function buildOrganizationSchema(options?: { includeGeo?: boolean }) {
   const siteUrl = getSiteUrl();
 
@@ -33,6 +45,8 @@ export function buildOrganizationSchema(options?: { includeGeo?: boolean }) {
     url: siteUrl,
     logo: getSiteLogoUrl(),
     email: SITE_EMAIL,
+    telephone: SITE_TEAM.map((member) => member.phoneTel),
+    contactPoint: buildContactPoints(),
     sameAs: SITE_SOCIAL_LINKS,
     ...(options?.includeGeo
       ? {
@@ -73,6 +87,8 @@ export function buildLocalBusinessSchema() {
     url: siteUrl,
     logo: getSiteLogoUrl(),
     email: SITE_EMAIL,
+    telephone: SITE_TEAM.map((member) => member.phoneTel),
+    contactPoint: buildContactPoints(),
     sameAs: SITE_SOCIAL_LINKS,
     address: buildPostalAddress(),
     geo: buildGeoCoordinates(),
@@ -91,6 +107,7 @@ export function buildPersonSchemas() {
     "@id": `${siteUrl}/about#${member.id}`,
     name: member.name,
     jobTitle: member.jobTitle,
+    telephone: member.phoneTel,
     image: `${siteUrl}${member.imagePath}`,
     worksFor: {
       "@id": `${siteUrl}/#organization`,
@@ -111,7 +128,7 @@ export function buildAboutPageSchema() {
         url: `${siteUrl}/about`,
         name: "About Us | Aperix Studio",
         description:
-          "Meet Aperix Studio — a two-person web development team in Melbourne building custom websites, web apps, and SaaS products.",
+          "Meet Aperix Studio, a two-person web development team in Melbourne building custom websites, web apps, and SaaS products.",
         inLanguage: SITE_LOCALITY.htmlLang,
         isPartOf: {
           "@id": `${siteUrl}/#website`,
@@ -125,6 +142,82 @@ export function buildAboutPageSchema() {
         },
       },
       ...buildPersonSchemas(),
+    ],
+  };
+}
+
+export function buildHomePageSchema() {
+  const siteUrl = getSiteUrl();
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/#webpage`,
+        url: `${siteUrl}/`,
+        name: "Web Design & Software Studio Melbourne | Aperix Studio",
+        description:
+          "Aperix Studio is a two-man Melbourne web design and software studio. We build custom websites for service-based and e-commerce businesses, plus apps and software.",
+        inLanguage: SITE_LOCALITY.htmlLang,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${siteUrl}/#organization` },
+        mainEntity: { "@id": `${siteUrl}/#organization` },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${siteUrl}/#faq`,
+        url: `${siteUrl}/#faq`,
+        mainEntity: FAQ_ITEMS.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
+      },
+    ],
+  };
+}
+
+export function buildServicesPageSchema() {
+  const siteUrl = getSiteUrl();
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/services#webpage`,
+        url: `${siteUrl}/services`,
+        name: "Services | Aperix Studio",
+        description:
+          "Web design, web apps and SaaS, software development, and app development from Aperix Studio in Melbourne.",
+        inLanguage: SITE_LOCALITY.htmlLang,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${siteUrl}/#organization` },
+        mainEntity: { "@id": `${siteUrl}/services#list` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${siteUrl}/services#list`,
+        itemListElement: STUDIO_SERVICES.map((service, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "Service",
+            "@id": `${siteUrl}/services#${service.id}`,
+            name: service.name,
+            description: service.summary,
+            provider: { "@id": `${siteUrl}/#organization` },
+            areaServed: {
+              "@type": "City",
+              name: SITE_LOCALITY.city,
+            },
+          },
+        })),
+      },
     ],
   };
 }

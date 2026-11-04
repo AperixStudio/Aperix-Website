@@ -39,9 +39,9 @@ const structuredData = {
 };
 
 const rootMetadata = buildPageMetadata({
-  title: "Aperix Studio — Custom Web Development Melbourne",
+  title: "Web Design & Software Studio Melbourne | Aperix Studio",
   description:
-    "Hand-coded, bespoke websites and social media management for Melbourne businesses. No templates. No WordPress. Just fast, modern, custom work.",
+    "Aperix Studio is a two-man Melbourne web design and software studio. We build custom websites for service-based and e-commerce businesses, plus apps and software.",
   path: "/",
 });
 
@@ -70,6 +70,12 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <noscript>
+          <style>{`
+            #aperix-intro-cover { display: none !important; }
+            #aperix-page { opacity: 1 !important; visibility: visible !important; }
+          `}</style>
+        </noscript>
         <div
           id="aperix-intro-cover"
           aria-hidden="true"

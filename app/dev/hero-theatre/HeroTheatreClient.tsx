@@ -109,7 +109,7 @@ export default function HeroTheatreClient() {
     const state = await exportHeroTheatreState();
     const text = JSON.stringify(state, null, 2);
     void navigator.clipboard.writeText(text);
-    console.log("Theatre state copied — save as lib/dev/heroTheatre/hero.theatre-state.json:\n", text);
+    console.log("Theatre state copied. Save as lib/dev/heroTheatre/hero.theatre-state.json:\n", text);
   }, []);
 
   return (

@@ -1,11 +1,20 @@
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import SocialProofBoard from "@/components/agency/SocialProofBoard";
 import HeroV4 from "@/components/agency/HeroV4";
 import BackToTop from "@/components/agency/BackToTop";
 import Footer from "@/components/agency/Footer";
 import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import { buildOrganizationSchema } from "@/lib/schema/siteSchema";
+import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 import { getSiteUrl, SITE_NAME } from "@/lib/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Current design reference | Aperix Studio",
+  description: "Internal snapshot of the previous Aperix Studio homepage design.",
+  path: "/current",
+  index: false,
+});
 
 const LiveSitesSectionV2 = dynamic(() => import("@/components/agency/LiveSitesSectionV2"), {
   loading: () => <div className="home-section-placeholder home-section-placeholder--our-work" aria-hidden />,
@@ -46,7 +55,7 @@ export default function CurrentDesign() {
       <HeroV4 />
       <SocialProofBoard />
       <main id="main-content">
-        <h1 className="sr-only">Aperix Studio — Custom Web Development and Software Solutions Melbourne</h1>
+        <h1 className="sr-only">Aperix Studio | Custom Web Development and Software Solutions Melbourne</h1>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

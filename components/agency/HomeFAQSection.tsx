@@ -26,16 +26,18 @@ export default function HomeFAQSection() {
 
           return (
             <div key={item.question} className="home-faq__item">
-              <button
-                id={triggerId}
-                type="button"
-                className="home-faq__question"
-                aria-expanded={isOpen}
-                aria-controls={panelId}
-                onClick={() => setOpenIndex(isOpen ? null : index)}
-              >
-                {item.question}
-              </button>
+              <h3 className="home-faq__question-heading">
+                <button
+                  id={triggerId}
+                  type="button"
+                  className="home-faq__question"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  {item.question}
+                </button>
+              </h3>
 
               <div
                 id={panelId}

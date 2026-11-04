@@ -14,7 +14,7 @@ import {
   type MouseEvent,
   type PointerEvent,
 } from "react";
-import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import { CAROUSEL_SITES, LIVE_SITES, type LiveSite } from "@/lib/liveSites";
 import {
   LIVE_SITES_CAROUSEL_DRAG_THRESHOLD,
   LIVE_SITES_CAROUSEL_MOVE_MS,
@@ -383,7 +383,7 @@ export default function LiveSitesSectionV2() {
   const { isMobile } = useMobileViewport();
   const sectionRef = useRef<HTMLElement>(null);
   const sectionInView = useInView(sectionRef, { rootMargin: "120px 0px" });
-  const tiles = useMemo(() => [...LIVE_SITES], []);
+  const tiles = useMemo(() => [...CAROUSEL_SITES], []);
   const [coarsePointer, setCoarsePointer] = useState(false);
 
   useLayoutEffect(() => {
@@ -700,7 +700,7 @@ export default function LiveSitesSectionV2() {
               <LiveSitesCarouselTile
                 key={site.name}
                 site={site}
-                theme={LIVE_SITES_CARD_THEMES[tileIndex % LIVE_SITES_CARD_THEMES.length]}
+                theme={LIVE_SITES_CARD_THEMES[LIVE_SITES.findIndex((item) => item.name === site.name)]}
                 point={
                   isDimmed
                     ? { ...point, opacity: Math.min(point.opacity, basePoint.opacity * 0.62) }

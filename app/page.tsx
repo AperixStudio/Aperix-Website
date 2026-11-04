@@ -6,6 +6,7 @@ import HomeContactSection from "@/components/agency/HomeContactSection";
 import HomeFAQSection from "@/components/agency/HomeFAQSection";
 import HomeHero from "@/components/agency/HomeHero";
 import HomeWorkSection from "@/components/agency/HomeWorkSection";
+import { buildHomePageSchema } from "@/lib/schema/siteSchema";
 import "./home-fit.css";
 
 // New look — build here.
@@ -16,6 +17,10 @@ export default function Home() {
   return (
     <>
       <main id="main-content" className="home-page">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildHomePageSchema()) }}
+        />
         <HomeHero />
         <HomeWorkAboutBand
           work={<HomeWorkSection />}

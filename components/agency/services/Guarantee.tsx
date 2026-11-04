@@ -81,7 +81,7 @@ export default function Guarantee() {
                   className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-4 py-1.5 text-xs font-semibold text-green-400"
                 >
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-400" />
-                  {label} — 100
+                  {label}: 100
                 </span>
               ))}
             </div>

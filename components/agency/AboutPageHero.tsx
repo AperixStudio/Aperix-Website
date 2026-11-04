@@ -10,7 +10,7 @@ export default function AboutPageHero() {
         {ABOUT_HERO_IMAGE_SRC ? (
           <Image
             src={ABOUT_HERO_IMAGE_SRC}
-            alt="Aperix Studio team — two developers building custom websites in Melbourne"
+            alt="Aperix Studio team, two developers building custom websites in Melbourne"
             fill
             priority
             sizes="100vw"
@@ -31,7 +31,7 @@ export default function AboutPageHero() {
         <p className="about-page-hero__kicker">About us</p>
         <h1 className="about-page-hero__heading">Two developers. One studio.</h1>
         <p className="about-page-hero__lede">
-          Aperix is a Melbourne web studio — hand-coding websites, web apps, and SaaS products for
+          Aperix is a Melbourne web studio, hand-coding websites, web apps, and SaaS products for
           businesses that care about craft. Full story and team photo coming soon.
         </p>
         <Link href="/contact" className="about-page-hero__cta">

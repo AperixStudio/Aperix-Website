@@ -63,7 +63,7 @@ export default function DevIndexPage() {
         </ul>
 
         <p className="mt-10 text-sm text-agency-muted">
-          Add GLB/MP4 assets to <code className="font-mono">/public</code> — see{" "}
+          Add GLB/MP4 assets to <code className="font-mono">/public</code>. See{" "}
           <code className="font-mono">public/dev-assets.md</code>.
         </p>
       </div>

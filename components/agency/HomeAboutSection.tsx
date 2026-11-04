@@ -21,12 +21,12 @@ export default function HomeAboutSection() {
         <div className="home-about__copy">
           <p className="home-about__eyebrow">About us</p>
           <h2 id="home-about-heading" className="home-about__heading">
-            The team behind the pixels,
+            The team behind the pixels
           </h2>
           <p className="home-about__lede">
-            just a small 2 man team based in Melbourne, who have completed many projects
-            ranging from app and software development through to web design and more, wanting
-            to turn your ideas into a reality
+            We&apos;re a small two-man team in Melbourne. We&apos;ve shipped work from app
+            and software development through to web design for service-based businesses,
+            e-commerce businesses, and more. We turn the idea you bring us into something real.
           </p>
 
           <div className="home-about__socials">

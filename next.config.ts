@@ -26,6 +26,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   transpilePackages: ["leva"],
   poweredByHeader: false,
+  devIndicators: false,
   async headers() {
     return [
       {

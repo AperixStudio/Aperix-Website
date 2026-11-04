@@ -17,7 +17,7 @@ const addOns = [
   },
   {
     name: "Rush Delivery",
-    description: "Accelerated timeline — approximately 50% faster turnaround",
+    description: "Accelerated timeline: approximately 50% faster turnaround",
     price: "+25% project fee",
   },
   {
@@ -32,7 +32,7 @@ const addOns = [
   },
   {
     name: "Social Media Management",
-    description: "Regular content across Instagram or Facebook — post frequency and scope agreed upfront",
+    description: "Regular content across Instagram or Facebook. Post frequency and scope agreed upfront",
     price: "From $349/mo",
   },
 ];

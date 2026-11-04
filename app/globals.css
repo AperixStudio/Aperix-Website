@@ -1027,3 +1027,10 @@ html {
     --wordmark-gutter: 0.5rem;
   }
 }
+
+/* Next.js still mounts a portal for the issues / route badge after
+   `devIndicators: false`. Hide it so localhost recordings stay clean.
+   Compile errors still print in the terminal. */
+nextjs-portal {
+  display: none !important;
+}

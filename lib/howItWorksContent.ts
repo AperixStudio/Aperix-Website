@@ -52,7 +52,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     number: "01",
     title: "Say hello",
     body:
-      "Send us a note with whatever you have — a rough idea, a half-finished brief, or just a problem you want fixed. It's always us two on the other end. No forms maze, no account manager.",
+      "Send us a note with whatever you have: a rough idea, a half-finished brief, or just a problem you want fixed. It's always us two on the other end. No forms maze, no account manager.",
     progress: {
       in: 0.02,
       holdStart: 0.08,
@@ -66,7 +66,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     number: "02",
     title: "Sketch it out",
     body:
-      "We figure out structure, flow, and feel together before the heavy build. Might be a wireframe on screen, might be a quick coded draft — whatever helps us both see if it's heading the right way.",
+      "We figure out structure, flow, and feel together before the heavy build. Might be a wireframe on screen, might be a quick coded draft. Whatever helps us both see if it's heading the right way.",
     progress: {
       in: ACT2_WIREFRAME_START + 0.01,
       holdStart: ACT2_WIREFRAME_START + 0.06,
@@ -80,7 +80,7 @@ export const HOW_IT_WORKS_BLOCKS: RocketTextBlock[] = [
     number: "03",
     title: "Build & ship",
     body:
-      "Then we hand-code it, test it on real devices, and get it live. We stay through launch — small team, so the people who built it are the ones answering your messages.",
+      "Then we hand-code it, test it on real devices, and get it live. We stay through launch. Small team, so the people who built it are the ones answering your messages.",
     progress: {
       in: ACT2_WIREFRAME_END + 0.01,
       holdStart: ACT2_WIREFRAME_END + 0.06,

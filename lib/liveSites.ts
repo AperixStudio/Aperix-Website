@@ -1,11 +1,37 @@
 export const LIVE_SITES = [
   {
+    name: "Nails by Avy",
+    href: "https://nailsbyavy55.com.au/",
+    preview: "/NailsByAvyPreview.png",
+    location: "Sunbury, VIC",
+    status: "Live now",
+    label: "Nail studio / appointments",
+    summary:
+      "An appointments-only site for a Sunbury nail studio. Gel, BIAB, and custom nail art are laid out as signature sets, with prices, hours, and online booking on the same page.",
+    scope: ["Booking site", "Service menu", "Signature sets", "Studio hours", "Local appointments"],
+    client: "Nails by Avy",
+    problem:
+      "A new studio needed somewhere clients could see the work, compare gel and BIAB, and book a time without going back and forth in messages.",
+    solution:
+      "We built the site around signature sets, a full price list, and a direct booking path, with the studio address and opening hours easy to find.",
+    result:
+      "Visitors can choose a set, check the price, and book online, with confirmation sent straight to their inbox.",
+    beforeAfter:
+      "Before: the offer lived in Instagram and DMs. After: services, prices, and booking sit on one site.",
+    relatedService: "Growth package for local appointment businesses",
+    impact:
+      "Business impact: clearer service choice, a booking path that does not depend on messages, and a local studio presence clients can find and trust.",
+    proofLibrary: [
+      { label: "Launch note", text: "The hero leads with gel, BIAB, and custom nail art before the price list." },
+      { label: "Process note", text: "Signature sets carry duration and price so a client can choose before they book." },
+      { label: "Proof point", text: "Hours, address, and the booking link stay visible through the page." },
+    ],
+  },
+  {
     name: "The Hidden Chapter",
     href: "https://thehiddenchapter.com.au/",
     previewVideo: "/theHiddenChapterPreview.webm",
     previewVideoTile: "/theHiddenChapterPreviewTile.webm",
-    previewVideoTileMp4: "/theHiddenChapterPreviewTile.mp4",
-    previewVideoMp4: "/theHiddenChapterPreview.mp4",
     location: "Victoria, Australia",
     status: "Live now",
     label: "E-commerce / brand experience",
@@ -94,8 +120,6 @@ export const LIVE_SITES = [
     href: "https://www.completetrade.au/",
     previewVideo: "/CSPreview.webm",
     previewVideoTile: "/CSPreviewTile.webm",
-    previewVideoTileMp4: "/CSPreviewTile.mp4",
-    previewVideoMp4: "/CSPreview.mp4",
     location: "Melbourne, VIC",
     status: "Live now",
     label: "Trades / home renovation",
@@ -125,8 +149,6 @@ export const LIVE_SITES = [
     href: "https://www.nationalroofing.com.au/",
     previewVideo: "/NRSPreview.webm",
     previewVideoTile: "/NRSPreviewTile.webm",
-    previewVideoTileMp4: "/NRSPreviewTile.mp4",
-    previewVideoMp4: "/NRSPreview.mp4",
     location: "Sunbury, VIC",
     status: "Live now",
     label: "Roofing contractor",
@@ -153,3 +175,6 @@ export const LIVE_SITES = [
   },
 ] as const;
 export type LiveSite = (typeof LIVE_SITES)[number];
+
+/** Work carousels. Rhino's Walk stays in the catalogue, paused out of rotation for now. */
+export const CAROUSEL_SITES = LIVE_SITES.filter((site) => site.name !== "Rhino's Walk");

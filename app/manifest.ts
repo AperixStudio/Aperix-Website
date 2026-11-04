@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Aperix Studio",
     short_name: "Aperix",
     description:
-      "Custom web development and software for Melbourne businesses — hand-coded, fast, and built to last.",
+      "Custom web development and software for Melbourne businesses. Hand-coded, fast, and built to last.",
     start_url: "/",
     display: "standalone",
     background_color: "#0c1017",

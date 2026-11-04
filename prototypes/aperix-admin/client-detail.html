@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aperix Admin — Client Detail</title>
+  <title>Aperix Admin | Client Detail</title>
   <link rel="stylesheet" href="prototype.css" />
 </head>
 <body>
@@ -127,7 +127,7 @@
     const params = new URLSearchParams(window.location.search);
     const project = getProjectById(params.get("id"));
 
-    document.title = `Aperix Admin — ${project.name}`;
+    document.title = `Aperix Admin | ${project.name}`;
     document.getElementById("projectName").textContent = project.name;
     document.getElementById("projectSummary").textContent = project.summary;
     document.getElementById("snapshotStatus").textContent = project.health;

@@ -135,7 +135,7 @@ export default function AgencyNavV2() {
             <Link
               href="/"
               className="group flex min-w-0 items-center gap-2"
-              aria-label="Aperix — home"
+              aria-label="Aperix home"
             >
               <span className="relative shrink-0 overflow-hidden rounded-sm transition-opacity duration-150 group-hover:opacity-90">
                 <AnimatedLogo size={352} priority className="h-88 w-auto" />

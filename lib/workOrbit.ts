@@ -91,7 +91,7 @@ export const WORK_ORBIT_NARROW: OrbitPreset = {
     a: 380,
     // Opened up from the wide ring's 0.492 (a 60.5deg tilt) to a 44deg one.
     // The clear band the headline sits in is the ellipse's semi-minor axis
-    // less half a card; at the wide ring's tilt, five cards this large close
+    // less half a card; at the wide ring's tilt, cards this large close
     // that band to nothing and the type has cards across it at all times.
     ratio: 0.72,
     axis: 25.5,

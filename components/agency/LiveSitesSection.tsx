@@ -4,13 +4,23 @@ import { useState, useCallback, useRef, useEffect, type CSSProperties } from "re
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/animations";
-import { LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import { CAROUSEL_SITES, LIVE_SITES, type LiveSite } from "@/lib/liveSites";
 import { cn } from "@/lib/utils";
 import "./LiveSitesSection.css";
 
 type Site = LiveSite;
 
 const CARD_THEMES = [
+  {
+    // Nails by Avy — wine burgundy
+    gradient: "from-[#6e1725] to-[#4a1019]",
+    accentLight: "text-white/70",
+    accent: "text-[#e7cfc0]",
+    badgeBg: "bg-white/20 text-white border-white/30",
+    tagBg: "border-[#6e1725]/20 bg-[#6e1725]/10 text-agency-ink",
+    btn: "bg-[#6e1725] text-white hover:bg-[#4a1019]",
+    darkGradient: "from-[#16080c] to-[#0c0c16]",
+  },
   {
     // The Hidden Chapter — leaf green
     gradient: "from-[#3a7d44] to-[#2d6235]",
@@ -63,7 +73,7 @@ const CARD_THEMES = [
   },
 ] as const;
 
-const TOTAL = LIVE_SITES.length;
+const TOTAL = CAROUSEL_SITES.length;
 const STEP_DEG = 22;
 const CARD_FAN_X = 24;
 const DRAG_THRESHOLD = 60;
@@ -398,7 +408,7 @@ export default function LiveSitesSection() {
   const dragStartX = useRef(0);
 
   // Track which cards have ever been the front card. We only mount a live iframe
-  // once its card first reaches the front, so the page never spins up all five
+  // once its card first reaches the front, so the page never spins up every
   // external sites at once (which previously saturated the GPU compositor and made
   // the fixed backdrop-blur header flash/break).
   const [mountedFrames, setMountedFrames] = useState<Set<number>>(() => new Set([0]));
@@ -418,7 +428,7 @@ export default function LiveSitesSection() {
   const openCaseStudy = useCallback((index: number) => {
     const normalizedIndex = ((index % TOTAL) + TOTAL) % TOTAL;
     setActive(normalizedIndex);
-    setSelectedSite(LIVE_SITES[normalizedIndex] ?? null);
+    setSelectedSite(CAROUSEL_SITES[normalizedIndex] ?? null);
   }, []);
 
   const closeCaseStudy = useCallback(() => {
@@ -478,12 +488,12 @@ export default function LiveSitesSection() {
               Sites we&apos;ve shipped.
             </h2>
             <p className="live-sites-section__lede mt-4 max-w-2xl text-base leading-relaxed sm:text-lg">
-              A handful of live builds — hand-coded websites and products for clients, side projects, and our own experiments.
+              A handful of live builds: hand-coded websites and products for clients, side projects, and our own experiments.
             </p>
           </Reveal>
           <Reveal>
             <div className="flex flex-wrap gap-2" role="tablist" aria-label="Select project">
-              {LIVE_SITES.map((site, i) => (
+              {CAROUSEL_SITES.map((site, i) => (
                 <button
                   key={site.name}
                   role="tab"
@@ -508,13 +518,14 @@ export default function LiveSitesSection() {
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
           >
-            {LIVE_SITES.map((site, i) => {
+            {CAROUSEL_SITES.map((site, i) => {
               const offset = getOffset(i, active);
+              const themeIndex = LIVE_SITES.findIndex((item) => item.name === site.name);
               return (
                 <ProjectCard
                   key={site.name}
                   site={site}
-                  theme={CARD_THEMES[i % CARD_THEMES.length]}
+                  theme={CARD_THEMES[themeIndex % CARD_THEMES.length]}
                   offset={offset}
                   isActive={i === active}
                   hasMounted={mountedFrames.has(i)}
@@ -527,7 +538,7 @@ export default function LiveSitesSection() {
         </div>
 
         <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
-          {LIVE_SITES.map((_, i) => (
+          {CAROUSEL_SITES.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}

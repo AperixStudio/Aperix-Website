@@ -27,7 +27,7 @@ const contactPageSchema = {
 };
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Contact — Aperix Studio",
+  title: "Contact | Aperix Studio",
   description:
     "Contact Aperix Studio about custom web design, development, and support for your Melbourne business.",
   path: "/contact",

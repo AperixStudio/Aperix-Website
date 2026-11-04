@@ -30,13 +30,13 @@ const TRANSITION_PANELS = [
   {
     index: "01",
     title: "Rooted in Melbourne. Open to the world.",
-    lede: "Built in Melbourne — Happy for a video call from wherever you are in the world.",
+    lede: "Built in Melbourne. Happy for a video call from wherever you are in the world.",
   },
   {
     index: "02",
     title: "Small team, big care.",
     lede:
-      "Just two mates who over time have worked on many projects — from app development to web design and want to help turn your ideas into a reality.",
+      "Just two mates who over time have worked on many projects, from app development to web design, and want to help turn your ideas into a reality.",
   },
 ] as const;
 

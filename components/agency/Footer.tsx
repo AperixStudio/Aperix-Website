@@ -4,7 +4,11 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import { SITE_EMAIL } from "@/lib/site";
+import { SITE_TEAM } from "@/lib/siteBusiness";
 import "./Footer.css";
+
+const STUDIO_ABN = "57 379 139 292";
 
 /* ── legal links ───────────────────────────────────────── */
 const legalLinks = [
@@ -352,10 +356,26 @@ export default function Footer() {
           <AnimatedLogo size={112} className="h-28 w-auto opacity-70 transition hover:opacity-100" />
         </Link>
 
-        {/* Centre — copyright */}
-        <p className="absolute left-1/2 -translate-x-1/2 text-xs text-agency-muted/50">
-          © {new Date().getFullYear()} Aperix Studio. All rights reserved.
-        </p>
+        {/* Centre — service area and contact. No street address: the studio is online. */}
+        <div className="site-footer__meta">
+          <address className="site-footer__address">
+            <span>Melbourne, Victoria (online)</span>
+            <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+            <ul className="site-footer__phones">
+              {SITE_TEAM.map((member) => (
+                <li key={member.id}>
+                  <span className="site-footer__phone-name">{member.name}</span>
+                  <a href={`tel:${member.phoneTel}`}>{member.phoneDisplay}</a>
+                </li>
+              ))}
+            </ul>
+          </address>
+          <p className="site-footer__fine">
+            ABN {STUDIO_ABN}
+            <span aria-hidden="true"> · </span>
+            <span className="site-footer__copy">© {new Date().getFullYear()} Aperix Studio</span>
+          </p>
+        </div>
 
         {/* Right — legals dropdown */}
         <div className="relative" ref={legalsRef}>

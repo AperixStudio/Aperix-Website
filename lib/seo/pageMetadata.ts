@@ -7,9 +7,16 @@ type PageMetadataInput = {
   title: string;
   description: string;
   path: `/${string}` | "/";
+  /** Set false for placeholders, drafts, and comparison routes. */
+  index?: boolean;
 };
 
-export function buildPageMetadata({ title, description, path }: PageMetadataInput): Metadata {
+export function buildPageMetadata({
+  title,
+  description,
+  path,
+  index = true,
+}: PageMetadataInput): Metadata {
   const siteUrl = getSiteUrl();
   const canonicalPath = path === "/" ? `${siteUrl}/` : `${siteUrl}${path}`;
   const pageUrl = path === "/" ? siteUrl : `${siteUrl}${path}`;
@@ -17,6 +24,12 @@ export function buildPageMetadata({ title, description, path }: PageMetadataInpu
   return {
     title,
     description,
+    robots: index
+      ? undefined
+      : {
+          index: false,
+          follow: true,
+        },
     alternates: {
       canonical: canonicalPath,
       languages: {

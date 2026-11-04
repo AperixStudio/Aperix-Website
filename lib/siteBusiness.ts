@@ -19,14 +19,18 @@ export const SITE_TEAM = [
     name: "Tom",
     jobTitle: "Co-founder & Developer",
     imagePath: "/TomPhoto.webp",
-    imageAlt: "Tom — Co-founder at Aperix Studio",
+    imageAlt: "Tom, Co-founder at Aperix Studio",
+    phoneDisplay: "0466 584 549",
+    phoneTel: "+61466584549",
   },
   {
     id: "harrison",
     name: "Harrison",
     jobTitle: "Co-founder & Developer",
     imagePath: "/HarriosnPhoto.webp",
-    imageAlt: "Harrison — Co-founder at Aperix Studio",
+    imageAlt: "Harrison, Co-founder at Aperix Studio",
+    phoneDisplay: "0499 277 423",
+    phoneTel: "+61499277423",
   },
 ] as const;
 
@@ -36,7 +40,7 @@ export const SITE_SITEMAP_IMAGES = [
     pagePath: "/",
     loc: "/arrowhead-mark.svg",
     title: "Aperix Studio logo",
-    caption: "Aperix Studio — custom web development Melbourne",
+    caption: "Aperix Studio, custom web development Melbourne",
   },
   {
     pagePath: "/about",
@@ -47,14 +51,20 @@ export const SITE_SITEMAP_IMAGES = [
   {
     pagePath: "/about",
     loc: "/TomPhoto.webp",
-    title: "Tom — Aperix Studio",
+    title: "Tom | Aperix Studio",
     caption: "Tom, co-founder of Aperix Studio",
   },
   {
     pagePath: "/about",
     loc: "/HarriosnPhoto.webp",
-    title: "Harrison — Aperix Studio",
+    title: "Harrison | Aperix Studio",
     caption: "Harrison, co-founder of Aperix Studio",
+  },
+  {
+    pagePath: "/",
+    loc: "/NailsByAvyPreview.png",
+    title: "Nails by Avy case study preview",
+    caption: "Nails by Avy nail studio website by Aperix Studio",
   },
   {
     pagePath: "/our-work",

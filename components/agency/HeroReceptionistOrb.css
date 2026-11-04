@@ -4,9 +4,11 @@
 .hero-orb {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  justify-content: flex-start;
+  width: 12.5rem;
+  max-width: 12.5rem;
   overflow: visible;
+  pointer-events: auto;
 }
 
 .hero-orb__stage {
@@ -171,6 +173,11 @@
 }
 
 @media (max-width: 820px) {
+  .hero-orb {
+    width: 8rem;
+    max-width: 8rem;
+  }
+
   .hero-orb__stage {
     padding-bottom: 3.25rem;
   }

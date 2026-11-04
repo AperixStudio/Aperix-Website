@@ -4,10 +4,10 @@ Aperix Studio is a Melbourne web design and development studio that builds custo
 
 ## Understand First
 
-1. `/` — Home page with the core positioning, process, proof points, and calls to action.
-2. `/services` — Services and pricing page with package details, FAQs, and schema.
-3. `/our-work` — Live case studies and project examples.
-4. `/contact` — Direct enquiry page and business contact details.
+1. `/`: Home page with the core positioning, process, proof points, and calls to action.
+2. `/services`: Services and pricing page with package details, FAQs, and schema.
+3. `/our-work`: Live case studies and project examples.
+4. `/contact`: Direct enquiry page and business contact details.
 
 ## What Aperix Does
 

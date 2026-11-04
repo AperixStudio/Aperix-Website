@@ -11,7 +11,6 @@ import {
 import { motion } from "framer-motion";
 import { onIntroDone } from "@/lib/introState";
 import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/IntroScreenSimple";
-import HeroReceptionistOrb from "@/components/agency/HeroReceptionistOrb";
 import "./HomeHero.css";
 
 /*
@@ -49,13 +48,14 @@ type Drift = { x: number[]; y: number[]; duration: number };
 const WATER_EASE: [number, number, number, number] = [0.42, 0, 0.58, 1];
 
 /**
- * The two copy blocks drift on independent organic loops once revealed.
- * The wordmark and its rule stay fixed — only the paragraphs breathe.
+ * The headline and the supporting copy drift on independent organic loops
+ * once revealed. The wordmark and its rule stay fixed — only the copy breathes.
+ * The closer sits beside the fixed TABS pill, so its track stays small.
  *
- * Periods are deliberately coprime so the pair never lock back into step.
+ * Periods are deliberately coprime so the trio never lock back into step.
  * Every track opens and closes on 0 for a seamless loop.
  */
-const DRIFT: Record<"lead" | "sub", Drift> = {
+const DRIFT: Record<"lead" | "sub" | "close", Drift> = {
   lead: {
     x: [0, 18, 30, 14, -18, -32, -16, 10, 24, 0],
     y: [0, -14, -28, -38, -24, -8, 12, 28, 16, 0],
@@ -66,12 +66,17 @@ const DRIFT: Record<"lead" | "sub", Drift> = {
     y: [0, -20, -10, 16, 30, 20, -6, -26, -14, 0],
     duration: 31,
   },
+  close: {
+    x: [0, 4, 6, 2, -3, -6, -2, 3, 5, 0],
+    y: [0, -3, -5, -2, 2, 4, 1, -4, -2, 0],
+    duration: 37,
+  },
 };
 
 const MOBILE_HERO_QUERY = "(max-width: 820px)";
 
 /** Softer on mobile — grid padding keeps copy on-screen without clipping. */
-const MOBILE_DRIFT: Record<"lead" | "sub", Drift> = {
+const MOBILE_DRIFT: Record<"lead" | "sub" | "close", Drift> = {
   lead: {
     x: [0, 8, 12, 6, -8, -12, -6, 4, 10, 0],
     y: [0, -6, -10, -12, -8, -3, 5, 10, 6, 0],
@@ -81,6 +86,11 @@ const MOBILE_DRIFT: Record<"lead" | "sub", Drift> = {
     x: [0, -7, -11, -8, 3, 10, 12, 5, -9, 0],
     y: [0, -8, -4, 6, 12, 8, -2, -10, -5, 0],
     duration: 31,
+  },
+  close: {
+    x: [0, 3, 4, 1, -2, -4, -1, 2, 3, 0],
+    y: [0, -2, -3, -1, 1, 3, 1, -2, -1, 0],
+    duration: 37,
   },
 };
 
@@ -270,7 +280,7 @@ export default function HomeHero() {
   }, [showCopy]);
 
   /** Reveal, then drift — the two never overlap, so they never conflict. */
-  const copyMotion = (key: "lead" | "sub", settled: object) => {
+  const copyMotion = (key: "lead" | "sub" | "close", settled: object) => {
     const drift = isMobileHero ? MOBILE_DRIFT[key] : DRIFT[key];
     return floating
       ? { animate: { ...settled, opacity: 1, x: drift.x, y: drift.y },
@@ -371,9 +381,7 @@ export default function HomeHero() {
                 initial={{ opacity: 0, y: 16 }}
                 {...copyMotion("lead", {})}
               >
-                A two-man team inspired by top creators and advancing technology,
-                providing Melbourne with the finest care in web development and
-                software solutions.
+                Melbourne-based web design and software development studio
               </motion.h1>
             </div>
 
@@ -383,15 +391,27 @@ export default function HomeHero() {
                 initial={{ opacity: 0, y: 16 }}
                 {...copyMotion("sub", {})}
               >
-                Driven by the desire to provide AI-supported, customised projects, we
-                give you the structure and strategy to build{" "}
-                <span className="home-hero__you">your</span> iconic brand and business.
+                A two-man team inspired by top creators and advancing technology,
+                providing Melbourne with the finest care in web development and
+                software solutions.
               </motion.p>
+            </div>
+
+            <div className="home-hero__drift-wrap home-hero__drift-wrap--close">
+              <div className="home-hero__close-slot">
+                <motion.p
+                  className="home-hero__close"
+                  initial={{ opacity: 0, y: 16 }}
+                  {...copyMotion("close", {})}
+                >
+                  Driven by the desire to provide AI-supported, customised projects, we
+                  give you the structure and strategy to build{" "}
+                  <span className="home-hero__you">your</span> iconic brand and business.
+                </motion.p>
+              </div>
             </div>
           </div>
         </div>
-
-        <HeroReceptionistOrb show={showCopy} floating={floating} />
 
         <motion.div
           className="home-hero__base"

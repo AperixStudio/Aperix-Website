@@ -1,5 +1,12 @@
 export const LIVE_SITES_CARD_THEMES = [
   {
+    gradient: "from-[#6e1725] to-[#4a1019]",
+    accent: "text-[#e7cfc0]",
+    badgeBg: "bg-white/20 text-white border-white/30",
+    btn: "bg-[#6e1725] text-white hover:bg-[#4a1019]",
+    darkGradient: "from-[#16080c] to-[#0c0c16]",
+  },
+  {
     gradient: "from-[#3a7d44] to-[#2d6235]",
     accent: "text-[#6dba7d]",
     badgeBg: "bg-white/20 text-white border-white/30",
