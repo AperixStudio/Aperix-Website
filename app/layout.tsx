@@ -40,6 +40,7 @@ const structuredData = {
 
 const rootMetadata = buildPageMetadata({
   title: "Web Design & Software Studio Melbourne | Aperix Studio",
+  socialTitle: "Aperix Studio",
   description:
     "Aperix Studio is a two-man Melbourne web design and software studio. We build custom websites for service-based and e-commerce businesses, plus apps and software.",
   path: "/",

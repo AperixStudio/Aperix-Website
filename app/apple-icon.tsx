@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
-import { AperixOgImage, OG_IMAGE_CONTENT_TYPE, OG_IMAGE_SIZE } from "@/lib/og/AperixOgImage";
 
 export const runtime = "edge";
-export const size = OG_IMAGE_SIZE;
-export const contentType = OG_IMAGE_CONTENT_TYPE;
+export const size = { width: 180, height: 180 };
+export const contentType = "image/png";
 
 export default function AppleIcon() {
   return new ImageResponse(
