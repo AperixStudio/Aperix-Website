@@ -3,15 +3,14 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import HashLink from "@/components/agency/HashLink";
-import { useIntroDone } from "@/lib/useIntroDone";
 import "./BubbleNav.css";
 
 const NAV_LINKS = [
-  { label: "Our Work", href: "/#our-work" },
-  { label: "Services", href: "/services"  },
-  { label: "About",    href: "/#about"    },
-  { label: "Forum",    href: "/forum"     },
-  { label: "Contact",  href: "/#contact"  },
+  { label: "Our Work", href: "/our-work" },
+  { label: "Services", href: "/services" },
+  { label: "About", href: "/about" },
+  { label: "Forum", href: "/forum" },
+  { label: "Contact", href: "/contact" },
 ];
 
 function scrollToTop() {
@@ -49,7 +48,6 @@ function scrollToTop() {
 export default function BubbleNav() {
   const [open, setOpen] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-  const introDone = useIntroDone();
   const shellRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -91,9 +89,7 @@ export default function BubbleNav() {
     };
   }, [open]);
 
-  if (!portalTarget || !introDone) return null;
-
-  return createPortal(
+  const shell = (
     <div
       ref={shellRef}
       className={`bubble-nav-shell${open ? " is-open" : ""}`}
@@ -151,7 +147,12 @@ export default function BubbleNav() {
           <path d="M6 15l6-6 6 6" />
         </svg>
       </button>
-    </div>,
-    portalTarget,
+    </div>
   );
+
+  // The shell is in the server HTML. After hydration it moves to document.body
+  // so the hero canvas cannot sit on top of it. Returning null until then
+  // kept these links out of the raw HTML.
+  if (!portalTarget) return shell;
+  return createPortal(shell, portalTarget);
 }

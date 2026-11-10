@@ -176,5 +176,14 @@ export const LIVE_SITES = [
 ] as const;
 export type LiveSite = (typeof LIVE_SITES)[number];
 
+/** Stable id for `/our-work#…` links. Shared with the services hub. */
+export function caseStudyId(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 /** Work carousels. Rhino's Walk stays in the catalogue, paused out of rotation for now. */
 export const CAROUSEL_SITES = LIVE_SITES.filter((site) => site.name !== "Rhino's Walk");

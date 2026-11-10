@@ -34,6 +34,12 @@ export const SITE_TEAM = [
   },
 ] as const;
 
+/** Live AI receptionist. The hero orb and /services both dial this line. */
+export const RECEPTIONIST_LINE = {
+  display: "+61 3 9962 4119",
+  tel: "+61399624119",
+} as const;
+
 /** Indexable images for image sitemap generation. */
 export const SITE_SITEMAP_IMAGES = [
   {

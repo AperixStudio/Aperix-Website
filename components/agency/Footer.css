@@ -58,6 +58,27 @@ body {
   text-align: center;
 }
 
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.15rem 0.7rem;
+  margin: 0 0 0.2rem;
+}
+
+.site-footer__nav a {
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--agency-muted, #9aa3b2) 84%, white);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.site-footer__nav a:hover {
+  color: var(--agency-text, #f4f7fb);
+}
+
 .site-footer__address {
   display: flex;
   flex-direction: column;

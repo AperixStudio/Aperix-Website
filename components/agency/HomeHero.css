@@ -182,6 +182,16 @@
   color: rgba(255, 255, 255, 0.62);
 }
 
+.home-hero__services-link {
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.home-hero__services-link:hover {
+  color: #fff;
+}
+
 /* Pinned above the pill, in the dark to its left. The pill's top is
    --bubble-nav-bottom plus its own 3rem height. Drift stays on the
    paragraph, so this slot does not use transform. */

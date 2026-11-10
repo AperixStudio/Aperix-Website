@@ -32,7 +32,10 @@ export default function HashLink({ href, onClick, ...props }: HashLinkProps) {
       return;
     }
 
-    const path = url.slice(0, hashIndex) || "/";
+    // "#contact" has no path, so it belongs to the page the reader is already
+    // on. Treating that empty path as "/" sent /services off to the home form.
+    const rawPath = url.slice(0, hashIndex);
+    const path = rawPath.length > 0 ? rawPath : window.location.pathname;
     const hash = url.slice(hashIndex + 1);
     const onTargetPage = window.location.pathname === path;
 

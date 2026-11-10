@@ -12,8 +12,8 @@ const routes: Array<{ path: string; priority: number; changeFrequency: MetadataR
 /** Stable last-modified dates per route (update when page content changes). */
 const ROUTE_LAST_MODIFIED: Record<string, string> = {
   "": "2026-11-04",
-  "/services": "2026-11-04",
-  "/our-work": "2026-11-04",
+  "/services": "2026-11-10",
+  "/our-work": "2026-11-10",
   "/about": "2026-11-04",
   "/contact": "2026-11-04",
 };

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import AgencyNavV2 from "@/components/agency/AgencyNavV2";
+import AboutFoundersSection from "@/components/agency/AboutFoundersSection";
+import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
-import BackToTop from "@/components/agency/BackToTop";
-import AboutPageHero from "@/components/agency/AboutPageHero";
+import HomeAboutSection from "@/components/agency/HomeAboutSection";
 import { buildAboutPageSchema } from "@/lib/schema/siteSchema";
 import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 
@@ -16,16 +16,16 @@ export const metadata: Metadata = buildPageMetadata({
 export default function AboutPage() {
   return (
     <>
-      <AgencyNavV2 />
-      <main id="main-content" className="overflow-x-hidden bg-[#0c1017]">
+      <main id="main-content" className="about-page overflow-x-hidden pt-44 sm:pt-28">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildAboutPageSchema()) }}
         />
-        <AboutPageHero />
+        <HomeAboutSection headingLevel="h1" />
+        <AboutFoundersSection />
       </main>
-      <BackToTop />
       <Footer />
+      <BubbleNav />
     </>
   );
 }

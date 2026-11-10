@@ -191,9 +191,9 @@ export function buildServicesPageSchema() {
         "@type": "WebPage",
         "@id": `${siteUrl}/services#webpage`,
         url: `${siteUrl}/services`,
-        name: "Services | Aperix Studio",
+        name: "Web design & software development services | Aperix Studio",
         description:
-          "Web design, web apps and SaaS, software development, and app development from Aperix Studio in Melbourne.",
+          "Web design, web apps, software, mobile apps, and an AI receptionist from Aperix Studio in Melbourne. Each project is scoped, then quoted.",
         inLanguage: SITE_LOCALITY.htmlLang,
         isPartOf: { "@id": `${siteUrl}/#website` },
         about: { "@id": `${siteUrl}/#organization` },

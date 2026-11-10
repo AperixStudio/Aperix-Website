@@ -358,6 +358,12 @@ export default function Footer() {
 
         {/* Centre — service area and contact. No street address: the studio is online. */}
         <div className="site-footer__meta">
+          <nav className="site-footer__nav" aria-label="Footer">
+            <Link href="/services">Services</Link>
+            <Link href="/our-work">Our work</Link>
+            <Link href="/about">About</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
           <address className="site-footer__address">
             <span>Melbourne, Victoria (online)</span>
             <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>

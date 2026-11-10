@@ -2,6 +2,7 @@ import "@fontsource-variable/hubot-sans/wght.css";
 import type { Metadata, Viewport } from "next";
 import SiteAtmosphere from "@/components/agency/SiteAtmosphere";
 import SiteBackground from "@/components/agency/SiteBackground";
+import MelbourneGlassClock from "@/components/agency/MelbourneGlassClock";
 import SiteLogoFixed from "@/components/agency/SiteLogoFixed";
 import CursorFollower from "@/components/animations/CursorFollower";
 import IntroSelector from "@/components/animations/IntroSelector";
@@ -91,6 +92,7 @@ export default function RootLayout({
         {/* SiteLogoFixed lives outside PageReveal so it's always in the DOM
             and measurable — IntroScreenSimple reads its position to fly toward it. */}
         <SiteLogoFixed />
+        <MelbourneGlassClock />
         <IntroSelector />
         <SiteBackground />
         <SiteAtmosphere />

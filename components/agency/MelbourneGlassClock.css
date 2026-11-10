@@ -1,0 +1,184 @@
+/* Hallmark · component: clock · genre: atmospheric · theme: existing Aperix glass
+ * states: n/a (display only) · contrast: muted on purpose, secondary to the hero
+ * Dark liquid-glass Melbourne clock. Hours over minutes, labels horizontal.
+ * Digit width is locked to the 32×58 segment viewBox so the numerals stay narrow.
+ */
+
+.glass-clock {
+  --clock-ink: #f4f8ff;
+  --clock-ink-dim: rgba(226, 236, 248, 0.78);
+  --clock-ghost: rgba(255, 255, 255, 0.16);
+  --clock-accent: #7dd3fc;
+  --clock-accent-soft: rgba(56, 189, 248, 0.18);
+  --clock-edge: rgba(255, 255, 255, 0.22);
+
+  position: fixed;
+  top: 0.85rem;
+  right: clamp(0.75rem, 1.6vw, 1.5rem);
+  z-index: 260;
+  pointer-events: none;
+  user-select: none;
+  color: var(--clock-ink);
+  isolation: isolate;
+}
+
+.glass-clock__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.glass-clock__face {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto max-content;
+  column-gap: 0.42rem;
+  align-items: center;
+  padding: 0.32rem 0.7rem 0.3rem 0.78rem;
+  border-radius: 1.35rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.glass-clock__face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(16, 26, 40, 0.38) 0%,
+    rgba(10, 16, 26, 0.46) 48%,
+    rgba(7, 11, 18, 0.52) 100%
+  );
+  -webkit-backdrop-filter: blur(22px) saturate(1.75) brightness(1.04);
+  backdrop-filter: url(#melbourne-glass-clock) blur(2px) saturate(1.75) brightness(1.06);
+}
+
+.glass-clock__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 70% at 8% -10%, rgba(255, 255, 255, 0.1), transparent 52%),
+    radial-gradient(90% 80% at 100% 110%, rgba(56, 189, 248, 0.08), transparent 46%);
+}
+
+.glass-clock__digits,
+.glass-clock__side {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-clock__digits {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.08rem;
+}
+
+.glass-clock__pair {
+  display: flex;
+  gap: 0.12rem;
+}
+
+/* ViewBox is 32×58. Width stays on that ratio so the segments
+   are not stretched sideways. */
+.glass-clock__digit {
+  display: block;
+  width: 0.84rem;
+  height: 1.52rem;
+}
+
+.glass-clock__digit .seg {
+  fill: rgba(255, 255, 255, 0.1);
+  transition: fill 180ms ease;
+}
+
+.glass-clock__digit .seg.is-on {
+  fill: rgba(226, 234, 244, 0.58);
+}
+
+.glass-clock__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.glass-clock__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.22rem;
+}
+
+.glass-clock__place {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.46rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(226, 236, 248, 0.62);
+}
+
+.glass-clock__weekday {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.38rem 0.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  background: rgba(56, 189, 248, 0.1);
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.42rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(186, 230, 253, 0.72);
+}
+
+.glass-clock__date {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.48rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(226, 236, 248, 0.55);
+}
+
+@media (max-width: 820px) {
+  .glass-clock {
+    top: 0.4rem;
+    right: 0.45rem;
+    transform: scale(0.78);
+    transform-origin: top right;
+  }
+
+  /* Home wordmark spans the top edge. Drop the clock under that line. */
+  html:has(#home-hero) .glass-clock {
+    top: calc(5.5vh + var(--wordmark-size, 2.4rem) + 0.55rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .glass-clock {
+    transform: scale(0.68);
+  }
+}
