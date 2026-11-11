@@ -14,6 +14,14 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
+const HOME_LINK = { label: "Home", href: "/" };
+
+function linksForPath(pathname: string) {
+  const path = pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+  const links = path === "/" ? NAV_LINKS : [HOME_LINK, ...NAV_LINKS];
+  return links.filter((link) => link.href !== path);
+}
+
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -109,10 +117,15 @@ export default function BubbleNav() {
     return null;
   }
 
+  // Home is first on every other page. The page you are on is left out.
+  // Order otherwise stays Our Work, Services, About, Forum, Contact.
+  // Links stay in the markup while the pill is collapsed so crawlers see them.
+  const links = linksForPath(pathname);
+
   const shell = (
     <div
       ref={shellRef}
-      className={`bubble-nav-shell${open ? " is-open" : ""}${dismissed ? " is-dismissed" : ""}`}
+      className={`bubble-nav-shell${links.length > 5 ? " bubble-nav-shell--six" : ""}${open ? " is-open" : ""}${dismissed ? " is-dismissed" : ""}`}
       onPointerLeave={() => setDismissed(false)}
     >
       <nav className="bubble-nav" aria-label="Site navigation" onClick={openPill}>
@@ -123,7 +136,7 @@ export default function BubbleNav() {
 
         {/* Expanded links */}
         <ul className="bubble-nav__links" role="list">
-          {NAV_LINKS.map((link, i) => (
+          {links.map((link, i) => (
             <Fragment key={link.href}>
               {i > 0 && (
                 <li className="bubble-nav__divider" aria-hidden="true" />

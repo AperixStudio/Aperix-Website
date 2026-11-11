@@ -80,6 +80,19 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+/* Offer pages keep all five sections plus Home. Grow past 34rem, still
+   inside the viewport cap already set on .bubble-nav. */
+@media (hover: hover) {
+  .bubble-nav-shell--six:hover:not(.is-dismissed) .bubble-nav {
+    width: min(42rem, calc(100vw - 2rem));
+  }
+}
+
+.bubble-nav-shell--six:focus-within .bubble-nav,
+.bubble-nav-shell--six.is-open .bubble-nav {
+  width: min(42rem, calc(100vw - 2rem));
+}
+
 /* ── Collapsed label "TABS" with glitch ────────────────────── */
 
 .bubble-nav__label {
@@ -276,6 +289,17 @@
   .bubble-nav__link::before,
   .bubble-nav__link::after {
     padding: 0 0.5rem;
+  }
+
+  .bubble-nav-shell--six .bubble-nav__link {
+    padding: 0 0.28rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .bubble-nav-shell--six .bubble-nav__link::before,
+  .bubble-nav-shell--six .bubble-nav__link::after {
+    padding: 0 0.28rem;
   }
 }
 
