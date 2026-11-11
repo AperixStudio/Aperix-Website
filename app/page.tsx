@@ -1,4 +1,3 @@
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeAboutSection from "@/components/agency/HomeAboutSection";
 import HomeWorkAboutBand from "@/components/agency/HomeWorkAboutBand";
@@ -31,8 +30,6 @@ export default function Home() {
       </main>
 
       <Footer />
-
-      <BubbleNav />
     </>
   );
 }

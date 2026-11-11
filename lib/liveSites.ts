@@ -2,7 +2,7 @@ export const LIVE_SITES = [
   {
     name: "Nails by Avy",
     href: "https://nailsbyavy55.com.au/",
-    preview: "/NailsByAvyPreview.png",
+    preview: "/NailsByAvyPreview.webp",
     location: "Sunbury, VIC",
     status: "Live now",
     label: "Nail studio / appointments",
@@ -93,7 +93,7 @@ export const LIVE_SITES = [
     location: "Web app",
     status: "Live now",
     label: "SaaS / streaming product",
-    preview: "/POVSyncPreview.png",
+    preview: "/POVSyncPreview.webp",
     summary:
       "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
     scope: ["SaaS landing", "Product messaging", "Onboarding UX", "Fast setup flow"],
@@ -171,6 +171,34 @@ export const LIVE_SITES = [
       { label: "Launch note", text: "The typewriter hero reinforces the service set without adding clutter." },
       { label: "Process note", text: "Trust signals were front-loaded to help first-time visitors feel confident." },
       { label: "Visual proof", text: "The service layout supports quick scanning on mobile." },
+    ],
+  },
+  {
+    name: "Mully",
+    href: "https://aperix.com.au/contact",
+    preview: "/MullyPreview.webp",
+    location: "iOS and Android",
+    status: "Product demo",
+    label: "Mobile app / golf companion",
+    summary:
+      "A golf app for a group that wants the round, the map, and the weekend in one place. Live scoring, a GPS course view, friends, and events with a snake draft.",
+    scope: ["Live scoring", "GPS course view", "Friends and messages", "Events and draft", "Handicap"],
+    client: "Mully",
+    problem:
+      "A golf group was splitting the round across a scorecard, a maps app, and a group chat, then trying to sort teams for the weekend afterwards.",
+    solution:
+      "We built Mully as a native app: hole-by-hole scoring, a course map with distances, friends and messages, and multi-day events with a live snake draft.",
+    result:
+      "The group can start a round, keep score, see the hole, and run a weekend event without leaving the app. A demo is available on request.",
+    beforeAfter:
+      "Before: the round lived in three different apps. After: scoring, the course, and the event sit in one product.",
+    relatedService: "App development",
+    impact:
+      "Product impact: one place for the round and the weekend, with the course data and the social side kept together.",
+    proofLibrary: [
+      { label: "Product note", text: "Scoring, the course map, and the event draft are in the app, not in a brochure site." },
+      { label: "Stack note", text: "The phone app stays on its own stack. The course data, accounts, and live updates sit behind it." },
+      { label: "Demo note", text: "There is no public store listing yet. Ask and we will walk through a build." },
     ],
   },
 ] as const;

@@ -145,6 +145,35 @@
   color: rgba(255, 255, 255, 0.68);
 }
 
+.services-index__body > :first-child {
+  margin-top: 0;
+}
+
+.services-index__summary + .services-index__summary {
+  margin-top: 0.85rem;
+}
+
+.services-index__summary strong {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.services-index__summary a {
+  color: #ffffff;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(186, 230, 253, 0.55);
+  text-underline-offset: 0.18em;
+}
+
+.services-index__summary a:hover {
+  text-decoration-color: rgba(186, 230, 253, 0.95);
+}
+
+.services-index__summary a:focus-visible {
+  outline: 1px solid rgba(14, 165, 233, 0.7);
+  outline-offset: 3px;
+}
+
 .services-index__covers {
   display: flex;
   flex-wrap: wrap;

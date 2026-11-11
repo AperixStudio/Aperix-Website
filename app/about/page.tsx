@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import AboutFoundersSection from "@/components/agency/AboutFoundersSection";
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeAboutSection from "@/components/agency/HomeAboutSection";
 import { buildAboutPageSchema } from "@/lib/schema/siteSchema";
@@ -25,7 +24,6 @@ export default function AboutPage() {
         <AboutFoundersSection />
       </main>
       <Footer />
-      <BubbleNav />
     </>
   );
 }

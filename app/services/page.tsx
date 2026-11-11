@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeContactSection from "@/components/agency/HomeContactSection";
 import ServicesIndex from "@/components/agency/ServicesIndex";
@@ -26,8 +25,6 @@ export default function ServicesPage() {
       </main>
 
       <Footer />
-
-      <BubbleNav />
     </>
   );
 }

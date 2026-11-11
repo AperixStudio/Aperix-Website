@@ -251,19 +251,19 @@ Team trust copy: home subheading says "A two-man team". About metadata says "a t
 
 ---
 
-## 3. `/ecommerce-websites` (proposed, P2)
+## 3. `/ecommerce-websites` (draft, P2, noindex)
 
 | | |
 |---|---|
-| **Status** | Proposed. No equivalent route in the repo. Not in the sitemap. Do not add it until the page exists. |
+| **Status** | On the branch and in the sitemap. Indexable. Teammate sign-off is still open. |
 | **Buyer intent** | Get a custom online store built. |
 | **Primary** | ecommerce website design melbourne (260) |
 | **Secondary** | ecommerce website development melbourne (260). Overlaps the primary. Do not add them together. |
-| **Draft H1, suggestion only** | "Custom ecommerce websites in Melbourne". |
+| **Draft H1** | "Custom ecommerce websites". Set by Thomas on 11 Nov 2026. This page does not mention Melbourne. Home owns the city. |
 
 **Proof:** The Hidden Chapter. The published write-up covers the mood-led storefront, product pathways, browsing, and purchase. Thomas (9 Nov 2026) adds the missing fact: Aperix built the checkout on Stripe, and can use other payment providers. **To do:** put that into the Hidden Chapter case study (`lib/liveSites.ts` and the forum post) so the public proof matches the map.
 
-**Purpose, when the page is built:** process, features, checkout (Stripe, or another payment provider), a custom build rather than a WordPress template, and FAQs. No title or meta description is drafted yet. Draft H1 is above.
+**Purpose on the noindex draft:** process, what the shop has to do, The Hidden Chapter, and FAQs. Title and description are drafted. Checkout stays off the page until the Hidden Chapter write-up records it. H1 is above.
 
 **Do not target:** Shopify- or WooCommerce-specific terms. The repo does not show those as offers.
 
@@ -273,14 +273,14 @@ Team trust copy: home subheading says "A two-man team". About metadata says "a t
 
 ---
 
-## 4. `/web-design-for-tradies` (approved, P3, not built)
+## 4. `/web-design-for-tradies` (approved, P3, noindex draft)
 
 | | |
 |---|---|
-| **Status** | Approved by Thomas on 9 Nov 2026. Not built. No equivalent route. Not in the sitemap. Teammate sign-off is still open. |
+| **Status** | Approved by Thomas on 9 Nov 2026. On the branch and in the sitemap. Indexable. Teammate sign-off is still open. |
 | **Buyer intent** | A tradie wants a website that brings in jobs. |
 | **Primary** | web design for tradies (320) |
-| **Draft H1, suggestion only** | "Websites for tradies, built in Melbourne". |
+| **Draft H1** | "Websites for Tradies". Set by Thomas on 11 Nov 2026. This page does not mention Melbourne. Home owns the city. |
 
 **Proof:** National Roofing Solutions and Complete Trade Solutions, quoted above. The published write-ups already say: multi-service trades layout and a quote path (Complete Trade Solutions); local roofing services, trust signals, and a direct contact path (National Roofing Solutions). Outcomes stay qualitative. Do not add numbers.
 
@@ -309,15 +309,15 @@ The case study files do not say "Google Business Profile" or "free instant quote
 
 ---
 
-## 5. `/custom-software-development` (approved, P3, not built)
+## 5. `/custom-software-development` (approved, P3, noindex draft)
 
 | | |
 |---|---|
-| **Status** | Approved by Thomas on 9 Nov 2026 as the dedicated owner. Not built. No equivalent route. Not in the sitemap. Teammate sign-off is still open. |
+| **Status** | Approved by Thomas on 9 Nov 2026 as the dedicated owner. On the branch and in the sitemap. Indexable. Teammate sign-off is still open. |
 | **Buyer intent** | Commission custom software, a web app, or a SaaS product. |
 | **Primary** | custom software development melbourne (50) |
 | **Secondary** | software development companies melbourne (140) |
-| **Draft H1, suggestion only** | "Custom software development in Melbourne". |
+| **Draft H1** | "Custom software development". Set on 11 Nov 2026 to match the other service pages. This page does not mention Melbourne. Home owns the city. |
 
 Low volume, high commercial value, as stated in the brief. That value is not a measured outcome from the repo.
 
@@ -330,7 +330,7 @@ Low volume, high commercial value, as stated in the brief. That value is not a m
 
 **Do not target:** salary, jobs, or "software companies" as an employer search.
 
-**Decision:** Thomas (9 Nov 2026) chose this page as the only owner of "custom software development melbourne". `/services` keeps a short software section that introduces the work and links here. That section does not target the primary. POV Sync stays a case study. See Decision 4. The teammate has not signed. The page is not built and is not in the sitemap.
+**Decision:** Thomas (9 Nov 2026) chose this page as the only owner of "custom software development melbourne". `/services` keeps a short software section that introduces the work and links here. That section does not target the primary. POV Sync stays a case study. See Decision 4. The teammate has not signed. The noindex draft is on the branch and is not in the sitemap.
 
 ---
 
@@ -469,9 +469,9 @@ No existing route was an equivalent of `/ecommerce-websites`, `/web-design-for-t
 | Keyword | Only primary owner |
 |---|---|
 | web design melbourne | `/` |
-| ecommerce website design melbourne | `/ecommerce-websites` (proposed) |
-| web design for tradies | `/web-design-for-tradies` (approved, not built) |
-| custom software development melbourne | `/custom-software-development` (approved, not built) |
+| ecommerce website design melbourne | `/ecommerce-websites` |
+| web design for tradies | `/web-design-for-tradies` |
+| custom software development melbourne | `/custom-software-development` |
 | small business website design packages | `/services` |
 | AI receptionist for tradies | `/services`, own section, no new URL |
 

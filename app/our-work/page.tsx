@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeContactSection from "@/components/agency/HomeContactSection";
 import WorkIndex from "@/components/agency/WorkIndex";
@@ -44,8 +43,6 @@ export default function OurWorkPage() {
       </main>
 
       <Footer />
-
-      <BubbleNav />
     </>
   );
 }

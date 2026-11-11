@@ -53,8 +53,8 @@ export type OrbitPreset = {
  *
  * The reference's frame is 2962x2160 because it fills a viewport; ours is
  * tighter so the cards land at a size a website preview is actually readable
- * at. Ten cards carry the five projects twice, which puts each project
- * opposite its own repeat.
+ * at. The ring shows each live project once. `count` is a design note; the
+ * stage places however many items it is given.
  */
 export const WORK_ORBIT_WIDE: OrbitPreset = {
   frame: { w: 1800, h: 1150 },

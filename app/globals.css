@@ -871,10 +871,6 @@ html:has(#home-story, #home-hero) .agency-header .agency-button-primary:hover {
   --winding-x: 92%;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 /* ---------------------------------------------------------------
    Reduced-motion accommodation disabled by product decision.
    The block below is intentionally commented out so the animation

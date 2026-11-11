@@ -2,6 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import HashLink from "@/components/agency/HashLink";
 import "./BubbleNav.css";
 
@@ -46,7 +47,11 @@ function scrollToTop() {
  * this way on a touchscreen to begin with — see BubbleNav.css.
  */
 export default function BubbleNav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Mouse clicks leave the pointer over the pill, and the link keeps focus.
+  // Either one would hold it open. Suppress hover until the pointer leaves.
+  const [dismissed, setDismissed] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -58,15 +63,25 @@ export default function BubbleNav() {
     (event: React.MouseEvent) => {
       // Once open, the pill's own background is never what a tap lands on —
       // that area is a link, a divider, or the gap around one — so this only
-      // ever fires for the tap that opens it.
+      // ever fires for the tap that opens it. Link clicks bubble here too;
+      // those must not flip the pill back open after a selection.
       if (open) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("a, button")) return;
       event.preventDefault();
       setOpen(true);
     },
     [open],
   );
 
-  const closePill = useCallback(() => setOpen(false), []);
+  const closePill = useCallback(() => {
+    setOpen(false);
+    setDismissed(true);
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && shellRef.current?.contains(active)) {
+      active.blur();
+    }
+  }, []);
 
   // Tapping outside, or Escape, closes it again. Mouse users never set `open`
   // in the first place (they close by moving the pointer away), so this only
@@ -89,10 +104,16 @@ export default function BubbleNav() {
     };
   }, [open]);
 
+  // One instance lives in the root layout. These routes bring their own nav.
+  if (pathname.startsWith("/dev") || pathname.startsWith("/current")) {
+    return null;
+  }
+
   const shell = (
     <div
       ref={shellRef}
-      className={`bubble-nav-shell${open ? " is-open" : ""}`}
+      className={`bubble-nav-shell${open ? " is-open" : ""}${dismissed ? " is-dismissed" : ""}`}
+      onPointerLeave={() => setDismissed(false)}
     >
       <nav className="bubble-nav" aria-label="Site navigation" onClick={openPill}>
         {/* Collapsed state label */}

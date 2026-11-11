@@ -9,6 +9,7 @@ const SERVICE_LINKS: Record<string, { href: string; label: string }> = {
   "POV Sync": { href: "/custom-software-development", label: "custom software development" },
   "Complete Trade Solutions": { href: "/web-design-for-tradies", label: "websites for tradies" },
   "National Roofing Solutions": { href: "/web-design-for-tradies", label: "websites for tradies" },
+  Mully: { href: "/app-development", label: "app development" },
 };
 
 function projectNumber(index: number) {
@@ -27,8 +28,8 @@ export default function WorkIndex() {
           </h1>
         </div>
         <p className="services-index__lede">
-          Live sites we have shipped: a booking studio, a shop, a web app, and
-          trade businesses in Melbourne and Victoria.
+          Work we have shipped: a booking studio, a shop, a web app, a golf
+          product for iOS and Android, and trade businesses in Melbourne and Victoria.
         </p>
       </header>
 

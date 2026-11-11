@@ -68,14 +68,20 @@ export const SITE_SITEMAP_IMAGES = [
   },
   {
     pagePath: "/",
-    loc: "/NailsByAvyPreview.png",
+    loc: "/NailsByAvyPreview.webp",
     title: "Nails by Avy case study preview",
     caption: "Nails by Avy nail studio website by Aperix Studio",
   },
   {
     pagePath: "/our-work",
-    loc: "/POVSyncPreview.png",
+    loc: "/POVSyncPreview.webp",
     title: "POV Sync case study preview",
     caption: "POV Sync SaaS landing page by Aperix Studio",
+  },
+  {
+    pagePath: "/our-work",
+    loc: "/MullyPreview.webp",
+    title: "Mully case study preview",
+    caption: "Mully golf companion app by Aperix Studio",
   },
 ] as const;

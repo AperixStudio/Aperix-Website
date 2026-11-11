@@ -234,6 +234,15 @@ export const STUDIO_SERVICES: StudioService[] = [
     summary:
       "Apps for the phone and for the product. The same two people from the first conversation through to something you can hand someone.",
     covers: ["Mobile apps", "Product apps"],
+    caseStudies: [{ before: "See ", name: "Mully", after: "." }],
+    pages: [
+      {
+        before: "More on ",
+        label: "app development",
+        href: "/app-development",
+        after: ".",
+      },
+    ],
   },
   {
     id: "ai-receptionist",

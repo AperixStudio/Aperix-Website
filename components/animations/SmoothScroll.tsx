@@ -95,7 +95,14 @@ export default function SmoothScroll() {
       targetY = currentY;
     };
 
+    const dialogOpen = () => document.body.dataset.dialogOpen === "true";
+
     const tick = () => {
+      if (dialogOpen()) {
+        stop();
+        return;
+      }
+
       currentY += (targetY - currentY) * SCROLL_EASE;
 
       if (Math.abs(targetY - currentY) < STOP_THRESHOLD) {
@@ -121,6 +128,13 @@ export default function SmoothScroll() {
       }
 
       const deltaY = normalizeWheelDelta(event);
+      if (dialogOpen()) {
+        if (!hasScrollableParent(event.target as Element | null, deltaY)) {
+          event.preventDefault();
+          stop();
+        }
+        return;
+      }
       if (hasScrollableParent(event.target as Element | null, deltaY)) {
         return;
       }

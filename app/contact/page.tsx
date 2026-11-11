@@ -1,5 +1,4 @@
 import { type Metadata } from "next";
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import HomeContactSection from "@/components/agency/HomeContactSection";
 import { buildLocalBusinessSchema } from "@/lib/schema/siteSchema";
@@ -47,7 +46,6 @@ export default function ContactPage() {
       </main>
 
       <Footer />
-      <BubbleNav />
     </>
   );
 }

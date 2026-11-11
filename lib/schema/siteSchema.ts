@@ -222,6 +222,60 @@ export function buildServicesPageSchema() {
   };
 }
 
+export function buildServiceLandingSchema({
+  path,
+  name,
+  description,
+  serviceName,
+  faqs,
+}: {
+  path: `/${string}`;
+  name: string;
+  description: string;
+  serviceName: string;
+  faqs: { question: string; answer: string }[];
+}) {
+  const siteUrl = getSiteUrl();
+  const url = `${siteUrl}${path}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name,
+        description,
+        inLanguage: SITE_LOCALITY.htmlLang,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${url}#service` },
+      },
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: serviceName,
+        description,
+        url,
+        provider: { "@id": `${siteUrl}/#organization` },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        url,
+        mainEntity: faqs.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
+      },
+    ],
+  };
+}
+
 export function buildGeoMetaTags() {
   return {
     "geo.region": SITE_LOCALITY.geoRegion,

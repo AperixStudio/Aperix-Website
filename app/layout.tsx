@@ -7,6 +7,7 @@ import SiteLogoFixed from "@/components/agency/SiteLogoFixed";
 import CursorFollower from "@/components/animations/CursorFollower";
 import IntroSelector from "@/components/animations/IntroSelector";
 import PageReveal from "@/components/animations/PageReveal";
+import BubbleNav from "@/components/agency/BubbleNav";
 import SkipToContent from "@/components/layout/SkipToContent";
 import {
   buildOrganizationSchema,
@@ -101,12 +102,14 @@ export default function RootLayout({
             thread JS instead of the browser's compositor thread, so any
             hitch elsewhere on the page — WebGL background frames, the video
             tiles' play/pause churn, framer-motion — stuttered the scroll
-            itself rather than just a paint. Native scrolling (this file's
-            `scroll-behavior: smooth` in globals.css covers anchor jumps) has
-            no such failure mode. See components/animations/SmoothScroll.tsx
-            if this needs revisiting. */}
+            itself rather than just a paint. Native scrolling has no such
+            failure mode. Same-page hashes still ease through HashLink.
+            See components/animations/SmoothScroll.tsx if this needs revisiting. */}
         <CursorFollower />
-        <PageReveal>{children}</PageReveal>
+        <PageReveal>
+          {children}
+          <BubbleNav />
+        </PageReveal>
       </body>
     </html>
   );
