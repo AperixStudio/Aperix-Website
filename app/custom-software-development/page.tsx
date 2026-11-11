@@ -59,7 +59,7 @@ export default function CustomSoftwareDevelopmentPage() {
         <ServiceDetail
           title="Custom software development"
           lede="Custom software development for a web app or a SaaS product people log into, not a brochure with a login attached."
-          close="Describe what the software has to do, and where people get stuck today. We'll reply with a written scope and a timeline."
+          close="Describe what the software has to do, and where people get stuck today. We'll get in touch to talk through how we'd do it."
           sections={[
             {
               title: "The product",

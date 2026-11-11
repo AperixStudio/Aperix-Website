@@ -55,7 +55,7 @@ export default function WebDesignForTradiesPage() {
         <ServiceDetail
           title="Websites for Tradies"
           lede="Web design for tradies who need enquiries, not a brochure. The work is on the first screen, and the way to ask for a quote is easy to find."
-          close="Describe the work you want the site to bring in. We'll reply with a written scope and a timeline."
+          close="Describe the work you want the site to bring in. We'll get in touch to talk through how we'd do it."
           sections={[
             {
               title: "The job of the site",

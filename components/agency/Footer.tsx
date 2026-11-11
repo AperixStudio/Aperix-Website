@@ -329,6 +329,7 @@ export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const pinning = useRef(false);
   const skipPin = useRef(true);
+  const stickToBottom = useRef(false);
   const detailsOpenRef = useRef(false);
   detailsOpenRef.current = detailsOpen;
 
@@ -383,16 +384,20 @@ export default function Footer() {
 
     const onTouchStart = (event: TouchEvent) => {
       if (!mq.matches || reduced.matches || event.touches.length !== 1) return;
+      const footer = footerRef.current;
+      const onFooter = !!footer && event.target instanceof Node && footer.contains(event.target);
       armed = fromBottom() < 12;
-      holdingDetails = armed && detailsOpenRef.current;
+      // Only a finger that starts on the footer may freeze scrolling.
+      // Touches on the rest of the page scroll normally.
+      holdingDetails = onFooter && detailsOpenRef.current;
       startY = event.touches[0].clientY;
-      if (holdingDetails) {
-        document.addEventListener("touchmove", onTouchMove, { passive: false });
+      if (holdingDetails && footer) {
+        footer.addEventListener("touchmove", onTouchMove, { passive: false });
       }
     };
 
     const endGesture = (event: TouchEvent) => {
-      document.removeEventListener("touchmove", onTouchMove);
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
       if (!armed) {
         holdingDetails = false;
         return;
@@ -402,7 +407,8 @@ export default function Footer() {
       holdingDetails = false;
       const dy = startY - event.changedTouches[0].clientY;
       if (!wasHolding && dy > 48) setDetailsOpen(true);
-      else if (dy < -48) {
+      else if (wasHolding && dy < -48) {
+        stickToBottom.current = true;
         setDetailsOpen(false);
         setLegalsOpen(false);
       }
@@ -411,7 +417,7 @@ export default function Footer() {
     const onTouchCancel = () => {
       armed = false;
       holdingDetails = false;
-      document.removeEventListener("touchmove", onTouchMove);
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -423,7 +429,7 @@ export default function Footer() {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", endGesture);
       window.removeEventListener("touchcancel", onTouchCancel);
-      document.removeEventListener("touchmove", onTouchMove);
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
     };
   }, []);
 
@@ -437,7 +443,9 @@ export default function Footer() {
     }
 
     const footer = footerRef.current;
-    if (!footer || !window.matchMedia("(max-width: 640px)").matches) return undefined;
+    const followBottom = detailsOpen || stickToBottom.current;
+    stickToBottom.current = false;
+    if (!footer || !followBottom || !window.matchMedia("(max-width: 640px)").matches) return undefined;
 
     pinning.current = true;
     let frame = 0;
@@ -455,31 +463,6 @@ export default function Footer() {
     return () => {
       cancelAnimationFrame(frame);
       pinning.current = false;
-    };
-  }, [detailsOpen]);
-
-  // A trackpad or mouse-wheel flick is one gesture made of many events. Eat
-  // the upward ones through the collapse, or the page scrolls past stage 1
-  // before the bar has finished shrinking.
-  useEffect(() => {
-    if (!detailsOpen) return undefined;
-
-    const mq = window.matchMedia("(max-width: 640px)");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const onWheel = (event: WheelEvent) => {
-      if (!mq.matches || reduced.matches || event.deltaY >= 0) return;
-      event.preventDefault();
-      if (!detailsOpenRef.current) return;
-      setDetailsOpen(false);
-      setLegalsOpen(false);
-    };
-
-    document.addEventListener("wheel", onWheel, { passive: false });
-    return () => {
-      window.setTimeout(() => {
-        document.removeEventListener("wheel", onWheel);
-      }, 450);
     };
   }, [detailsOpen]);
 

@@ -65,7 +65,7 @@ export default function WorkIndex() {
       <div className="services-index__close">
         <p className="services-index__close-copy">
           Want something in this line? Describe what you want to ship. We&apos;ll
-          reply with a fixed quote and a timeline.
+          get in touch to talk through how we&apos;d do it.
         </p>
         <HashLink href="#contact" className="services-index__cta">
           Contact us

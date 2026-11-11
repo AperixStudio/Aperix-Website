@@ -93,7 +93,7 @@ export default function ServicesIndex() {
       <div className="services-index__close">
         <p className="services-index__close-copy">
           Don&apos;t see the exact thing? Describe what you want to ship. We&apos;ll
-          reply with a fixed quote and a timeline.
+          get in touch to talk through how we&apos;d do it.
         </p>
         <HashLink href="#contact" className="services-index__cta">
           Contact us

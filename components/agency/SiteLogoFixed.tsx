@@ -29,20 +29,17 @@ const LOGO_GPU_MOBILE = 480; // iOS Safari OOMs on a 2000px WebGL canvas × devi
 const LOGO_NAV_SIZE = 352;
 const LOGO_NAV_SIZE_MOBILE = 352; // ≤767px only — tune independently from desktop
 
-// Mobile homepage (≤767px, compact layout): slot size is from HomeHero.css —
-// multiply here without touching CSS. 1 = slot size; 0.85 smaller; 1.1 larger.
-// Tablet compact (768–820px) keeps the slot scale only.
+// Phone homepage mark. Width matches --hero-logo-width in HomeHero.css.
+// 1 = that slot; 0.85 smaller; 1.1 larger. Used on every phone page, not
+// only home. Tablet (768–820px) and desktop do not use it.
 const MOBILE_COMPACT_HERO_SCALE = 1;
+const MOBILE_HOME_LOGO_WIDTH_REM = 13.5;
 
-// Fixed anchor: `top` on #site-logo-fixed + nav dock math in `apply()`.
-// More negative = higher on screen.
+// Fixed anchor for the docked mark. The homepage phone pose does not use
+// this as its on-screen position — the hero slot does, plus NAV_TOP_REM_MOBILE.
 const NAV_TOP_REM = -2.25;
-// Docked phone mark (inner pages, and the shrunk pose). Not the homepage hero.
-const NAV_DOCK_TOP_REM_MOBILE = -12.25;
-// Phone shift from the current resting place. 0 leaves the homepage logo in
-// its hero slot and the docked logo where it is. Negative moves up, positive
-// moves down. The homepage slot used to cancel NAV_TOP_REM_MOBILE, so editing
-// it did nothing on the phone home screen.
+// Phone homepage only. 0 sits in the hero slot. Negative moves up, positive
+// moves down. Not applied on other pages, or the mark gets pushed off screen.
 const NAV_TOP_REM_MOBILE = -3;
 
 // Mobile-only extra shrink once fully docked: scales down toward MIN_SCALE
@@ -51,8 +48,6 @@ const NAV_TOP_REM_MOBILE = -3;
 // page) — then holds there, smaller but never gone. Desktop is unaffected.
 const MOBILE_QUERY           = "(max-width: 767px)";
 const COMPACT_QUERY          = "(max-width: 820px)";
-const MOBILE_MIN_SCALE       = 0.45;
-const MOBILE_SHRINK_RANGE_PX = 220;
 
 /**
  * Fixed centred logo. Desktop: hero scale on load, docks to nav as the
@@ -70,9 +65,10 @@ const MOBILE_SHRINK_RANGE_PX = 220;
  * measurement still works. After the intro logo animates up and fades out,
  * this element is already in place at the correct (hero) position.
  *
- * On any page without a laid-out `#home-hero-logo-slot` (every page but
- * home, or a slot with no box) this docks at nav size/position, with the
- * original mobile scroll-shrink.
+ * Phones (≤767px) keep the homepage loaded size and position on every
+ * page, including while scrolling. Desktop still docks smaller as the hero
+ * scrolls away. Tablet keeps the compact homepage slot and the nav dock
+ * everywhere else.
  *
  * The pose is remeasured on every route change. This component stays mounted
  * across navigations, so without that the last transform would stick: the
@@ -134,23 +130,42 @@ function SiteLogoFixed() {
       const size = gpuSizeRef.current;
       const navScale = (isMobile ? LOGO_NAV_SIZE_MOBILE : LOGO_NAV_SIZE) / size;
       const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      const navTopRem = isMobile ? NAV_DOCK_TOP_REM_MOBILE : NAV_TOP_REM;
-      const phoneShift = isMobile ? NAV_TOP_REM_MOBILE * remPx : 0;
+      const navTopRem = NAV_TOP_REM;
+      const phoneShift = isMobile && isCompact ? NAV_TOP_REM_MOBILE * remPx : 0;
       el.style.top = `${navTopRem}rem`;
       const navTopY = navTopRem * remPx;
       const heroSlot = document.getElementById("home-hero-logo-slot");
       const heroSection = document.getElementById("home-hero");
       const slotRect = heroSlot?.getBoundingClientRect();
 
-      if (!slotRect || slotRect.width <= 1 || !heroSection) {
-        // No hero on this page/breakpoint — docked at rest, same as before
-        // this redesign, with the original scrollY-based mobile shrink.
-        let scale = navScale;
-        if (isMobile) {
-          const t = Math.min(1, window.scrollY / MOBILE_SHRINK_RANGE_PX);
-          scale *= 1 - t * (1 - MOBILE_MIN_SCALE);
+      // Phones: one pose, the homepage mark. No scroll shrink. The slot
+      // measurement wins on home so it stays under the wordmark; other
+      // pages rebuild that same box from the same CSS numbers.
+      if (isMobile) {
+        const phoneShift = NAV_TOP_REM_MOBILE * remPx;
+        if (slotRect && slotRect.width > 1 && heroSection) {
+          const sectionRect = heroSection.getBoundingClientRect();
+          const heroCenterX = slotRect.left + slotRect.width / 2;
+          const restCenterY =
+            slotRect.top - sectionRect.top + slotRect.height / 2;
+          const heroTopY = restCenterY - (slotRect.width * LOGO_ASPECT) / 2;
+          const dx = heroCenterX - window.innerWidth / 2;
+          const dy = heroTopY - navTopY + phoneShift;
+          const scale = (slotRect.width / size) * MOBILE_COMPACT_HERO_SCALE;
+          el.style.transform =
+            `translateX(-50%) translate(${dx}px, ${dy}px) scale(${scale})`;
+          return;
         }
-        el.style.transform = `translateX(-50%) translateY(${phoneShift}px) scale(${scale})`;
+
+        const slotWidth = MOBILE_HOME_LOGO_WIDTH_REM * remPx * MOBILE_COMPACT_HERO_SCALE;
+        const dy = mobileHomeLogoTopPx(remPx) - navTopY + phoneShift;
+        el.style.transform =
+          `translateX(-50%) translate(0px, ${dy}px) scale(${slotWidth / size})`;
+        return;
+      }
+
+      if (!slotRect || slotRect.width <= 1 || !heroSection) {
+        el.style.transform = `translateX(-50%) scale(${navScale})`;
         return;
       }
 
@@ -305,4 +320,18 @@ export default memo(SiteLogoFixed);
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
+}
+
+/** Matches :root --wordmark-size, including the ≤640px override in globals.css. */
+function mobileWordmarkPx(remPx: number) {
+  const width = window.innerWidth;
+  if (width <= 640) {
+    return Math.min(2.4 * remPx, Math.max(1.3 * remPx, width * 0.0833));
+  }
+  return Math.min(3.6 * remPx, Math.max(2.4 * remPx, width * 0.055));
+}
+
+/** Top of the phone hero logo slot: 5.5vh + wordmark + 0.55rem. */
+function mobileHomeLogoTopPx(remPx: number) {
+  return window.innerHeight * 0.055 + mobileWordmarkPx(remPx) + 0.55 * remPx;
 }

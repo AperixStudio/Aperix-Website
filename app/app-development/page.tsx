@@ -59,7 +59,7 @@ export default function AppDevelopmentPage() {
         <ServiceDetail
           title="App development"
           lede="App development for a product people carry with them. The app does the job, instead of sending them between a scorecard, a map, and a chat."
-          close="Describe what the app has to do. We'll reply with a written scope and a timeline."
+          close="Describe what the app has to do. We'll get in touch to talk through how we'd do it."
           sections={[
             {
               title: "The product",

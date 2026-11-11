@@ -59,7 +59,7 @@ export default function EcommerceWebsitesPage() {
         <ServiceDetail
           title="Custom ecommerce websites"
           lede="Ecommerce website design for a shop that should feel like the brand, not a generic catalogue."
-          close="Describe what the shop sells and what it should feel like. We'll reply with a written scope and a timeline."
+          close="Describe what the shop sells and what it should feel like. We'll get in touch to talk through how we'd do it."
           sections={[
             {
               title: "The shop",
