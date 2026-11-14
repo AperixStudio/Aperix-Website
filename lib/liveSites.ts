@@ -7,15 +7,15 @@ export const LIVE_SITES = [
     status: "Live now",
     label: "Nail studio / appointments",
     summary:
-      "An appointments-only site for a Sunbury nail studio. Gel, BIAB, and custom nail art are laid out as signature sets, with prices, hours, and online booking on the same page.",
-    scope: ["Booking site", "Service menu", "Signature sets", "Studio hours", "Local appointments"],
+      "An appointments only site for a Sunbury nail studio. Gel, BIAB, Acryllic and custom nail art are laid out as signature sets, with prices, hours, and online booking on the same page.",
+    scope: ["Booking site", "Services menu", "Signature sets", "Studio hours", "Local appointments", "Easy to use booking flow and management for owner."],
     client: "Nails by Avy",
     problem:
-      "A new studio needed somewhere clients could see the work, compare gel and BIAB, and book a time without going back and forth in messages.",
+      "A new studio needed somewhere clients could primarly book appointments as they were doing thi by hand to begin, but also showcase their work and services to potential clients bringing new clients to the studio.",
     solution:
       "We built the site around signature sets, a full price list, and a direct booking path, with the studio address and opening hours easy to find.",
     result:
-      "Visitors can choose a set, check the price, and book online, with confirmation sent straight to their inbox.",
+      "Visitors can choose a set, check the price, and book online, with confirmation sent straight to their inbox. The owner can easily manage the site and add new services and pricing as well as change availability and hours.",
     beforeAfter:
       "Before: the offer lived in Instagram and DMs. After: services, prices, and booking sit on one site.",
     relatedService: "Growth package for local appointment businesses",
@@ -36,13 +36,13 @@ export const LIVE_SITES = [
     status: "Live now",
     label: "E-commerce / brand experience",
     summary:
-      "A blind date with a book storefront built around mood, mystery, and gifting. The site leads with a strong brand concept, clear shopping flow, and a polished experience that feels thoughtful from the first scroll.",
+      "A small custom storefront and checkout for a Blind Date with a Book buisness. The site leads with a strong brand concept, clear shopping flow, trusted payment gateway and easy to use checkout.",
     scope: ["E-commerce", "Brand storytelling", "Responsive UX", "Story-led homepage", "Warm branded shopping flow"],
     client: "The Hidden Chapter",
     problem:
-      "The business needed an online store that felt like a curated gift experience instead of a generic product catalogue.",
+      "The business was limited to only selling books in person and needed a way to sell books online to reach a wider audience.",
     solution:
-      "We built a mood-led storefront with stronger visual hierarchy, clearer product pathways, and brand storytelling that supports discovery on desktop and mobile.",
+      "We built a mood led storefront with good SEO foundations, allowing the Hidden Chapter to be found by more potential customers. We built clear product pathways, and brand storytelling that supports discovery on desktop and mobile.",
     result:
       "The finished site gives the brand a more premium feel and makes it easier for visitors to move from curiosity to browsing and purchase.",
     beforeAfter:
@@ -96,7 +96,7 @@ export const LIVE_SITES = [
     preview: "/POVSyncPreview.webp",
     summary:
       "A multi-POV streaming tool that brings YouTube and Twitch feeds into one synced view. The product site focuses on fast onboarding, clear feature communication, and a simple path into the host setup flow.",
-    scope: ["SaaS landing", "Product messaging", "Onboarding UX", "Fast setup flow"],
+    scope: ["Multi-POV view", "YouTube and Twitch", "Synced feeds", "Web app"],
     client: "POV Sync",
     problem:
       "The product needed to explain a fairly technical workflow without losing people before they reached the setup stage.",
@@ -124,8 +124,8 @@ export const LIVE_SITES = [
     status: "Live now",
     label: "Trades / home renovation",
     summary:
-      "A full-service trades business covering kitchen renovations, roof restoration, painting, plumbing, electrical, cabinetry, and flooring. The site leads with a cinematic intro animation, clear service breakdown, and a direct quote enquiry flow.",
-    scope: ["Multi-service trades", "Intro animation", "Service showcase", "Quote CTA", "Mobile-first"],
+      "A full service trades business covering kitchen renovations, roof restoration, painting, plumbing, electrical, cabinetry, and flooring. The site leads with a cinematic intro animation, clear service breakdown, and a direct quote enquiry flow.",
+    scope: ["Trade services", "Intro animation", "Service showcase", "Quote CTA", "Mobile-first"],
     client: "Complete Trade Solutions",
     problem:
       "The business needed one site that could handle multiple services without feeling crowded or hard to scan.",

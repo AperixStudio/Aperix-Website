@@ -1,4 +1,6 @@
+import Link from "next/link";
 import "./AboutFoundersSection.css";
+import "./ServicesIndex.css";
 
 const FOUNDERS = [
   {
@@ -25,7 +27,7 @@ export default function AboutFoundersSection() {
           Two backgrounds. One studio.
         </h2>
         <p className="about-founders__lede">
-          Aperix is Tom and Harrison. Different training, the same work: take what you want built and ship it.
+          Aperix is a small software studio that cares about your business. We learn how you work and who you serve, then build the website, the app, or the software around that.
         </p>
 
         <div className="about-founders__grid">
@@ -41,6 +43,9 @@ export default function AboutFoundersSection() {
         <p className="about-founders__closer">
           You work with both of us. There is no account layer in between.
         </p>
+        <Link href="/contact" className="services-index__cta about-founders__cta">
+          Contact us
+        </Link>
       </div>
     </section>
   );

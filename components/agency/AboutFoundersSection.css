@@ -84,6 +84,10 @@
   color: rgba(255, 255, 255, 0.68);
 }
 
+.about-founders__cta {
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+}
+
 .about-founders__closer {
   margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
   max-width: 34rem;
