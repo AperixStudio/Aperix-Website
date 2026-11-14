@@ -11,11 +11,11 @@ const routes: Array<{ path: string; priority: number; changeFrequency: MetadataR
 
 /** Stable last-modified dates per route (update when page content changes). */
 const ROUTE_LAST_MODIFIED: Record<string, string> = {
-  "": "2026-11-04",
-  "/services": "2026-11-04",
-  "/our-work": "2026-11-04",
-  "/about": "2026-11-04",
-  "/contact": "2026-11-04",
+  "": "2026-11-14",
+  "/services": "2026-11-14",
+  "/our-work": "2026-11-14",
+  "/about": "2026-11-14",
+  "/contact": "2026-11-14",
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map(({ path, priority, changeFrequency }) => ({
     url: `${siteUrl}${path}`,
-    lastModified: ROUTE_LAST_MODIFIED[path] ?? "2026-11-04",
+    lastModified: ROUTE_LAST_MODIFIED[path] ?? "2026-11-14",
     changeFrequency,
     priority,
   }));
