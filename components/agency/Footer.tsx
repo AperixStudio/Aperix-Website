@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 import { SITE_EMAIL } from "@/lib/site";
-import { SITE_TEAM } from "@/lib/siteBusiness";
+import { SITE_GOOGLE_PROFILE_URL, SITE_LOCALITY, SITE_TEAM } from "@/lib/siteBusiness";
 import "./Footer.css";
 
 const STUDIO_ABN = "57 379 139 292";
@@ -505,7 +505,10 @@ export default function Footer() {
           </div>
           <div className="site-footer__side site-footer__side--trail">
             <address className="site-footer__address">
-              <span>Melbourne, Victoria (online)</span>
+              <span>Based in {SITE_LOCALITY.city}</span>
+              <a href={SITE_GOOGLE_PROFILE_URL} target="_blank" rel="noopener noreferrer">
+                Serving {SITE_LOCALITY.countryName}
+              </a>
               <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
               <ul className="site-footer__phones">
                 {SITE_TEAM.map((member) => (

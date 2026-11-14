@@ -122,8 +122,9 @@ body {
   text-underline-offset: 2px;
 }
 
-.site-footer__nav a:hover {
-  color: var(--agency-text, #f4f7fb);
+.site-footer__nav a:hover,
+.site-footer__nav a:focus-visible {
+  color: #ffffff;
 }
 
 .site-footer__address {
@@ -144,8 +145,9 @@ body {
   text-underline-offset: 2px;
 }
 
-.site-footer__address a:hover {
-  color: var(--agency-text, #f4f7fb);
+.site-footer__address a:hover,
+.site-footer__address a:focus-visible {
+  color: #ffffff;
 }
 
 .site-footer__phones {

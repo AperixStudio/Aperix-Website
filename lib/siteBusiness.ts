@@ -13,16 +13,11 @@ export const SITE_LOCALITY = {
   openGraphLocale: "en_AU",
 } as const;
 
+/** Google share link for the Aperix Studio listing, including the service area. */
+export const SITE_GOOGLE_PROFILE_URL = "https://maps.app.goo.gl/avRuFFQswpMonZiN6";
+
+/** Harrison is the primary number on the Google Business Profile, so he is listed first. */
 export const SITE_TEAM = [
-  {
-    id: "tom",
-    name: "Tom",
-    jobTitle: "Co-founder & Developer",
-    imagePath: "/TomPhoto.webp",
-    imageAlt: "Tom, Co-founder at Aperix Studio",
-    phoneDisplay: "0466 584 549",
-    phoneTel: "+61466584549",
-  },
   {
     id: "harrison",
     name: "Harrison",
@@ -31,6 +26,15 @@ export const SITE_TEAM = [
     imageAlt: "Harrison, Co-founder at Aperix Studio",
     phoneDisplay: "0499 277 423",
     phoneTel: "+61499277423",
+  },
+  {
+    id: "tom",
+    name: "Tom",
+    jobTitle: "Co-founder & Developer",
+    imagePath: "/TomPhoto.webp",
+    imageAlt: "Tom, Co-founder at Aperix Studio",
+    phoneDisplay: "0466 584 549",
+    phoneTel: "+61466584549",
   },
 ] as const;
 
