@@ -3,10 +3,10 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import {
-  PIXEL_FADE_CELL,
-  PIXEL_FADE_CELLS,
+  PIXEL_FADE_HEIGHT,
   PIXEL_FADE_INSIDE,
-  PIXEL_FADE_ROWS,
+  PIXEL_FADE_SRC,
+  PIXEL_FADE_WIDTH,
 } from "@/lib/pixelFade";
 
 // Radius of the round "blob" head of the reveal once the cursor has settled.
@@ -458,16 +458,13 @@ export default function WorkCursorLens({
               className="home-work__backdrop-fill"
             />
             <g ref={gridGroupRef} className="home-work__backdrop-grid">
-              {PIXEL_FADE_CELLS.map((cell) => (
-                <rect
-                  key={`${cell.x}-${cell.y}`}
-                  x={cell.x}
-                  y={cell.y}
-                  width={PIXEL_FADE_CELL}
-                  height={PIXEL_FADE_CELL}
-                  opacity={0.4 + 0.6 * (1 - cell.row / (PIXEL_FADE_ROWS - 1))}
-                />
-              ))}
+              <image
+                href={PIXEL_FADE_SRC}
+                x={0}
+                y={0}
+                width={PIXEL_FADE_WIDTH}
+                height={PIXEL_FADE_HEIGHT}
+              />
             </g>
           </g>
 

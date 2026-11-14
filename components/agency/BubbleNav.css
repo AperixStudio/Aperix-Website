@@ -5,7 +5,7 @@
 .bubble-nav-shell {
   position: fixed;
   /* Raised on pages that render the site footer — see Footer.css. */
-  bottom: var(--bubble-nav-bottom, 2rem);
+  bottom: var(--bubble-nav-bottom, 2.75rem);
   left: 50%;
   transform: translateX(-50%);
   /* Above .home-hero (z-index 201) and SiteLogoFixed (200). Those layers
@@ -60,7 +60,7 @@
    here removes the ambiguity outright, rather than trying to out-time it;
    `.is-open` below is their explicit, JS-driven equivalent. */
 @media (hover: hover) {
-  .bubble-nav-shell:hover .bubble-nav {
+  .bubble-nav-shell:hover:not(.is-dismissed) .bubble-nav {
     width: 34rem;
     box-shadow:
       0 0 0 1px rgba(14, 165, 233, 0.4),
@@ -78,6 +78,19 @@
     0 0 0 1px rgba(14, 165, 233, 0.4),
     0 8px 40px rgba(14, 165, 233, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Offer pages keep all five sections plus Home. Grow past 34rem, still
+   inside the viewport cap already set on .bubble-nav. */
+@media (hover: hover) {
+  .bubble-nav-shell--six:hover:not(.is-dismissed) .bubble-nav {
+    width: min(42rem, calc(100vw - 2rem));
+  }
+}
+
+.bubble-nav-shell--six:focus-within .bubble-nav,
+.bubble-nav-shell--six.is-open .bubble-nav {
+  width: min(42rem, calc(100vw - 2rem));
 }
 
 /* ── Collapsed label "TABS" with glitch ────────────────────── */
@@ -103,7 +116,7 @@
 }
 
 @media (hover: hover) {
-  .bubble-nav-shell:hover .bubble-nav__label {
+  .bubble-nav-shell:hover:not(.is-dismissed) .bubble-nav__label {
     opacity: 0;
     pointer-events: none;
   }
@@ -131,7 +144,7 @@
    these match, the links have no hit-target at all, so a first tap on the
    collapsed pill can only ever land on its background. */
 @media (hover: hover) {
-  .bubble-nav-shell:hover .bubble-nav__links {
+  .bubble-nav-shell:hover:not(.is-dismissed) .bubble-nav__links {
     opacity: 1;
     pointer-events: auto;
   }
@@ -179,7 +192,7 @@
 }
 
 @media (hover: hover) {
-  .bubble-nav-shell:hover .bubble-nav__top {
+  .bubble-nav-shell:hover:not(.is-dismissed) .bubble-nav__top {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 0.15s;
@@ -276,6 +289,17 @@
   .bubble-nav__link::before,
   .bubble-nav__link::after {
     padding: 0 0.5rem;
+  }
+
+  .bubble-nav-shell--six .bubble-nav__link {
+    padding: 0 0.28rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .bubble-nav-shell--six .bubble-nav__link::before,
+  .bubble-nav-shell--six .bubble-nav__link::after {
+    padding: 0 0.28rem;
   }
 }
 

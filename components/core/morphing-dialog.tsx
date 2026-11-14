@@ -189,6 +189,7 @@ export function MorphingDialogContent({
       return;
     }
 
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     markDialogOpen();
     containerRef.current
@@ -198,6 +199,7 @@ export function MorphingDialogContent({
       ?.focus();
 
     return () => {
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
       markDialogClosed();
     };
@@ -241,7 +243,7 @@ export function MorphingDialogContainer({
           <motion.div
             key={`backdrop-${uniqueId}`}
             className={cn(
-              "fixed inset-0 z-100 h-full w-full bg-black/70 backdrop-blur-sm",
+              "fixed inset-0 z-[450] h-full w-full bg-black/70 backdrop-blur-sm",
               backdropClassName,
             )}
             initial={{ opacity: 0 }}
@@ -249,7 +251,7 @@ export function MorphingDialogContainer({
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
           />
-          <div className="pointer-events-none fixed inset-0 z-100 flex items-center justify-center overflow-y-auto p-4">
+          <div className="pointer-events-none fixed inset-0 z-[450] flex items-center justify-center overflow-y-auto p-4">
             {children}
           </div>
         </>

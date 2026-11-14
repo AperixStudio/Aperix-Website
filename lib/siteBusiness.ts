@@ -13,16 +13,11 @@ export const SITE_LOCALITY = {
   openGraphLocale: "en_AU",
 } as const;
 
+/** Google share link for the Aperix Studio listing, including the service area. */
+export const SITE_GOOGLE_PROFILE_URL = "https://maps.app.goo.gl/avRuFFQswpMonZiN6";
+
+/** Harrison is the primary number on the Google Business Profile, so he is listed first. */
 export const SITE_TEAM = [
-  {
-    id: "tom",
-    name: "Tom",
-    jobTitle: "Co-founder & Developer",
-    imagePath: "/TomPhoto.webp",
-    imageAlt: "Tom, Co-founder at Aperix Studio",
-    phoneDisplay: "0466 584 549",
-    phoneTel: "+61466584549",
-  },
   {
     id: "harrison",
     name: "Harrison",
@@ -32,7 +27,22 @@ export const SITE_TEAM = [
     phoneDisplay: "0499 277 423",
     phoneTel: "+61499277423",
   },
+  {
+    id: "tom",
+    name: "Tom",
+    jobTitle: "Co-founder & Developer",
+    imagePath: "/TomPhoto.webp",
+    imageAlt: "Tom, Co-founder at Aperix Studio",
+    phoneDisplay: "0466 584 549",
+    phoneTel: "+61466584549",
+  },
 ] as const;
+
+/** Live AI receptionist. The hero orb and /services both dial this line. */
+export const RECEPTIONIST_LINE = {
+  display: "+61 3 9962 4119",
+  tel: "+61399624119",
+} as const;
 
 /** Indexable images for image sitemap generation. */
 export const SITE_SITEMAP_IMAGES = [
@@ -62,14 +72,20 @@ export const SITE_SITEMAP_IMAGES = [
   },
   {
     pagePath: "/",
-    loc: "/NailsByAvyPreview.png",
+    loc: "/NailsByAvyPreview.webp",
     title: "Nails by Avy case study preview",
     caption: "Nails by Avy nail studio website by Aperix Studio",
   },
   {
     pagePath: "/our-work",
-    loc: "/POVSyncPreview.png",
+    loc: "/POVSyncPreview.webp",
     title: "POV Sync case study preview",
     caption: "POV Sync SaaS landing page by Aperix Studio",
+  },
+  {
+    pagePath: "/our-work",
+    loc: "/MullyPreview.webp",
+    title: "Mully case study preview",
+    caption: "Mully golf companion app by Aperix Studio",
   },
 ] as const;

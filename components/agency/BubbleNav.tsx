@@ -2,17 +2,25 @@
 
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import HashLink from "@/components/agency/HashLink";
-import { useIntroDone } from "@/lib/useIntroDone";
 import "./BubbleNav.css";
 
 const NAV_LINKS = [
-  { label: "Our Work", href: "/#our-work" },
-  { label: "Services", href: "/services"  },
-  { label: "About",    href: "/#about"    },
-  { label: "Forum",    href: "/forum"     },
-  { label: "Contact",  href: "/#contact"  },
+  { label: "Our Work", href: "/our-work" },
+  { label: "Services", href: "/services" },
+  { label: "About", href: "/about" },
+  { label: "Forum", href: "/forum" },
+  { label: "Contact", href: "/contact" },
 ];
+
+const HOME_LINK = { label: "Home", href: "/" };
+
+function linksForPath(pathname: string) {
+  const path = pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+  const links = path === "/" ? NAV_LINKS : [HOME_LINK, ...NAV_LINKS];
+  return links.filter((link) => link.href !== path);
+}
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -47,9 +55,12 @@ function scrollToTop() {
  * this way on a touchscreen to begin with — see BubbleNav.css.
  */
 export default function BubbleNav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Mouse clicks leave the pointer over the pill, and the link keeps focus.
+  // Either one would hold it open. Suppress hover until the pointer leaves.
+  const [dismissed, setDismissed] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-  const introDone = useIntroDone();
   const shellRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -60,15 +71,25 @@ export default function BubbleNav() {
     (event: React.MouseEvent) => {
       // Once open, the pill's own background is never what a tap lands on —
       // that area is a link, a divider, or the gap around one — so this only
-      // ever fires for the tap that opens it.
+      // ever fires for the tap that opens it. Link clicks bubble here too;
+      // those must not flip the pill back open after a selection.
       if (open) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("a, button")) return;
       event.preventDefault();
       setOpen(true);
     },
     [open],
   );
 
-  const closePill = useCallback(() => setOpen(false), []);
+  const closePill = useCallback(() => {
+    setOpen(false);
+    setDismissed(true);
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && shellRef.current?.contains(active)) {
+      active.blur();
+    }
+  }, []);
 
   // Tapping outside, or Escape, closes it again. Mouse users never set `open`
   // in the first place (they close by moving the pointer away), so this only
@@ -91,12 +112,21 @@ export default function BubbleNav() {
     };
   }, [open]);
 
-  if (!portalTarget || !introDone) return null;
+  // One instance lives in the root layout. These routes bring their own nav.
+  if (pathname.startsWith("/dev") || pathname.startsWith("/current")) {
+    return null;
+  }
 
-  return createPortal(
+  // Home is first on every other page. The page you are on is left out.
+  // Order otherwise stays Our Work, Services, About, Forum, Contact.
+  // Links stay in the markup while the pill is collapsed so crawlers see them.
+  const links = linksForPath(pathname);
+
+  const shell = (
     <div
       ref={shellRef}
-      className={`bubble-nav-shell${open ? " is-open" : ""}`}
+      className={`bubble-nav-shell${links.length > 5 ? " bubble-nav-shell--six" : ""}${open ? " is-open" : ""}${dismissed ? " is-dismissed" : ""}`}
+      onPointerLeave={() => setDismissed(false)}
     >
       <nav className="bubble-nav" aria-label="Site navigation" onClick={openPill}>
         {/* Collapsed state label */}
@@ -106,7 +136,7 @@ export default function BubbleNav() {
 
         {/* Expanded links */}
         <ul className="bubble-nav__links" role="list">
-          {NAV_LINKS.map((link, i) => (
+          {links.map((link, i) => (
             <Fragment key={link.href}>
               {i > 0 && (
                 <li className="bubble-nav__divider" aria-hidden="true" />
@@ -151,7 +181,12 @@ export default function BubbleNav() {
           <path d="M6 15l6-6 6 6" />
         </svg>
       </button>
-    </div>,
-    portalTarget,
+    </div>
   );
+
+  // The shell is in the server HTML. After hydration it moves to document.body
+  // so the hero canvas cannot sit on top of it. Returning null until then
+  // kept these links out of the raw HTML.
+  if (!portalTarget) return shell;
+  return createPortal(shell, portalTarget);
 }

@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect, type CSSProperties } from "re
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/animations";
-import { CAROUSEL_SITES, LIVE_SITES, type LiveSite } from "@/lib/liveSites";
+import { CAROUSEL_SITES, LIVE_SITES, caseStudyId, type LiveSite } from "@/lib/liveSites";
 import { cn } from "@/lib/utils";
 import "./LiveSitesSection.css";
 
@@ -436,6 +436,19 @@ export default function LiveSitesSection() {
   }, []);
 
   useEffect(() => {
+    const openFromHash = () => {
+      const id = window.location.hash.replace(/^#/, "");
+      if (!id) return;
+      const index = CAROUSEL_SITES.findIndex((site) => caseStudyId(site.name) === id);
+      if (index >= 0) openCaseStudy(index);
+    };
+
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [openCaseStudy]);
+
+  useEffect(() => {
     if (!selectedSite) return;
 
     const previousOverflow = document.body.style.overflow;
@@ -496,11 +509,12 @@ export default function LiveSitesSection() {
               {CAROUSEL_SITES.map((site, i) => (
                 <button
                   key={site.name}
+                  id={caseStudyId(site.name)}
                   role="tab"
                   aria-selected={active === i}
                   onClick={() => goTo(i)}
                   className={cn(
-                    "live-sites-tab rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
+                    "live-sites-tab scroll-mt-28 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
                     active === i && "live-sites-tab--active",
                   )}
                 >

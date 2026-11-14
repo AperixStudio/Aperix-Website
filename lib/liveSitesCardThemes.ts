@@ -41,6 +41,13 @@ export const LIVE_SITES_CARD_THEMES = [
     btn: "bg-[#2e5f8a] text-white hover:bg-[#1e4a70]",
     darkGradient: "from-[#0a1826] to-[#06101a]",
   },
+  {
+    gradient: "from-[#0d5c38] to-[#003b23]",
+    accent: "text-[#b7e4c7]",
+    badgeBg: "bg-white/20 text-white border-white/30",
+    btn: "bg-[#003b23] text-white hover:bg-[#002818]",
+    darkGradient: "from-[#042016] to-[#02140e]",
+  },
 ] as const;
 
 export type LiveSitesCardTheme = (typeof LIVE_SITES_CARD_THEMES)[number];

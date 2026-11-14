@@ -1,12 +1,9 @@
 import { type Metadata } from "next";
-import AgencyNavV2 from "@/components/agency/AgencyNavV2";
 import Footer from "@/components/agency/Footer";
-import ContactForm from "@/components/agency/ContactForm";
-import BackToTop from "@/components/agency/BackToTop";
+import HomeContactSection from "@/components/agency/HomeContactSection";
 import { buildLocalBusinessSchema } from "@/lib/schema/siteSchema";
 import { buildPageMetadata } from "@/lib/seo/pageMetadata";
 import { getSiteUrl } from "@/lib/site";
-import "./ContactPage.css";
 
 const siteUrl = getSiteUrl();
 
@@ -36,12 +33,7 @@ export const metadata: Metadata = buildPageMetadata({
 export default function ContactPage() {
   return (
     <>
-      <AgencyNavV2 />
-
-      <main
-        id="main-content"
-        className="contact-page overflow-hidden px-4 pt-20 pb-6 sm:px-6 lg:px-8 lg:pt-24 lg:pb-8"
-      >
+      <main id="main-content" className="overflow-x-hidden pt-52 lg:pt-44">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildLocalBusinessSchema()) }}
@@ -50,18 +42,9 @@ export default function ContactPage() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
         />
-        <div className="contact-page__shell mx-auto h-full max-w-6xl">
-          <ContactForm
-            kicker="A 30-second briefing"
-            heading="Contact us about web design in Melbourne."
-            headingId="contact-heading"
-            headingAs="h1"
-            lede="Four short questions. We'll reply within 24 hours."
-          />
-        </div>
+        <HomeContactSection headingAs="h1" headingId="contact-heading" />
       </main>
 
-      <BackToTop />
       <Footer />
     </>
   );
