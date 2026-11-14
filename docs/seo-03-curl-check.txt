@@ -1,0 +1,35 @@
+SEO-03 raw HTML check. Fetched with no JavaScript from http://127.0.0.1:3000.
+
+/: OK
+  /services x4
+  /our-work x2
+  /about x2
+  /contact x2
+  hero: yes
+  faq answer link: yes
+
+/services: OK
+  /services x2
+  /our-work x2
+  /about x2
+  /contact x2
+
+/our-work: OK
+  /services x3
+  /our-work x2
+  /about x2
+  /contact x3
+
+/about: OK
+  /services x2
+  /our-work x2
+  /about x2
+  /contact x3
+
+/contact: OK
+  /services x2
+  /our-work x2
+  /about x2
+  /contact x2
+
+ALL_OK

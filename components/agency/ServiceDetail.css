@@ -1,0 +1,170 @@
+/* Offer pages — a single reading column, not the services index. */
+
+.offer {
+  position: relative;
+  z-index: 2;
+  width: min(40rem, calc(100% - 2.5rem));
+  margin-inline: auto;
+  padding:
+    clamp(7.5rem, 18vh, 10rem)
+    0
+    clamp(4.5rem, 10vh, 7rem);
+}
+
+.offer__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: clamp(2rem, 5vh, 3rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.offer__kicker {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(125, 211, 252, 0.8);
+}
+
+.offer__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3.1rem, 8vw, 5.4rem);
+  font-weight: 650;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+.offer__lede {
+  margin: 0;
+  max-width: 34rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.offer__sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.offer__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.75rem, 4vh, 2.5rem) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.offer__label {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(186, 230, 253, 0.72);
+}
+
+.offer__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.offer__text,
+.offer__note {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.02rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.offer__question {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.35;
+  color: #ffffff;
+}
+
+.offer__question:first-child {
+  margin-top: 0;
+}
+
+.offer__text a,
+.offer__note a {
+  color: #ffffff;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(125, 211, 252, 0.7);
+  text-underline-offset: 0.18em;
+}
+
+.offer__text a:hover,
+.offer__note a:hover {
+  text-decoration-color: #ffffff;
+}
+
+.offer__text a:focus-visible,
+.offer__note a:focus-visible,
+.offer__cta:focus-visible {
+  outline: 1px solid rgba(14, 165, 233, 0.8);
+  outline-offset: 3px;
+}
+
+.offer__end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding-top: clamp(2rem, 5vh, 3rem);
+}
+
+.offer__close {
+  margin: 0;
+  max-width: 32rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.offer__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e0f2fe;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.7);
+  padding-bottom: 0.15rem;
+}
+
+.offer__cta::after {
+  content: "→";
+}
+
+.offer__cta:hover {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+@media (min-width: 900px) {
+  .offer {
+    width: min(46rem, calc(100% - 8rem));
+  }
+}

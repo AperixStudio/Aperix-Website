@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import BubbleNav from "@/components/agency/BubbleNav";
 import Footer from "@/components/agency/Footer";
 import ForumInbox from "@/components/agency/ForumInbox";
 import { buildPageMetadata } from "@/lib/seo/pageMetadata";
@@ -21,8 +20,6 @@ export default function ForumPage() {
       </main>
 
       <Footer />
-
-      <BubbleNav />
     </>
   );
 }

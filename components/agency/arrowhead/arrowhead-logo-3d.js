@@ -159,7 +159,8 @@ export function createArrowheadLogo(container, options = {}) {
   const isCoarse =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
-  const maxDpr = isCoarse ? 1 : 2;
+  const dprCap = isCoarse ? 1 : 2;
+  const maxDpr = Math.min(dprCap, typeof opt.maxDpr === "number" ? opt.maxDpr : dprCap);
 
   let renderer;
   try {
@@ -173,6 +174,7 @@ export function createArrowheadLogo(container, options = {}) {
     canvas.remove();
     throw new Error("createArrowheadLogo: WebGL is unavailable in this browser");
   }
+  renderer.debug.checkShaderErrors = false;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
   setSRGB(renderer, null);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;

@@ -11,14 +11,15 @@ import {
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { HERO_PHONE_ICON } from "@/lib/heroPhoneIcon";
+import { RECEPTIONIST_LINE } from "@/lib/siteBusiness";
 import SVGParticles from "@/components/ui/svg-particles";
 import "./HeroReceptionistOrb.css";
 
 type Speaker = "ai" | "booked";
 type Line = { from: Speaker; text: string };
 
-/** Dial string — display format +61-3-9962-4119 */
-const APERIX_CALL_HREF = "tel:+61399624119";
+/** Dial string — display format +61 3 9962 4119 */
+const APERIX_CALL_HREF = `tel:${RECEPTIONIST_LINE.tel}`;
 
 const SCRIPT: Line[] = [
   {

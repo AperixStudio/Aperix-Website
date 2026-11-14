@@ -1,3 +1,5 @@
+import { RECEPTIONIST_LINE } from "@/lib/siteBusiness";
+
 export type TierTone = "muted" | "cyan" | "amber" | "violet";
 
 export type ServiceTierContent = {
@@ -144,12 +146,41 @@ export const SERVICE_TIERS: ServiceTierContent[] = [
   },
 ];
 
+export type ServicePageLink = {
+  before: string;
+  label: string;
+  href: `/${string}`;
+  after: string;
+};
+
+export type ServiceCall = {
+  /** tel: href for the live receptionist. */
+  href: string;
+  /** Number as it should be read on the page. */
+  number: string;
+};
+
+export type ServiceCaseStudy = {
+  /** Text immediately before the project link. */
+  before: string;
+  /** Project name. The link text, and the `/our-work` anchor. */
+  name: string;
+  /** Text immediately after the project link. */
+  after: string;
+};
+
 export type StudioService = {
   id: string;
   name: string;
   summary: string;
   /** Short lines under the summary. Add or remove freely. */
   covers: string[];
+  /** Case studies linked from this section. Omitted when the catalogue has none. */
+  caseStudies?: ServiceCaseStudy[];
+  /** When set, the service name dials this number. */
+  call?: ServiceCall;
+  /** Dedicated pages this section introduces. */
+  pages?: ServicePageLink[];
 };
 
 /**
@@ -162,22 +193,40 @@ export const STUDIO_SERVICES: StudioService[] = [
     id: "web-design",
     name: "Web design",
     summary:
-      "Hand-coded websites for service businesses, shops, and brands that need a site with a point of view. No templates, and no WordPress.",
+      "Custom websites for service businesses, shops, and brands. Each one is built around the work you do, with a clear way for a visitor to enquire or buy. No templates, and no WordPress.",
     covers: ["Service businesses", "E-commerce", "Landing pages"],
+    caseStudies: [
+      { before: "See ", name: "Nails by Avy", after: ", and " },
+      { before: "", name: "The Hidden Chapter", after: " for the e-commerce and service based business examples." },
+    ],
+    pages: [
+      { before: "More examples on ", label: "ecommerce websites", href: "/ecommerce-websites", after: " and " },
+      { before: "", label: "websites for tradies", href: "/web-design-for-tradies", after: "." },
+    ],
   },
   {
     id: "web-apps",
     name: "Web apps & SaaS",
     summary:
-      "Products people log into. The site, the onboarding, and the product itself, built as one piece rather than a theme with a login attached.",
-    covers: ["SaaS products", "Onboarding", "Dashboards"],
+      "Tools people open in the browser and use. The account, the working screen, and the job the product is there to do, built as one piece.",
+    covers: ["SaaS products", "Web apps"],
+    caseStudies: [{ before: "See ", name: "POV Sync", after: " for the web app example." }],
   },
   {
     id: "software",
     name: "Software development",
     summary:
-      "Bespoke software for the way a business actually runs. Tools, portals, and the work a marketing site was never meant to carry.",
+      "Custom software written for specific businesses. Internal tools to help your team at sticking points of your business, and portals for employees or clients to use.",
     covers: ["Custom software", "Internal tools", "Client portals"],
+    caseStudies: [{ before: "See ", name: "POV Sync", after: " for the product build." }],
+    pages: [
+      {
+        before: "More on ",
+        label: "custom software development",
+        href: "/custom-software-development",
+        after: ".",
+      },
+    ],
   },
   {
     id: "apps",
@@ -185,6 +234,26 @@ export const STUDIO_SERVICES: StudioService[] = [
     summary:
       "Apps for the phone and for the product. The same two people from the first conversation through to something you can hand someone.",
     covers: ["Mobile apps", "Product apps"],
+    caseStudies: [{ before: "See ", name: "Mully", after: " for the App Development example ." }],
+    pages: [
+      {
+        before: "More on ",
+        label: "app development",
+        href: "/app-development",
+        after: ".",
+      },
+    ],
+  },
+  {
+    id: "ai-receptionist",
+    name: "AI receptionist",
+    summary:
+      "A receptionist on the business phone line. It answers as the main call taker, or in place of the answering machine. It sounds like a person, collects the caller's name, contact details, job type, and when the work is needed, and can book an appointment or inspection against the rest of the calendar. It is an AI receptionist for tradies, and the same setup fits salons and other service businesses.",
+    covers: ["Trades", "Salons", "Bookings"],
+    call: {
+      href: `tel:${RECEPTIONIST_LINE.tel}`,
+      number: RECEPTIONIST_LINE.display,
+    },
   },
 ];
 

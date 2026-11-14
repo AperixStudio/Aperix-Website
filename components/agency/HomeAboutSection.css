@@ -11,6 +11,7 @@
   background: transparent;
 }
 
+
 .home-about__inner {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);

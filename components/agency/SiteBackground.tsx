@@ -19,7 +19,7 @@ const BG_SDK_URL =
 const BG_RENDER = {
   scale: 1,
   dpi: 1.5,
-  fps: 60 as const,
+  fps: 30 as const,
 } as const;
 
 function SiteBackgroundVideoSources() {

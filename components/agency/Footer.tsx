@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 import { SITE_EMAIL } from "@/lib/site";
-import { SITE_TEAM } from "@/lib/siteBusiness";
+import { SITE_GOOGLE_PROFILE_URL, SITE_LOCALITY, SITE_TEAM } from "@/lib/siteBusiness";
 import "./Footer.css";
 
 const STUDIO_ABN = "57 379 139 292";
@@ -324,7 +324,14 @@ export default function Footer() {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [legalsOpen, setLegalsOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const legalsRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
+  const pinning = useRef(false);
+  const skipPin = useRef(true);
+  const stickToBottom = useRef(false);
+  const detailsOpenRef = useRef(false);
+  detailsOpenRef.current = detailsOpen;
 
   const closePrivacy = useCallback(() => setPrivacyOpen(false), []);
 
@@ -338,6 +345,127 @@ export default function Footer() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Mobile only. The first time the page hits the footer, the bar stays
+  // clear except for the fixed TABS pill and a hint. A second gesture that
+  // starts while already at the bottom reveals the footer copy. A swipe
+  // back up while that second stage is open closes it and stays on the
+  // first stage — the page does not scroll away in the same gesture.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let armed = false;
+    let holdingDetails = false;
+    let startY = 0;
+
+    const fromBottom = () => {
+      const el = document.scrollingElement ?? document.documentElement;
+      return el.scrollHeight - el.scrollTop - el.clientHeight;
+    };
+
+    const onScroll = () => {
+      if (!mq.matches || reduced.matches) {
+        setDetailsOpen(false);
+        return;
+      }
+      if (pinning.current || holdingDetails) return;
+      if (fromBottom() > 64) {
+        setDetailsOpen(false);
+        setLegalsOpen(false);
+      }
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (!holdingDetails || event.touches.length !== 1) return;
+      const dy = startY - event.touches[0].clientY;
+      // Finger moving down scrolls the page up. Eat that until the gesture
+      // ends, so stage 2 collapses back to stage 1 instead of flying past it.
+      if (dy < 0) event.preventDefault();
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (!mq.matches || reduced.matches || event.touches.length !== 1) return;
+      const footer = footerRef.current;
+      const onFooter = !!footer && event.target instanceof Node && footer.contains(event.target);
+      armed = fromBottom() < 12;
+      // Only a finger that starts on the footer may freeze scrolling.
+      // Touches on the rest of the page scroll normally.
+      holdingDetails = onFooter && detailsOpenRef.current;
+      startY = event.touches[0].clientY;
+      if (holdingDetails && footer) {
+        footer.addEventListener("touchmove", onTouchMove, { passive: false });
+      }
+    };
+
+    const endGesture = (event: TouchEvent) => {
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
+      if (!armed) {
+        holdingDetails = false;
+        return;
+      }
+      armed = false;
+      const wasHolding = holdingDetails;
+      holdingDetails = false;
+      const dy = startY - event.changedTouches[0].clientY;
+      if (!wasHolding && dy > 48) setDetailsOpen(true);
+      else if (wasHolding && dy < -48) {
+        stickToBottom.current = true;
+        setDetailsOpen(false);
+        setLegalsOpen(false);
+      }
+    };
+
+    const onTouchCancel = () => {
+      armed = false;
+      holdingDetails = false;
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", endGesture, { passive: true });
+    window.addEventListener("touchcancel", onTouchCancel);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", endGesture);
+      window.removeEventListener("touchcancel", onTouchCancel);
+      footerRef.current?.removeEventListener("touchmove", onTouchMove);
+    };
+  }, []);
+
+  // Keep the footer's bottom edge pinned while its height changes, so opening
+  // stage 2 reads as the bar growing upward and closing it lands back on
+  // stage 1 instead of scrolling the page up by the same amount.
+  useLayoutEffect(() => {
+    if (skipPin.current) {
+      skipPin.current = false;
+      return undefined;
+    }
+
+    const footer = footerRef.current;
+    const followBottom = detailsOpen || stickToBottom.current;
+    stickToBottom.current = false;
+    if (!footer || !followBottom || !window.matchMedia("(max-width: 640px)").matches) return undefined;
+
+    pinning.current = true;
+    let frame = 0;
+    const start = performance.now();
+
+    const tick = () => {
+      const el = document.scrollingElement ?? document.documentElement;
+      const max = Math.max(0, el.scrollHeight - el.clientHeight);
+      if (Math.abs(el.scrollTop - max) > 0.5) el.scrollTop = max;
+      if (performance.now() - start < 420) frame = requestAnimationFrame(tick);
+      else pinning.current = false;
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      pinning.current = false;
+    };
+  }, [detailsOpen]);
+
   function openLegal(id: string) {
     setLegalsOpen(false);
     if (id === "privacy") {
@@ -348,37 +476,56 @@ export default function Footer() {
   }
 
   return (
-    <footer role="contentinfo" className="site-footer agency-glass-pill rounded-none border-x-0">
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+    <footer
+      ref={footerRef}
+      role="contentinfo"
+      className={`site-footer agency-glass-pill rounded-none border-x-0${detailsOpen ? " is-details" : ""}`}
+    >
+      <div className="site-footer__bar relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
 
         {/* Left — logo */}
-        <Link href="/" aria-label="Aperix home">
+        <Link href="/" aria-label="Aperix home" className="site-footer__logo">
           <AnimatedLogo size={112} className="h-28 w-auto opacity-70 transition hover:opacity-100" />
         </Link>
 
-        {/* Centre — service area and contact. No street address: the studio is online. */}
+        {/* Flanks the viewport centre so the TABS pill can sit there. */}
         <div className="site-footer__meta">
-          <address className="site-footer__address">
-            <span>Melbourne, Victoria (online)</span>
-            <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
-            <ul className="site-footer__phones">
-              {SITE_TEAM.map((member) => (
-                <li key={member.id}>
-                  <span className="site-footer__phone-name">{member.name}</span>
-                  <a href={`tel:${member.phoneTel}`}>{member.phoneDisplay}</a>
-                </li>
-              ))}
-            </ul>
-          </address>
-          <p className="site-footer__fine">
-            ABN {STUDIO_ABN}
-            <span aria-hidden="true"> · </span>
-            <span className="site-footer__copy">© {new Date().getFullYear()} Aperix Studio</span>
-          </p>
+          <div className="site-footer__side site-footer__side--lead">
+            <nav className="site-footer__nav" aria-label="Footer">
+              <Link href="/services">Services</Link>
+              <Link href="/our-work">Our work</Link>
+              <Link href="/about">About</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
+            <p className="site-footer__fine">
+              ABN {STUDIO_ABN}
+              <span aria-hidden="true"> · </span>
+              <span className="site-footer__copy">© {new Date().getFullYear()} Aperix Studio</span>
+            </p>
+          </div>
+          <div className="site-footer__side site-footer__side--trail">
+            <address className="site-footer__address">
+              <span>Based in {SITE_LOCALITY.city}</span>
+              <a href={SITE_GOOGLE_PROFILE_URL} target="_blank" rel="noopener noreferrer">
+                Serving {SITE_LOCALITY.countryName}
+              </a>
+              <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+              <ul className="site-footer__phones">
+                {SITE_TEAM.map((member) => (
+                  <li key={member.id}>
+                    <span className="site-footer__phone-name">{member.name}</span>
+                    <a href={`tel:${member.phoneTel}`}>{member.phoneDisplay}</a>
+                  </li>
+                ))}
+              </ul>
+            </address>
+          </div>
         </div>
 
+        <p className="site-footer__more">Swipe again for more info</p>
+
         {/* Right — legals dropdown */}
-        <div className="relative" ref={legalsRef}>
+        <div className="site-footer__legals relative" ref={legalsRef}>
           <button
             onClick={() => setLegalsOpen((v) => !v)}
             aria-expanded={legalsOpen}

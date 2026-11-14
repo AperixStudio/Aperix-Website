@@ -32,6 +32,8 @@ export type ArrowheadLogoOptions = {
   loopAfter?: number;
   distance?: number;
   pauseOffscreen?: boolean;
+  /** Caps renderer pixel ratio. Defaults to 2 on a mouse, 1 on a coarse pointer. */
+  maxDpr?: number;
   onPhase?: (phase: "reveal" | "track" | "orbit", index: number) => void;
 };
 

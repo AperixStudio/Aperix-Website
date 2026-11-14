@@ -83,3 +83,13 @@
   padding-bottom: clamp(1rem, 2.5vh, 1.35rem);
   opacity: 1;
 }
+
+.home-faq__services-link {
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.home-faq__services-link:hover {
+  color: #fff;
+}

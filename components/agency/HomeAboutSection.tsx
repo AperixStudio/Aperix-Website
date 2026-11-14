@@ -3,8 +3,14 @@ import { ABOUT_TEAM_PANEL_PHOTOS } from "@/lib/aboutContent";
 import "./HomeAboutSection.css";
 
 /** About us — the two team photos from /current About panel 03, plus the studio blurb. */
-export default function HomeAboutSection() {
+export default function HomeAboutSection({
+  headingLevel = "h2",
+}: {
+  /** The home band already has a page heading. /about uses this block as the page. */
+  headingLevel?: "h1" | "h2";
+}) {
   const { left, right } = ABOUT_TEAM_PANEL_PHOTOS;
+  const Heading = headingLevel;
 
   return (
     <section id="about" className="home-about" aria-labelledby="home-about-heading">
@@ -20,9 +26,9 @@ export default function HomeAboutSection() {
 
         <div className="home-about__copy">
           <p className="home-about__eyebrow">About us</p>
-          <h2 id="home-about-heading" className="home-about__heading">
+          <Heading id="home-about-heading" className="home-about__heading">
             The team behind the pixels
-          </h2>
+          </Heading>
           <p className="home-about__lede">
             We&apos;re a small two-man team in Melbourne. We&apos;ve shipped work from app
             and software development through to web design for service-based businesses,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { FAQ_ITEMS } from "@/lib/services-content";
 import "./HomeFAQSection.css";
 
@@ -46,7 +47,14 @@ export default function HomeFAQSection() {
                 className="home-faq__answer-wrap"
                 data-open={isOpen || undefined}
               >
-                <p className="home-faq__answer">{item.answer}</p>
+                <p className="home-faq__answer">
+                  {item.answer}{" "}
+                  {item.question === "How does pricing work?" ? (
+                    <Link href="/services" className="home-faq__services-link">
+                      See services for how a project is scoped.
+                    </Link>
+                  ) : null}
+                </p>
               </div>
             </div>
           );

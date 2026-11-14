@@ -191,9 +191,9 @@ export function buildServicesPageSchema() {
         "@type": "WebPage",
         "@id": `${siteUrl}/services#webpage`,
         url: `${siteUrl}/services`,
-        name: "Services | Aperix Studio",
+        name: "Web design & software development services | Aperix Studio",
         description:
-          "Web design, web apps and SaaS, software development, and app development from Aperix Studio in Melbourne.",
+          "Web design, web apps, software, mobile apps, and an AI receptionist from Aperix Studio in Melbourne. Each project is scoped, then quoted.",
         inLanguage: SITE_LOCALITY.htmlLang,
         isPartOf: { "@id": `${siteUrl}/#website` },
         about: { "@id": `${siteUrl}/#organization` },
@@ -215,6 +215,60 @@ export function buildServicesPageSchema() {
               "@type": "City",
               name: SITE_LOCALITY.city,
             },
+          },
+        })),
+      },
+    ],
+  };
+}
+
+export function buildServiceLandingSchema({
+  path,
+  name,
+  description,
+  serviceName,
+  faqs,
+}: {
+  path: `/${string}`;
+  name: string;
+  description: string;
+  serviceName: string;
+  faqs: { question: string; answer: string }[];
+}) {
+  const siteUrl = getSiteUrl();
+  const url = `${siteUrl}${path}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name,
+        description,
+        inLanguage: SITE_LOCALITY.htmlLang,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${url}#service` },
+      },
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: serviceName,
+        description,
+        url,
+        provider: { "@id": `${siteUrl}/#organization` },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        url,
+        mainEntity: faqs.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
           },
         })),
       },

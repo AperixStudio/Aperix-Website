@@ -26,6 +26,8 @@ type AnimatedLogoProps = {
   startAt?: number;
   /** Seek again when this changes (e.g. intro logo starts orbiting after it lands). */
   seekTo?: number;
+  /** Caps the WebGL drawing buffer's device pixel ratio. */
+  maxDpr?: number;
 };
 
 /**
@@ -43,6 +45,7 @@ export default function AnimatedLogo({
   onMouseLeave,
   startAt,
   seekTo,
+  maxDpr,
 }: AnimatedLogoProps) {
   const height = Math.round(size * LOGO_ASPECT);
   const handleRef = useRef<ArrowheadLogoHandle | null>(null);
@@ -66,7 +69,7 @@ export default function AnimatedLogo({
       onMouseLeave={onMouseLeave}
     >
       <ArrowheadLogo3D
-        options={{ tilt: 0 }}
+        options={{ tilt: 0, ...(maxDpr != null ? { maxDpr } : {}) }}
         onReady={(handle) => {
           handleRef.current = handle;
           if (startAt != null) handle?.seek(startAt);

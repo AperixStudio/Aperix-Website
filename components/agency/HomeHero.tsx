@@ -9,6 +9,7 @@ import {
   type CSSProperties,
 } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { onIntroDone } from "@/lib/introState";
 import { INTRO_SETTLE_MS, INTRO_TEXT_FADE_MS } from "@/components/animations/IntroScreenSimple";
 import "./HomeHero.css";
@@ -406,7 +407,10 @@ export default function HomeHero() {
                 >
                   Driven by the desire to provide AI-supported, customised projects, we
                   give you the structure and strategy to build{" "}
-                  <span className="home-hero__you">your</span> iconic brand and business.
+                  <span className="home-hero__you">your</span> iconic brand and business.{" "}
+                  <Link href="/services" className="home-hero__services-link">
+                    See our services
+                  </Link>
                 </motion.p>
               </div>
             </div>

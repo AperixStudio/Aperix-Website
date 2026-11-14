@@ -196,14 +196,8 @@ function WorkTile({ site, playing }: { site: LiveSite; playing: boolean }) {
   );
 }
 
-/**
- * The wide ring carries every project twice. With an even card count that puts
- * a project and its repeat exactly opposite each other, so the same site is
- * never visible twice on the near face. The narrow ring has room for one lap,
- * so it carries each project once.
- */
-const ORBIT_SITES_WIDE = [...CAROUSEL_SITES, ...CAROUSEL_SITES];
-const ORBIT_SITES_NARROW = [...CAROUSEL_SITES];
+/** One lap on every viewport. Each live project appears once. */
+const ORBIT_SITES = [...CAROUSEL_SITES];
 
 export default function HomeWorkSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -236,7 +230,7 @@ export default function HomeWorkSection() {
   );
 
   const preset = isNarrow ? WORK_ORBIT_NARROW : WORK_ORBIT_WIDE;
-  const orbitSites = isNarrow ? ORBIT_SITES_NARROW : ORBIT_SITES_WIDE;
+  const orbitSites = ORBIT_SITES;
   const orbitItems: WorkOrbitItem[] = orbitSites.map((site, index) => ({
     key: `${site.name}-${index}`,
     node: <WorkTile site={site} playing={playing} />,

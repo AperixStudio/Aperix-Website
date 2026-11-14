@@ -6,8 +6,11 @@
  * the colour dissolves into whatever sits below instead of ending on a hard
  * line.
  *
- * Generated once at module load from a seeded PRNG rather than Math.random,
- * so the server and the hydrating client produce byte-identical markup.
+ * Generated once at module load from a seeded PRNG rather than Math.random.
+ * The page does not mount these cells. `scripts/bake-work-pixel-fade.mjs`
+ * paints them into public/work-pixel-fade.png, and the work section draws
+ * that single image. Re-run the script if the hash, size, or row opacity
+ * changes. Row opacity is not baked with the slab's group opacity.
  */
 
 export const PIXEL_FADE_CELL = 18;
@@ -24,6 +27,13 @@ export const PIXEL_FADE_OVERHANG = 300;
 /** The remainder, which sits inside the Work section under its own content. */
 export const PIXEL_FADE_INSIDE = PIXEL_FADE_HEIGHT - PIXEL_FADE_OVERHANG;
 export const PIXEL_FADE_WIDTH = PIXEL_FADE_CELL * PIXEL_FADE_COLS;
+/** Baked field. Colour is #0d2d4c; per-row alpha is pixelFadeRowOpacity. */
+export const PIXEL_FADE_SRC = "/work-pixel-fade.png";
+
+/** Dims lower rows so the tail recedes instead of reading as confetti. */
+export function pixelFadeRowOpacity(row: number): number {
+  return 0.4 + 0.6 * (1 - row / (PIXEL_FADE_ROWS - 1));
+}
 
 /** Cheap 32-bit integer hash — stable across runtimes, unlike Math.random. */
 function hash(x: number, y: number): number {

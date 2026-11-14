@@ -6,15 +6,15 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import MelbourneFlipClock from "@/components/agency/MelbourneFlipClock";
 import HashLink from "@/components/agency/HashLink";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
-  { label: "Our Work", href: "/#our-work" },
-  { label: "About", href: "/#about" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Our Work", href: "/our-work" },
+  { label: "Services", href: "/services" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 function WiggleText({ label }: { label: string }) {
@@ -39,7 +39,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
       href={href}
       data-cursor-pill
       aria-label={label}
-      className="agency-nav-link group relative rounded-full px-4 py-2 text-sm font-medium"
+      className="agency-nav-link group relative rounded-full px-2.5 py-2 text-sm font-medium lg:px-4"
     >
       <span className="transition-opacity duration-150 group-hover:opacity-0" aria-hidden="true">
         <span className="text-agency-muted">
@@ -68,7 +68,7 @@ function MobileMenuButton({
     <button
       type="button"
       onClick={onClick}
-      className="relative z-50 flex size-[1.25rem] shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8 text-white shadow-[0_4px_14px_rgba(0,0,0,0.22)] supports-backdrop-filter:backdrop-blur-xl md:hidden"
+      className="relative z-50 flex size-[1.25rem] shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8 text-white shadow-[0_4px_14px_rgba(0,0,0,0.22)] supports-backdrop-filter:backdrop-blur-xl xl:hidden"
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open}
     >
@@ -171,7 +171,7 @@ export default function AgencyNavV2() {
                   <motion.nav
                     key="mobile-menu-panel"
                     aria-label="Mobile navigation"
-                    className="rocket-step-card fixed top-[5.35rem] left-4 z-50 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-xl px-5 py-2 sm:left-6 md:hidden lg:left-8"
+                    className="rocket-step-card fixed top-[5.35rem] left-4 z-50 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-xl px-5 py-2 sm:left-6 xl:hidden lg:left-8"
                     initial={
                       prefersReduced
                         ? { opacity: 0 }
@@ -231,20 +231,25 @@ export default function AgencyNavV2() {
           <nav
             aria-label="Main navigation"
             className={cn(
-              "absolute left-1/2 hidden -translate-x-1/2 items-center rounded-full md:flex",
+              "absolute left-1/2 hidden -translate-x-1/2 items-center rounded-full xl:grid xl:grid-cols-[1fr_24rem_1fr]",
               "agency-glass-pill px-1.5 py-1",
               scrolled ? "opacity-100" : "agency-glass-pill--soft opacity-95",
             )}
           >
-            {NAV_LINKS.map((link) => (
-              <NavLink key={link.href} href={link.href} label={link.label} />
-            ))}
+            <span className="flex items-center justify-start">
+              {NAV_LINKS.filter((link) => link.href === "/" || link.href === "/our-work").map((link) => (
+                <NavLink key={link.href} href={link.href} label={link.label} />
+              ))}
+            </span>
+            {/* The docked logo sits on this centre. A link here would render underneath it. */}
+            <span aria-hidden="true" />
+            <span className="flex items-center justify-start">
+              {NAV_LINKS.filter((link) => link.href !== "/" && link.href !== "/our-work").map((link) => (
+                <NavLink key={link.href} href={link.href} label={link.label} />
+              ))}
+            </span>
           </nav>
 
-          {/* Melbourne flip clock */}
-          <div className="flex shrink-0 justify-end">
-            <MelbourneFlipClock />
-          </div>
         </div>
       </header>
     </>
