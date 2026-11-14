@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect, useLayoutEffect } from "react
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedLogo from "@/components/agency/AnimatedLogo";
+import TrackedContactLink from "@/components/analytics/TrackedContactLink";
 import { SITE_EMAIL } from "@/lib/site";
 import { SITE_GOOGLE_PROFILE_URL, SITE_LOCALITY, SITE_TEAM } from "@/lib/siteBusiness";
 import "./Footer.css";
@@ -90,12 +91,14 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
           <p>
             This website is operated by Aperix Studio. If you have any
             questions about this Privacy Policy, you can contact us at{" "}
-            <a
+            <TrackedContactLink
               href="mailto:hello@aperix.com.au"
+              event="contact_email"
+              location="privacy_policy"
               className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80"
             >
               hello@aperix.com.au
-            </a>
+            </TrackedContactLink>
             .
           </p>
 
@@ -137,10 +140,23 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
           </h3>
           <p>
             We use <strong className="text-agency-text">Netlify Analytics</strong>{" "}
-            to understand how visitors use our website in aggregate. Netlify
-            Analytics provides anonymous, aggregated usage statistics and does
-            not rely on tracking cookies or fingerprinting to identify
+            and <strong className="text-agency-text">Google Analytics 4</strong>{" "}
+            to understand how visitors use our website.
+          </p>
+          <p>
+            Netlify Analytics provides anonymous, aggregated usage statistics
+            and does not rely on tracking cookies or fingerprinting to identify
             individual visitors.
+          </p>
+          <p>
+            Google Analytics 4 counts visits and enquiries. It sets a
+            first-party cookie (<span className="text-agency-text">_ga</span>{" "}
+            and <span className="text-agency-text">_ga_7ZB0J7JTHC</span>) and
+            collects the pages you view, your device and browser, an
+            approximate location, and whether an enquiry was delivered or an
+            email or phone link was clicked. Your name, email address, and
+            phone number are not sent to Google. We do not use Google
+            Analytics for advertising.
           </p>
 
           <h3 className="pt-2 text-base font-semibold text-agency-text">
@@ -149,10 +165,11 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
           <p>
             Information you submit through our contact forms is used solely to
             respond to your enquiry and provide the services you request. Form
-            submissions are processed by{" "}
-            <strong className="text-agency-text">Netlify Forms</strong> and
-            delivered to us by email. We do not use enquiry information for
-            marketing without your express consent.
+            submissions are sent through this website and delivered to us by
+            email using <strong className="text-agency-text">Resend</strong>.
+            We do not use enquiry information for marketing without your
+            express consent. The name, email address, and phone number in the
+            form are not sent to Google Analytics.
           </p>
 
           <h3 className="pt-2 text-base font-semibold text-agency-text">
@@ -196,11 +213,12 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
           </h3>
           <p>
             This website does not use advertising, profiling, or cross-site
-            tracking cookies. Essential technical cookies may be set where
-            required for website functionality, security, or to remember your
-            preferences. You can block or delete cookies in your browser
-            settings at any time, although doing so may affect site
-            functionality.
+            tracking cookies. Google Analytics sets the first-party analytics
+            cookie described in Section 3 to count visits and enquiries.
+            Essential technical cookies may be set where required for website
+            functionality, security, or to remember your preferences. You can
+            block or delete cookies in your browser settings at any time,
+            although doing so may affect site functionality.
           </p>
 
           <h3 className="pt-2 text-base font-semibold text-agency-text">
@@ -227,8 +245,31 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
               .
             </li>
             <li>
-              <strong className="text-agency-text">Analytics.</strong> See
-              Section 3.
+              <strong className="text-agency-text">Analytics.</strong> We use
+              Google Analytics 4, as described in Section 3. See{" "}
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80"
+              >
+                Google&rsquo;s Privacy Policy
+              </a>
+              .
+            </li>
+            <li>
+              <strong className="text-agency-text">Enquiry email.</strong>{" "}
+              Messages from the contact form are delivered by{" "}
+              <strong className="text-agency-text">Resend</strong>. See{" "}
+              <a
+                href="https://resend.com/legal/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80"
+              >
+                Resend&rsquo;s Privacy Policy
+              </a>
+              .
             </li>
           </ul>
           <p>
@@ -283,12 +324,14 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
             You have the right to request access to, or correction of, the
             personal information we hold about you. To make a request, or to
             raise a privacy concern, please contact us at{" "}
-            <a
+            <TrackedContactLink
               href="mailto:hello@aperix.com.au"
+              event="contact_email"
+              location="privacy_policy"
               className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80"
             >
               hello@aperix.com.au
-            </a>
+            </TrackedContactLink>
             . We will respond within{" "}
             <strong className="text-agency-text">30 days</strong>.
           </p>
@@ -311,7 +354,7 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
           </p>
 
           <p className="pt-2 text-xs text-agency-muted/60">
-            Last updated: 1 June 2026
+            Last updated: 15 November 2026
           </p>
         </div>
       </motion.div>
@@ -509,12 +552,20 @@ export default function Footer() {
               <a href={SITE_GOOGLE_PROFILE_URL} target="_blank" rel="noopener noreferrer">
                 Serving {SITE_LOCALITY.countryName}
               </a>
-              <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+              <TrackedContactLink href={`mailto:${SITE_EMAIL}`} event="contact_email" location="footer">
+                {SITE_EMAIL}
+              </TrackedContactLink>
               <ul className="site-footer__phones">
                 {SITE_TEAM.map((member) => (
                   <li key={member.id}>
                     <span className="site-footer__phone-name">{member.name}</span>
-                    <a href={`tel:${member.phoneTel}`}>{member.phoneDisplay}</a>
+                    <TrackedContactLink
+                      href={`tel:${member.phoneTel}`}
+                      event="contact_phone"
+                      line={member.id}
+                    >
+                      {member.phoneDisplay}
+                    </TrackedContactLink>
                   </li>
                 ))}
               </ul>
@@ -715,7 +766,7 @@ export default function Footer() {
                 <p>Some third-party embeds (e.g. external maps, analytics dashboards, or vendor widgets) may not yet fully meet WCAG 2.2 AA. Where we are responsible for these, we work to replace or wrap them with accessible alternatives.</p>
 
                 <h3 className="pt-2 text-base font-semibold text-agency-text">Feedback</h3>
-                <p>If you experience an accessibility barrier on this site, or on a site we have built for a client, please contact us at <a href="mailto:hello@aperix.com.au" className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80">hello@aperix.com.au</a>. We aim to respond within 5 business days and to remediate confirmed issues as quickly as practicable.</p>
+                <p>If you experience an accessibility barrier on this site, or on a site we have built for a client, please contact us at <TrackedContactLink href="mailto:hello@aperix.com.au" event="contact_email" location="accessibility" className="text-agency-accent underline underline-offset-2 hover:text-agency-accent/80">hello@aperix.com.au</TrackedContactLink>. We aim to respond within 5 business days and to remediate confirmed issues as quickly as practicable.</p>
 
                 <p className="pt-2 text-xs text-agency-muted/60">Last updated: 1 June 2026</p>
               </div>

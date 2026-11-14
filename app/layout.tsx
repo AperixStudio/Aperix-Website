@@ -9,6 +9,7 @@ import IntroSelector from "@/components/animations/IntroSelector";
 import PageReveal from "@/components/animations/PageReveal";
 import BubbleNav from "@/components/agency/BubbleNav";
 import SkipToContent from "@/components/layout/SkipToContent";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import {
   buildOrganizationSchema,
   buildWebSiteSchema,
@@ -107,6 +108,7 @@ export default function RootLayout({
             failure mode. Same-page hashes still ease through HashLink.
             See components/animations/SmoothScroll.tsx if this needs revisiting. */}
         <CursorFollower />
+        <GoogleAnalytics />
         <PageReveal>
           {children}
           <BubbleNav />

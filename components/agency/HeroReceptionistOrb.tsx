@@ -11,6 +11,7 @@ import {
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { HERO_PHONE_ICON } from "@/lib/heroPhoneIcon";
+import TrackedContactLink from "@/components/analytics/TrackedContactLink";
 import { RECEPTIONIST_LINE } from "@/lib/siteBusiness";
 import SVGParticles from "@/components/ui/svg-particles";
 import "./HeroReceptionistOrb.css";
@@ -261,8 +262,10 @@ export default function HeroReceptionistOrb({
           : { duration: 0.55, ease: HERO_EASE, delay: show ? 0.2 : 0 }
       }
     >
-      <a
+      <TrackedContactLink
         href={APERIX_CALL_HREF}
+        event="contact_phone"
+        line="receptionist"
         className={`hero-orb__stage${hovering ? " is-preview" : " is-idle"}${prefersReducedMotion ? " no-motion" : ""}`}
         onMouseEnter={startPreview}
         onMouseLeave={stopPreview}
@@ -285,7 +288,7 @@ export default function HeroReceptionistOrb({
             />
           </span>
         </span>
-      </a>
+      </TrackedContactLink>
     </motion.div>
   );
 }

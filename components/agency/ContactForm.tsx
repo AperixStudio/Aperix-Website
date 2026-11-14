@@ -1,5 +1,6 @@
 "use client";
 
+import TrackedContactLink from "@/components/analytics/TrackedContactLink";
 import {
   useEffect,
   useId,
@@ -25,6 +26,7 @@ import {
   type BriefingDraft,
   type BriefingStep,
 } from "@/lib/contactBriefing";
+import { trackGenerateLead } from "@/lib/analytics";
 import { SITE_EMAIL } from "@/lib/site";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
@@ -284,6 +286,13 @@ export default function AgencyContactForm({
         return;
       }
 
+      trackGenerateLead({
+        pagePath: window.location.pathname,
+        leadNeed: parsed.data.need,
+        leadTiming: parsed.data.timing,
+        preferCall: nextDraft.preferCall,
+      });
+
       const firstName = parsed.data.name.split(" ")[0] || "there";
       setSubmittedName(firstName);
       setSubmitted(true);
@@ -342,7 +351,9 @@ export default function AgencyContactForm({
         )}
         <p className="contact-brief__mail">
           Prefer email?{" "}
-          <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>
+          <TrackedContactLink href={`mailto:${SITE_EMAIL}`} event="contact_email" location="contact_form">
+            {SITE_EMAIL}
+          </TrackedContactLink>
         </p>
       </div>
 

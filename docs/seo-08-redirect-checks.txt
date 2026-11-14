@@ -1,0 +1,207 @@
+SEO-08 redirect checks
+Recorded: 15 Nov 2026
+Production has not published netlify.toml yet. These curls are the live hosts before that publish. They are not a pass of the 301 checks.
+
+=== Mail and DNS (unchanged by the redirect file) ===
+## aperixstudio.com.au
+  NS: kipp.ns.cloudflare.com., martha.ns.cloudflare.com.
+  A: 75.2.60.5, 99.83.231.61
+  MX: no-answer status=0
+  TXT: no-answer status=0
+## aperixstudio.com
+  NS: decker.ns.cloudflare.com., jocelyn.ns.cloudflare.com.
+  A: 99.83.231.61, 75.2.60.5
+  MX: no-answer status=0
+  TXT: no-answer status=0
+## aperix.com.au
+  NS: kipp.ns.cloudflare.com., martha.ns.cloudflare.com.
+  A: 99.83.231.61, 75.2.60.5
+  MX: 1 aspmx.l.google.com., 10 alt3.aspmx.l.google.com., 10 alt4.aspmx.l.google.com., 5 alt1.aspmx.l.google.com., 5 alt2.aspmx.l.google.com.
+  TXT: "google-site-verification=tiRUGrthky2vdZ9j8Eh-rRxIPA1Vw6TF4oHoC8n_VyE", "v=spf1 include:_spf.mx.cloudflare.net include:send.resend.com include:_spf.google.com ~all"
+## www.aperixstudio.com.au
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+## www.aperixstudio.com
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+## _dmarc.aperixstudio.com.au
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+## _dmarc.aperixstudio.com
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+## mail.aperixstudio.com.au
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+## mail.aperixstudio.com
+  A: no-answer status=3
+  CNAME: no-answer status=3
+  MX: no-answer status=3
+
+=== curl -I (first response only, redirects not followed) ===
+----- https://aperixstudio.com.au/
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com.au/
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/
+curl_http_code=301
+curl_redirect=https://aperixstudio.com.au/
+
+----- https://aperixstudio.com.au/contact
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com.au/contact
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/contact
+curl_http_code=301
+curl_redirect=https://aperixstudio.com.au/contact
+
+----- https://aperixstudio.com.au/contact?utm=seo08
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com.au/contact?utm=seo08
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/contact?utm=seo08
+curl_http_code=301
+curl_redirect=https://aperixstudio.com.au/contact?utm=seo08
+
+----- https://aperixstudio.com.au/does-not-exist-seo07
+HTTP/2 404
+curl_http_code=404
+curl_redirect=
+
+----- http://aperixstudio.com.au/does-not-exist-seo07
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/does-not-exist-seo07
+curl_http_code=301
+curl_redirect=https://aperixstudio.com.au/does-not-exist-seo07
+
+----- https://aperixstudio.com/
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com/
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/
+curl_http_code=301
+curl_redirect=https://aperixstudio.com/
+
+----- https://aperixstudio.com/contact
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com/contact
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/contact
+curl_http_code=301
+curl_redirect=https://aperixstudio.com/contact
+
+----- https://aperixstudio.com/contact?utm=seo08
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- http://aperixstudio.com/contact?utm=seo08
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/contact?utm=seo08
+curl_http_code=301
+curl_redirect=https://aperixstudio.com/contact?utm=seo08
+
+----- https://aperixstudio.com/does-not-exist-seo07
+HTTP/2 404
+curl_http_code=404
+curl_redirect=
+
+----- http://aperixstudio.com/does-not-exist-seo07
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/does-not-exist-seo07
+curl_http_code=301
+curl_redirect=https://aperixstudio.com/does-not-exist-seo07
+
+----- https://aperix.com.au/services
+HTTP/2 200
+curl_http_code=200
+curl_redirect=
+
+----- https://www.aperixstudio.com.au/
+Could not resolve host
+curl_http_code=000
+curl_redirect=
+
+----- https://www.aperixstudio.com/
+Could not resolve host
+curl_http_code=000
+curl_redirect=
+
+----- http://www.aperixstudio.com.au/
+Could not resolve host
+curl_http_code=000
+curl_redirect=
+
+----- http://www.aperixstudio.com/
+Could not resolve host
+curl_http_code=000
+curl_redirect=
+
+=== HTTP followed (two-hop check, max 3) ===
+----- FOLLOW http://aperixstudio.com.au/
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/
+HTTP/2 200
+final_url=https://aperixstudio.com.au/
+redirects=1
+final_code=200
+
+----- FOLLOW http://aperixstudio.com.au/contact?utm=seo08
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/contact?utm=seo08
+HTTP/2 200
+final_url=https://aperixstudio.com.au/contact?utm=seo08
+redirects=1
+final_code=200
+
+----- FOLLOW http://aperixstudio.com.au/does-not-exist-seo07
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com.au/does-not-exist-seo07
+HTTP/2 404
+final_url=https://aperixstudio.com.au/does-not-exist-seo07
+redirects=1
+final_code=404
+
+----- FOLLOW http://aperixstudio.com/
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/
+HTTP/2 200
+final_url=https://aperixstudio.com/
+redirects=1
+final_code=200
+
+----- FOLLOW http://aperixstudio.com/contact?utm=seo08
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/contact?utm=seo08
+HTTP/2 200
+final_url=https://aperixstudio.com/contact?utm=seo08
+redirects=1
+final_code=200
+
+----- FOLLOW http://aperixstudio.com/does-not-exist-seo07
+HTTP/1.1 301 Moved Permanently
+Location: https://aperixstudio.com/does-not-exist-seo07
+HTTP/2 404
+final_url=https://aperixstudio.com/does-not-exist-seo07
+redirects=1
+final_code=404
