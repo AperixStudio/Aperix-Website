@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import TrackedContactLink from "@/components/analytics/TrackedContactLink";
 
 export default function GlobalError({
   error,
@@ -32,12 +33,14 @@ export default function GlobalError({
         >
           Try again
         </button>
-        <a
+        <TrackedContactLink
           href="mailto:hello@aperix.com.au"
+          event="contact_email"
+          location="error_page"
           className="rounded-full border border-agency-border px-5 py-3 text-sm font-semibold text-agency-text transition-colors hover:border-agency-border-dark hover:bg-agency-surface"
         >
           Email support
-        </a>
+        </TrackedContactLink>
       </div>
     </main>
   );

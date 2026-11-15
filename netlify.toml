@@ -1,0 +1,29 @@
+# Host redirects for the retired studio domains (SEO-07 / SEO-08).
+# HTTPS on each studio host 301s to the same path on https://aperix.com.au.
+# The query string is left off the destination so Netlify keeps the original one.
+# HTTP is not listed here. Netlify upgrades HTTP to HTTPS on the same host first.
+# Do not add a rule for aperix.com.au. That host is the destination.
+
+[[redirects]]
+  from = "https://aperixstudio.com.au/"
+  to = "https://aperix.com.au/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://aperixstudio.com.au/*"
+  to = "https://aperix.com.au/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://aperixstudio.com/"
+  to = "https://aperix.com.au/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://aperixstudio.com/*"
+  to = "https://aperix.com.au/:splat"
+  status = 301
+  force = true

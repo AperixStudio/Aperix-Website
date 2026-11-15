@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TrackedContactLink from "@/components/analytics/TrackedContactLink";
 import HashLink from "@/components/agency/HashLink";
 import ReceptionistMascot from "@/components/agency/ReceptionistMascot";
 import { caseStudyId } from "@/lib/liveSites";
@@ -12,7 +13,13 @@ function serviceNumber(index: number) {
 function ServiceHeading({ service }: { service: (typeof STUDIO_SERVICES)[number] }) {
   return (
     <h2 className="services-index__name">
-      {service.call ? <a href={service.call.href}>{service.name}</a> : service.name}
+      {service.call ? (
+        <TrackedContactLink href={service.call.href} event="contact_phone" line="receptionist">
+          {service.name}
+        </TrackedContactLink>
+      ) : (
+        service.name
+      )}
     </h2>
   );
 }
@@ -60,7 +67,11 @@ export default function ServicesIndex() {
               ) : null}
               {service.call ? (
                 <p className="services-index__proof">
-                  Call the bot on <a href={service.call.href}>{service.call.number}</a>.
+                  Call the bot on{" "}
+                  <TrackedContactLink href={service.call.href} event="contact_phone" line="receptionist">
+                    {service.call.number}
+                  </TrackedContactLink>
+                  .
                 </p>
               ) : null}
               {service.caseStudies && service.caseStudies.length > 0 ? (
