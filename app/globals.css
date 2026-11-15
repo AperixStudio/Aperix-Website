@@ -211,7 +211,12 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* `clip`, not `hidden`. `hidden` forces overflow-y to auto, so the body
+     becomes its own scrollport. The collapsed mobile footer sticks out of
+     that port, and the first swipe anywhere — including the top of the
+     page — is swallowed there instead of moving the page. */
   overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior-x: none;
   max-width: 100%;
 }

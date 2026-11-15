@@ -218,6 +218,11 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    /* The copy is taller than the first-stage bar. A zero box keeps it
+       from extending the page, which would put a second scrollport under
+       every swipe, not just the footer. */
+    height: 0;
+    overflow: hidden;
   }
 
   .site-footer.is-details .site-footer__bar {
